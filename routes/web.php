@@ -41,6 +41,10 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('/exclusion-reason', 'ExclusionReasonController@edit')->name('edit-exclusion-reason');
         Route::get('/abnormal-reason', 'AbnormalReasonController@edit')->name('edit-abnormal-reason');
         Route::get('/processing-time', 'ProcessingTimeController@edit')->name('edit-processing-time');
+        Route::get('/time-shift-definition', 'TimeShiftDefinitionController@edit')->name('edit-time-shift-definition');
+        Route::get('/performance', 'PerformanceController@edit')->name('edit-performance');
+        Route::get('/quality', 'QualityController@edit')->name('edit-quality');
+        Route::get('/machine-oee', 'MachineOEEController@edit')->name('edit-machine-oee');
     });
 
     Route::group(['prefix' => 'calender'], function () {
@@ -48,6 +52,13 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('/year-calendar', 'CalendarController@yearcalendar')->name('year-calendar');
         Route::get('/process-calendar', 'ProcessCalendarController@processcalendar')->name('process-calendar');
         Route::get('/adjust-process-calendar', 'ProcessCalendarController@showProcessCalendar')->name('show-process-calendar');
+    });
+
+    Route::group(['prefix' => 'uptime'], function () {
+        Route::get('/time-shift-definition', 'TimeShiftDefinitionController@index')->name('time-shift-definition');
+        Route::get('/performance', 'PerformanceController@index')->name('performance');
+        Route::get('/quality', 'QualityController@index')->name('quality');
+        Route::get('/machine-oee', 'MachineOEEController@index')->name('machine-oee');
     });
 });
 

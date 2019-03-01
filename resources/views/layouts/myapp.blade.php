@@ -46,6 +46,9 @@
         .sidebar ul li a.active {
             background-color: #343641;
         }
+        .slectbtn{
+            width:10%;
+        }
         .clearable{
             background: #fff url(http://i.stack.imgur.com/mJotv.gif) no-repeat right -10px center;
             border: 1px solid #ccc;
@@ -193,16 +196,16 @@
                             <a href="#" style="color: white;">稼動參數<span class="fa arrow"></span></a>
                             <ul class="nav nav-second-level">
                                 <li>
-                                    <a href="#" style="color: white;">時間稼動定義</a>
+                                    <a href="{{ route('time-shift-definition') }}" style="color: white;">時間稼動定義</a>
                                 </li>
                                 <li>
-                                    <a href="#" style="color: white;">性能稼動定義</a>
+                                    <a href="{{ route('performance') }}" style="color: white;">性能稼動定義</a>
                                 </li>
                                 <li>
-                                    <a href="#" style="color: white;">良率定義</a>
+                                    <a href="{{ route('quality') }}" style="color: white;">良率定義</a>
                                 </li>
                                 <li>
-                                    <a href="#" style="color: white;">機台OEE定義</a>
+                                    <a href="{{ route('machine-oee') }}" style="color: white;">機台OEE定義</a>
                                 </li>
                             </ul>
                         </li>
