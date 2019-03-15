@@ -41,7 +41,7 @@
         width: 39px;
         height: 25x;
         border-radius:100px;
-        border:1px solid #000;
+       
         background-color: #ccc;
         box-shadow: 0px 3px 0px rgba(0,0,0,.13) inset;
     }
@@ -89,22 +89,23 @@
                 <div class="panel panel-default">
                     <div class="panel-heading">資料編輯</div>
                     <div class="panel-body">
-                        <form class="form-horizontal">
+                    <form class="form-horizontal" action="{{ route('store-machine-category')}}" method="post">
+                        {{ csrf_field() }}
                             <div class="form-group">
                                 <label class="col-md-2 control-label">機台類別</label>
                                 <div class="col-md-10">
-                                    <input class="clearable form-control" required>
+                                    <input  name="type"type="text" value="" class="clearable form-control" required>
                                 </div>
                             </div>
                             <hr>
                             <div class="form-group">
                                 <label class="col-md-2 control-label">單機 ／ 多機</label>
                                 <div class="col-md-10">
-                                        <select class="form-control" required >
-                                            <option value="">單工序單機</option>
-                                            <option value="">單工序多機</option>
-                                            <option value="">多工序單機</option>
-                                            <option value="">多工序多機</option>
+                                        <select name="type2"class="form-control" required >
+                                            <option value="SS">單工序單機</option>
+                                            <option value="SM">單工序多機</option>
+                                            <option value="MS">多工序單機</option>
+                                            <option value="MM">多工序多機</option>
                                         </select>
                                     </div>
                             </div>
@@ -112,13 +113,13 @@
                             <div class="form-group">
                                 <label class="col-md-2 control-label">自動化</label>
                                 <div class="col-md-10">
-                                        <select class="form-control" required >
-                                            <option value="">無人全自動化</option>
-                                            <option value="">人機同步全自動化</option>
-                                            <option value="">人機同步半自動化</option>
-                                            <option value="">人機半自動</option>
-                                            <option value="">手動數控</option>
-                                            <option value="">手動機械</option>
+                                        <select name="auto" class="form-control" required >
+                                            <option value="FA">無人全自動化</option>
+                                            <option value="HA">人機同步全自動化</option>
+                                            <option value="SH">人機同步半自動化</option>
+                                            <option value="SA">人機半自動</option>
+                                            <option value="MN">手動數控</option>
+                                            <option value="MM">手動機械</option>
                                         </select>
                                     </div>
                             </div>
@@ -126,12 +127,12 @@
                             <div class="form-group">
                                 <label class="col-md-2 control-label">人機介面</label>
                                 <div class="col-md-10">
-                                    <select class="form-control" required>
-                                            <option value="">可離線生產</option>
-                                            <option value="">人機同步生產</option>
-                                            <option value="">遠端遙控生產</option>
-                                            <option value="">無人化自動生產</option>
-                                            <option value="">人機手動</option>
+                                    <select name="interface"class="form-control" required>
+                                            <option value="A">可離線生產</option>
+                                            <option value="B">人機同步生產</option>
+                                            <option value="C">遠端遙控生產</option>
+                                            <option value="D">無人化自動生產</option>
+                                            <option value="E">人機手動</option>
                                     </select>
                                 </div>
                             </div>
@@ -139,21 +140,22 @@
                             <div class="form-group">
                                 <label class="col-md-2 control-label">休息時間可生產</label>
                                     <div class="col-md-10">
-                                        <select class="form-control" required >
-                                            <option value="">是</option>
-                                            <option value="">否</option>
-                                            <option value="">部分</option>
-                                            <option value="">強制</option>
+                                        <select  name="rest"class="form-control" required >
+                                            <option value="1">是</option>
+                                            <option value="0">否</option>
+                                            <option value="2">部分</option>
+                                            <option value="3">強制</option>
                                         </select>
                                     </div>
                             </div>
                             <hr>
-                            <div class="form-group">
+                             <div class="form-group">
                                 <label class="col-md-2 control-label">休息時間可生產</label>
                                 <div class="col-md-10">
                                 <label class="col-md-3 ">
                                      <span class="text">自動上料&nbsp;
-                                        <input type="checkbox" name="" id="" class="checkbox">
+                                        <input type="hidden" name="up" value="0">
+                                        <input type="checkbox" name="up" value="1" class="checkbox">
                                             <span class="btn-box">
                                                 <span class="btn"></span>  
                                             </span> 
@@ -162,7 +164,8 @@
                                 
                                 <label class="col-md-3 ">
                                         <span class="text">自動下料&nbsp;
-                                           <input type="checkbox" name="" id="" class="checkbox">
+                                           <input type="hidden" name="down" value="0">
+                                           <input type="checkbox" name="down" value="1" class="checkbox" >
                                                <span class="btn-box">
                                                    <span class="btn"></span>  
                                                </span> 
@@ -171,7 +174,8 @@
 
                                 <label class="col-md-3 ">
                                         <span class="text">排板系統　　&nbsp;
-                                           <input type="checkbox" name="" id="" class="checkbox">
+                                            <input type="hidden" name="arrange" value="0">
+                                           <input type="checkbox" name="arrange" value="1" class="checkbox" >
                                                <span class="btn-box">
                                                    <span class="btn"></span>  
                                                </span> 
@@ -180,19 +184,21 @@
 
                                 <label class="col-md-3 ">
                                         <span class="text">自動加工排程&nbsp;
-                                           <input type="checkbox" name="" id="" class="checkbox">
+                                            <input type="hidden" name="auto arrange" value="0">
+                                           <input type="checkbox" name="auto arrange" value="1" class="checkbox" >
                                                <span class="btn-box">
                                                    <span class="btn"></span>  
                                                </span> 
                                         </span>
                                 </label> 
-                            </div>
-                            <hr>
+                                </div>
+                            <br>
                             <label class="col-md-2 control-label"></label>
-                            <div class="col-md-10">
+                                <div class="col-md-10">
                                     <label class="col-md-3 ">
                                          <span class="text">自動換模&nbsp;
-                                            <input type="checkbox" name="" id="" class="checkbox">
+                                            <input type="hidden" name="auto change" value="0">
+                                            <input type="checkbox" name="auto change" value="1" class="checkbox" >
                                                 <span class="btn-box">
                                                     <span class="btn"></span>  
                                                 </span> 
@@ -201,7 +207,8 @@
                                     
                                     <label class="col-md-3 ">
                                             <span class="text">自動給料&nbsp;
-                                               <input type="checkbox" name="" id="" class="checkbox">
+                                                <input type="hidden" name="auto pay" value="0">
+                                               <input type="checkbox" name="auto pay" value="1" class="checkbox" >
                                                    <span class="btn-box">
                                                        <span class="btn"></span>  
                                                    </span> 
@@ -210,7 +217,8 @@
     
                                     <label class="col-md-3 ">
                                             <span class="text">自動完工取料&nbsp;
-                                               <input type="checkbox" name="" id="" class="checkbox">
+                                               <input type="hidden" name="auto finish" value="0">
+                                               <input type="checkbox" name="auto finish" value="1" class="checkbox" >
                                                    <span class="btn-box">
                                                        <span class="btn"></span>  
                                                    </span> 
@@ -218,8 +226,10 @@
                                     </label> 
                                 </div>
                                                  
-                            </div>   
+                            </div> 
+                            <hr>   
                             <div style="text-align:center">
+                             @csrf
                                 <button type="submit" id="sendBtn" class="btn btn-success btn-lg" style="width:45%">確認</button>
                                 <button type="reset" onclick="" class="btn btn-secondary btn-lg" style="width:45%">清除資料</button>
                             </div>

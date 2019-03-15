@@ -55,17 +55,17 @@ td {
 
 @section('js')
 <script>
-    const today = new Date();
-    let currentYear = today.getFullYear();
+    const today = new Date();//現在時間
+    let currentYear = today.getFullYear();//今年
     const arrWeekdays = ['日', '一', '二', '三', '四', '五', '六'];
     const arrEnddays = [31,28,31,30,31,30,31,31,30,31,30,31];
     const divCalendar = document.getElementById('calendar');
     const isLeapYear = (year) => {
-       return !(year % (year % 100 ? 4 : 400));
+       return !(year % (year % 100 ? 4 : 400));//判斷閏年
     }
 
     const makeMonthTable = (calendarYear, month) => {
-        const monthText = ~~month + 1;
+        const monthText = ~~month + 1;// ~~用來取整數
         const start_date = new Date(calendarYear, month, 1);
         const start_weekday = start_date.getDay();
         let endDay = arrEnddays[month];
@@ -78,7 +78,7 @@ td {
         strMonthTable += `
             <tr>
                 <th colspan='7' class='month-title'>
-                    <a href='/full-calendar/?year=${calendarYear}&month=${monthText}'>${monthText}月</a>
+                    <a href='/calendar/full-calendar/?year=${calendarYear}&month=${monthText}'>${monthText}月</a>
                 </th>
             </tr>
         `;

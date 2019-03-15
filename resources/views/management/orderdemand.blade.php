@@ -1,7 +1,6 @@
 @extends('layouts.myapp')
 
 @section('css')
-
 <style>
     .space-item {
         margin-left: 10px;
@@ -33,7 +32,6 @@
     .btn.focus, .btn:focus, .btn:hover {
         color: #fff;
     }
-    
 </style>
 
 @endsection
@@ -41,14 +39,12 @@
 @section('content')
 <div id="page-wrapper">
     <div class="container-fluid">
-        <h2>班別設定</h2>
+        <h2>製令單查詢</h2>
         <ol class="breadcrumb">
             <img src="{{ asset('img/u12.png') }}">
-            <span class="space-item">系統設定</span>
+            <span class="space-item">MES管理</span>
             <span class="space-item">></span>
-            <span class="space-item">班別設定<span>
-            <span class="space-item">></span>
-            <span class="space-item">資料編輯頁</span>
+            <span class="space-item">製令單查詢<span>
         </ol>
         <div class="row">
             <div class="col-md-12">
@@ -57,21 +53,33 @@
                     <div class="panel-body">
                         <form class="form-horizontal">
                             <div class="form-group">
-                                <label class="col-md-2 control-label">班別名稱</label>
+                                <label class="col-md-2 control-label">組織</label>
                                 <div class="col-md-10">
-                                    <input class="form-control" required>
+                                    <select class="form-control" required>
+                                            <option value="">一群</option>
+                                            <option value="">二群</option>
+                                            <option value="">三群</option>
+                                            <option value="">四群</option>
+                                            <option value="">五群</option>
+                                            <option value="">六群</option> 
+                                    </select>
+                                </div>   
+                            </div>
+                            <hr>
+                            <div class="form-group">
+                                <label class="col-md-2 control-label">工藝路線</label>                       
+                                <div class="col-md-10">
+                                    <select class="form-control" required>
+                                        <option value="">一群-雷射</option>
+                                        <option value="">一群-P2</option>
+                                        <option value="">一群-NC2</option>  
+                                        <option value="">一群-捲料</option>      
+                                </select>
                                 </div>
                             </div>
                             <hr>
                             <div class="form-group">
-                                <label class="col-md-2 control-label">班別類型</label>
-                                <div class="col-md-10">
-                                    <input class="form-control" required>
-                                </div>
-                            </div>
-                            <hr>
-                            <div class="form-group">
-                                <label class="col-md-2 control-label">上班時間</label>
+                                <label class="col-md-2 control-label">需求開始日期</label>
                                     <div class="col-md-4">
                                         <input class="clearable form-control" required>
                                     </div>
@@ -84,38 +92,16 @@
                             </div>
                             <hr>
                             <div class="form-group">
-                                <label class="col-md-2 control-label">休息類別一</label>
+                                <label class="col-md-2 control-label">來源訂單號</label>
                                 <div class="col-md-10">
-                                    <select class="form-control" required>
-                                            <option value="">- - - 請選擇休息時段 - - -</option>
-                                            <option value="">正常班之休息時段</option>
-                                            <option value="">早班之休息時段</option>
-                                            <option value="">中班之休息時段</option>
-                                    </select>
+                                    <input class="clearable form-control" required>
                                 </div>
                             </div>
                             <hr>
                             <div class="form-group">
-                                <label class="col-md-2 control-label">休息類別二</label>
+                                <label class="col-md-2 control-label">客戶</label>
                                 <div class="col-md-10">
-                                    <select class="form-control" required >
-                                            <option value="">- - - 請選擇休息時段 - - -</option>
-                                        <option value="">正常班之休息時段</option>
-                                        <option value="">早班之休息時段</option>
-                                        <option value="">中班之休息時段</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <hr>
-                            <div class="form-group">
-                                <label class="col-md-2 control-label">休息類別三</label>
-                                <div class="col-md-10">
-                                    <select class="form-control" required>
-                                            <option value="">- - - 請選擇休息時段 - - -</option>
-                                            <option value="">正常班之休息時段</option>
-                                            <option value="">早班之休息時段</option>
-                                            <option value="">中班之休息時段</option>
-                                    </select>
+                                    <input class="clearable form-control" required>
                                 </div>
                             </div>
                             <hr>
@@ -130,5 +116,4 @@
         </div>
     </div>
 </div>
-
 @endsection

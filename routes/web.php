@@ -28,7 +28,14 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('/abnormal-reason', 'AbnormalReasonController@index')->name('abnormal-reason');
         Route::get('/processing-time', 'ProcessingTimeController@index')->name('processing-time');
         Route::get('/processing-time-result', 'ProcessingTimeController@result')->name('processing-time-result');
+        Route::post('/store-machine-category', 'MachineCategoryController@store')->name('store-machine-category');
 
+        Route::get('/machine-performance', 'MachinePerformanceController@index')->name('machine-performance');
+        Route::get('/order-load', 'OrderLoadController@index')->name('order-load');
+        Route::get('/order-demand', 'OrderDemandController@index')->name('order-demand');
+        Route::get('/order-inbound', 'OrderInboundController@index')->name('order-inbound');
+        
+        Route::get('/personnel-management', 'PersonnelManagementController@index')->name('personnel-management');
         
 
     Route::group(['prefix' => 'edit'], function () {
@@ -45,9 +52,10 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('/performance', 'PerformanceController@edit')->name('edit-performance');
         Route::get('/quality', 'QualityController@edit')->name('edit-quality');
         Route::get('/machine-oee', 'MachineOEEController@edit')->name('edit-machine-oee');
+        Route::get('/personnel-management', 'PersonnelManagementController@edit')->name('edit-personnel-management');
     });
 
-    Route::group(['prefix' => 'calender'], function () {
+    Route::group(['prefix' => 'calendar'], function () {
         Route::get('/full-calendar', 'CalendarController@fullcalendar')->name('full-calendar');
         Route::get('/year-calendar', 'CalendarController@yearcalendar')->name('year-calendar');
         Route::get('/process-calendar', 'ProcessCalendarController@processcalendar')->name('process-calendar');

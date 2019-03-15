@@ -15,4 +15,8 @@ class MachineCategoryController extends Controller
     {
         return view('system/edit/editmachinecategory');
     }
+    public function store(request $request)
+    {
+        dd($request->all());
+    }
 }
