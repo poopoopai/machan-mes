@@ -14,10 +14,10 @@ class CreateResourcesTablePhp extends Migration
     public function up()
     {
         Schema::create('resources', function (Blueprint $table) {
-            $table->increments('id');
+            $table->unsignedInteger('id');
             $table->string('port_number')->nullable();
-            $table->unsignedInteger('program-code');
-            $table->unsignedInteger('error-code');
+            $table->unsignedInteger('program_code');
+            $table->unsignedInteger('error_code');
             $table->timestamps();
         });
     }
@@ -29,8 +29,6 @@ class CreateResourcesTablePhp extends Migration
      */
     public function down()
     {
-        Schema::table('resources', function (Blueprint $table) {
-            //
-        });
+        Schema::dropIfExists('resources');
     }
 }

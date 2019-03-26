@@ -39,12 +39,12 @@
 @section('content')
 <div id="page-wrapper">
     <div class="container-fluid">
-        <h2>班別設定</h2>
+        <h2>休息時間</h2>
         <ol class="breadcrumb">
             <img src="{{ asset('img/u12.png') }}">
             <span class="space-item">系統設定</span>
             <span class="space-item">></span>
-            <span class="space-item">班別設定<span>
+            <span class="space-item">休息時間<span>
             <span class="space-item">></span>
             <span class="space-item">資料編輯頁</span>
         </ol>

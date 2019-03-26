@@ -154,8 +154,8 @@
                                 <div class="col-md-10">
                                 <label class="col-md-3 ">
                                      <span class="text">自動上料&nbsp;
-                                        <input type="hidden" name="up" value="0">
-                                        <input type="checkbox" name="up" value="1" class="checkbox">
+                                        <input type="hidden" name="auto_up" value="0">
+                                        <input type="checkbox" name="auto_up" value="1" class="checkbox">
                                             <span class="btn-box">
                                                 <span class="btn"></span>  
                                             </span> 
@@ -164,8 +164,8 @@
                                 
                                 <label class="col-md-3 ">
                                         <span class="text">自動下料&nbsp;
-                                           <input type="hidden" name="down" value="0">
-                                           <input type="checkbox" name="down" value="1" class="checkbox" >
+                                           <input type="hidden" name="auto_down" value="0">
+                                           <input type="checkbox" name="auto_down" value="1" class="checkbox" >
                                                <span class="btn-box">
                                                    <span class="btn"></span>  
                                                </span> 

@@ -73,13 +73,13 @@
                             <div class="form-group">
                                 <label class="col-md-2 control-label">上班時間</label>
                                     <div class="col-md-4">
-                                        <input class="clearable form-control" required>
+                                        <input type=date class="clearable form-control" required>
                                     </div>
                                     <div class="col-md-2" style="text-align:center;">
                                         <label style="margin:7px;"> ~ </label>
                                     </div>
                                     <div class="col-md-4">
-                                        <input class="clearable form-control" required>
+                                        <input type=date class="clearable form-control" required>
                                     </div>
                             </div>
                             <hr>

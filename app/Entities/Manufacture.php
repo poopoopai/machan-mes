@@ -6,5 +6,5 @@ use Illuminate\Database\Eloquent\Model;
 
 class Manufacture extends Model
 {
-    protected $fillable = ['id','port_number','program-code','error-code'];
+    protected $fillable = ['port_number','program_code','error_code'];
 }
