@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateResourcesTablePhp extends Migration
+class CreateResourcesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -15,9 +15,9 @@ class CreateResourcesTablePhp extends Migration
     {
         Schema::create('resources', function (Blueprint $table) {
             $table->unsignedInteger('id');
-            $table->string('port_number')->nullable();
-            $table->unsignedInteger('program_code');
-            $table->unsignedInteger('error_code');
+            $table->string('OrderNo')->nullable();
+            $table->unsignedInteger('Status');
+            $table->unsignedInteger('Code');
             $table->timestamps();
         });
     }

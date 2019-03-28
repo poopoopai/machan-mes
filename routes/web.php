@@ -18,56 +18,61 @@ Route::get('/', function () {
 Route::group(['middleware' => ['auth']], function () {
 
         Route::get('/home', 'HomeController@index')->name('home');
-        Route::get('/work-type', 'WorkTypeController@index')->name('work-type');
-        Route::get('/break-time', 'BreakTimeController@index')->name('break-time');
-        Route::get('/machine-category', 'MachineCategoryController@index')->name('machine-category');
-        Route::get('/machine-definition', 'MachineDefinitionController@index')->name('machine-definition');
-        Route::get('/aps-processcode', 'ApsProcessCodeController@index')->name('aps-processcode');
-        Route::get('/process-routing', 'ProcessRoutingController@index')->name('process-routing');
-        Route::get('/exclusion-reason', 'ExclusionReasonController@index')->name('exclusion-reason');
-        Route::get('/abnormal-reason', 'AbnormalReasonController@index')->name('abnormal-reason');
-        Route::get('/processing-time', 'ProcessingTimeController@index')->name('processing-time');
-        Route::get('/processing-time-result', 'ProcessingTimeController@result')->name('processing-time-result');
-        Route::post('/store-machine-category', 'MachineCategoryController@store')->name('store-machine-category');
+        Route::get('/work-type', 'web\WorkTypeController@index')->name('work-type');
+        Route::get('/break-time', 'web\BreakTimeController@index')->name('break-time');
+        Route::get('/machine-category', 'web\MachineCategoryController@index')->name('machine-category');
+        Route::get('/machine-definition', 'web\MachineDefinitionController@index')->name('machine-definition');
+        Route::get('/aps-processcode', 'web\ApsProcessCodeController@index')->name('aps-processcode');
+        Route::get('/process-routing', 'web\ProcessRoutingController@index')->name('process-routing');
+        Route::get('/exclusion-reason', 'web\ExclusionReasonController@index')->name('exclusion-reason');
+        Route::get('/abnormal-reason', 'web\AbnormalReasonController@index')->name('abnormal-reason');
+        Route::get('/processing-time', 'web\ProcessingTimeController@index')->name('processing-time');
+        Route::get('/processing-time-result', 'web\ProcessingTimeController@result')->name('processing-time-result');
+        Route::post('/store-machine-category', 'web\MachineCategoryController@store')->name('store-machine-category');
 
-        Route::get('/machine-performance', 'MachinePerformanceController@index')->name('machine-performance');
-        Route::get('/order-load', 'OrderLoadController@index')->name('order-load');
-        Route::get('/order-demand', 'OrderDemandController@index')->name('order-demand');
-        Route::get('/order-inbound', 'OrderInboundController@index')->name('order-inbound');
+        Route::get('/machine-performance', 'web\MachinePerformanceController@index')->name('machine-performance');
+        Route::get('/order-load', 'web\OrderLoadController@index')->name('order-load');
+        Route::get('/order-demand', 'web\OrderDemandController@index')->name('order-demand');
+        Route::get('/order-inbound', 'web\OrderInboundController@index')->name('order-inbound');
         
-        Route::get('/personnel-management', 'PersonnelManagementController@index')->name('personnel-management');
+        Route::get('/personnel-management', 'web\PersonnelManagementController@index')->name('personnel-management');
+
+        Route::get('/resource', 'web\ResourceController@index')->name('resource');
         
 
     Route::group(['prefix' => 'edit'], function () {
-        Route::get('/work-type', 'WorkTypeController@edit')->name('edit-work-type');
-        Route::get('/break-time', 'BreakTimeController@edit')->name('edit-break-time');
-        Route::get('/machine-category', 'MachineCategoryController@edit')->name('edit-machine-category');
-        Route::get('/machine-definition', 'MachineDefinitionController@edit')->name('edit-machine-definition');
-        Route::get('/aps-processcode', 'ApsProcessCodeController@edit')->name('edit-aps-processcode'); //前url 後表單
-        Route::get('/process-routing', 'ProcessRoutingController@edit')->name('edit-process-routing');
-        Route::get('/exclusion-reason', 'ExclusionReasonController@edit')->name('edit-exclusion-reason');
-        Route::get('/abnormal-reason', 'AbnormalReasonController@edit')->name('edit-abnormal-reason');
-        Route::get('/processing-time', 'ProcessingTimeController@edit')->name('edit-processing-time');
-        Route::get('/time-shift-definition', 'TimeShiftDefinitionController@edit')->name('edit-time-shift-definition');
-        Route::get('/performance', 'PerformanceController@edit')->name('edit-performance');
-        Route::get('/quality', 'QualityController@edit')->name('edit-quality');
-        Route::get('/machine-oee', 'MachineOEEController@edit')->name('edit-machine-oee');
-        Route::get('/personnel-management', 'PersonnelManagementController@edit')->name('edit-personnel-management');
+        Route::get('/work-type', 'web\WorkTypeController@edit')->name('edit-work-type');
+        Route::get('/break-time', 'web\BreakTimeController@edit')->name('edit-break-time');
+        Route::get('/machine-category', 'web\MachineCategoryController@edit')->name('edit-machine-category');
+        Route::get('/machine-definition', 'web\MachineDefinitionController@edit')->name('edit-machine-definition');
+        Route::get('/aps-processcode', 'web\ApsProcessCodeController@edit')->name('edit-aps-processcode'); //前url 後表單
+        Route::get('/process-routing', 'web\ProcessRoutingController@edit')->name('edit-process-routing');
+        Route::get('/exclusion-reason', 'web\ExclusionReasonController@edit')->name('edit-exclusion-reason');
+        Route::get('/abnormal-reason', 'web\AbnormalReasonController@edit')->name('edit-abnormal-reason');
+        Route::get('/processing-time', 'web\ProcessingTimeController@edit')->name('edit-processing-time');
+        Route::get('/time-shift-definition', 'web\TimeShiftDefinitionController@edit')->name('edit-time-shift-definition');
+        Route::get('/performance', 'web\PerformanceController@edit')->name('edit-performance');
+        Route::get('/quality', 'web\QualityController@edit')->name('edit-quality');
+        Route::get('/machine-oee', 'web\MachineOEEController@edit')->name('edit-machine-oee');
+        Route::get('/personnel-management', 'web\PersonnelManagementController@edit')->name('edit-personnel-management');
     });
 
     Route::group(['prefix' => 'calendar'], function () {
-        Route::get('/full-calendar', 'CalendarController@fullcalendar')->name('full-calendar');
-        Route::get('/year-calendar', 'CalendarController@yearcalendar')->name('year-calendar');
-        Route::get('/process-calendar', 'ProcessCalendarController@processcalendar')->name('process-calendar');
-        Route::get('/adjust-process-calendar', 'ProcessCalendarController@showProcessCalendar')->name('show-process-calendar');
+        Route::get('/full-calendar', 'web\CalendarController@fullcalendar')->name('full-calendar');
+        Route::get('/year-calendar', 'web\CalendarController@yearcalendar')->name('year-calendar');
+        Route::get('/process-calendar', 'web\ProcessCalendarController@processcalendar')->name('process-calendar');
+        Route::get('/adjust-process-calendar', 'web\ProcessCalendarController@showProcessCalendar')->name('show-process-calendar');
     });
 
     Route::group(['prefix' => 'uptime'], function () {
-        Route::get('/time-shift-definition', 'TimeShiftDefinitionController@index')->name('time-shift-definition');
-        Route::get('/performance', 'PerformanceController@index')->name('performance');
-        Route::get('/quality', 'QualityController@index')->name('quality');
-        Route::get('/machine-oee', 'MachineOEEController@index')->name('machine-oee');
+        Route::get('/time-shift-definition', 'web\TimeShiftDefinitionController@index')->name('time-shift-definition');
+        Route::get('/performance', 'web\PerformanceController@index')->name('performance');
+        Route::get('/quality', 'web\QualityController@index')->name('quality');
+        Route::get('/machine-oee', 'web\MachineOEEController@index')->name('machine-oee');
     });
+
+
+        
 });
 
 
