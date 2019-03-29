@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Web;
 
 use App\Http\Repositories\CompanyCalendarRepository;
+use App\Http\Controllers\Controller;
 
 class CalendarController extends Controller
 {   

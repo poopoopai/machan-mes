@@ -17,11 +17,27 @@ Route::get('/', function () {
 });
 Route::group(['middleware' => ['auth']], function () {
 
+
+    Route::get('/machine-definition', 'web\MachineDefinitionController@index')->name('machine-definition');
+
+    Route::get('/resource', 'web\ResourceController@index')->name('resource');
+
+
+
+
+
+
+
+
+
+
+
+
         Route::get('/home', 'HomeController@index')->name('home');
         Route::get('/work-type', 'web\WorkTypeController@index')->name('work-type');
         Route::get('/break-time', 'web\BreakTimeController@index')->name('break-time');
         Route::get('/machine-category', 'web\MachineCategoryController@index')->name('machine-category');
-        Route::get('/machine-definition', 'web\MachineDefinitionController@index')->name('machine-definition');
+       
         Route::get('/aps-processcode', 'web\ApsProcessCodeController@index')->name('aps-processcode');
         Route::get('/process-routing', 'web\ProcessRoutingController@index')->name('process-routing');
         Route::get('/exclusion-reason', 'web\ExclusionReasonController@index')->name('exclusion-reason');
@@ -37,7 +53,7 @@ Route::group(['middleware' => ['auth']], function () {
         
         Route::get('/personnel-management', 'web\PersonnelManagementController@index')->name('personnel-management');
 
-        Route::get('/resource', 'web\ResourceController@index')->name('resource');
+        
         
 
     Route::group(['prefix' => 'edit'], function () {
