@@ -18,7 +18,8 @@ class CreateErrorCodesTable extends Migration
             $table->unsignedInteger('code');
             $table->string('message');
             $table->string('machine_type');
-            $table->string('group');        
+            $table->string('group'); 
+            $table->timestamps();       
         });
     }
 

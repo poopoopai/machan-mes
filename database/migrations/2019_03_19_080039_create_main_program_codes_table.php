@@ -20,6 +20,7 @@ class CreateMainProgramCodesTable extends Migration
             $table->string('type')->nullable();
             $table->string('codeX')->nullable();
             $table->string('group');
+            $table->timestamps();
         });
     }
 

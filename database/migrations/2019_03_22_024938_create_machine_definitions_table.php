@@ -30,6 +30,7 @@ class CreateMachineDefinitionsTable extends Migration
             $table->unsignedInteger('class_assign');
             $table->unsignedInteger('production_time');
             $table->unsignedInteger('change_line_time')->nullable();
+            $table->timestamps();
         });
     }
 

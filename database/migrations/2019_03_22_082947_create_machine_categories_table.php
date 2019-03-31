@@ -14,10 +14,10 @@ class CreateMachineCategoriesTable extends Migration
     public function up()
     {
         Schema::create('machine_categories', function (Blueprint $table) {
-            $table->increments('no');
-            $table->string('machine_id');
+            $table->increments('id');
+            $table->string('machine_id')->nullable();
             $table->string('machine_name');
-            $table->string('tpye');
+            $table->string('type');
             $table->string('auto');
             $table->boolean('auto_up')->default(false);
             $table->boolean('auto_down')->default(false);
@@ -27,10 +27,11 @@ class CreateMachineCategoriesTable extends Migration
             $table->boolean('auto_pay')->default(false);
             $table->boolean('auto_finish')->default(false);
             $table->string('interface');
-            $table->string('data_integration');
+            $table->string('data_integration')->nullable();
             $table->string('break_time');
-            $table->string('machine_type');
-            $table->string('remark');
+            $table->string('machine_type')->nullable();
+            $table->string('remark')->nullable();
+            $table->timestamps();
         });
     }
 

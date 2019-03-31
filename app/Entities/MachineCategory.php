@@ -6,11 +6,11 @@ use Illuminate\Database\Eloquent\Model;
 
 class MachineCategory extends Model
 {
-    protected $fillable = [
-        'no',
+    protected $fillable = 
+    [
         'machine_id',
         'machine_name',
-        'tpye',
+        'type',
         'auto',
         'auto_up',
         'auto_down',

@@ -35,9 +35,9 @@ class CreateSummaryTablesTable extends Migration
             $table->time('processing_start_time');
             $table->time('processing_completion_time');
             $table->time('working_time');
-            $table->double('roll_T');
-            $table->double('second_T');
-            $table->time('CT_processing_time');
+            $table->double('roll_t');
+            $table->double('second_t');
+            $table->time('ct_processing_time');
             $table->unsignedInteger('restart_count');
             $table->unsignedInteger('restop_count');
             $table->unsignedInteger('refueling_start');
@@ -48,12 +48,13 @@ class CreateSummaryTablesTable extends Migration
             $table->unsignedInteger('aggregate_end');
             $table->time('aggregate_time');
             $table->time('collector_time');
-            $table->double('UAT-H-36-233');
-            $table->double('UAT-H-36-75');
-            $table->double('UAT-H-36-154');
-            $table->double('standard_UAT-H-36-233');
-            $table->double('standard_UAT-H-36-75');
-            $table->double('standard_UAT-H-36-154');
+            $table->double('uat-h-36-233');
+            $table->double('uat-h-36-75');
+            $table->double('uat-h-36-154');
+            $table->double('standard_uat-h-36-233');
+            $table->double('standard_uat-h-36-75');
+            $table->double('standard_uat-h-36-154');
+            $table->timestamps();
         });
     }
 

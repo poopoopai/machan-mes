@@ -64,7 +64,9 @@
         <div class="breadcrumb-custom">
             <span>資料列表</span>
             <div style="float:right; margin-top:-7px">
+            <a href="{{route('machine-category.create')}}">
                 <button class="btn btn-success">新增</button>
+                </a>
             </div> 
         </div>
         <div class="total-data">載入筆數 | 共 5 筆</div>
@@ -84,76 +86,30 @@
                 </thead>
                 <tbody>
                     <tr>
-                        <th scope="row">1</th>
-                        <td>Mark</td>
-                        <td>Otto</td>
-                        <td>@mdo</td>
-                        <td>the Bird</td>
-                        <td>the Bird</td>
-                        <td>
-                            <a  href="{{ route('edit-machine-category') }}">
-                                <button class="btn btn-primary" >
-                                 編輯
-                                </button>
-                            </a>
-                            &nbsp
-                            <button class="btn btn-danger">刪除</button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <th scope="row">2</th>
-                        <td>Jaco</td>
-                        <td>Thornton</td>
-                        <td>@fat</td>
-                        <td>the Bird</td>
-                        <td>the Bird</td>
-                        <td>
-                            <button class="btn btn-primary">編輯</button>
-                            &nbsp
-                            <button class="btn btn-danger">刪除</button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <th scope="row">3</th>
-                        <td>Larry</td>
-                        <td>the Bird</td>
-                        <td>@twitter</td>
-                        <td>the Bird</td>
-                        <td>the Bird</td>
-                        <td>
-                            <button class="btn btn-primary">編輯</button>
-                            &nbsp
-                            <button class="btn btn-danger">刪除</button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <th scope="row">4</th>
-                        <td>Larry</td>
-                        <td>the Bird</td>
-                        <td>@twitter</td>
-                        <td>the Bird</td>
-                        <td>the Bird</td>
-                        <td>
-                            <button class="btn btn-primary" >編輯</button>
-                            &nbsp
-                            <button class="btn btn-danger">刪除</button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <th scope="row">5</th>
-                        <td>Larry</td>
-                        <td>the Bird</td>
-                        <td>@twitter</td>
-                        <td>the Bird</td>
-                        <td>the Bird</td>
-                        <td>
-                            <button class="btn btn-primary">編輯</button>
-                            &nbsp
-                            <button class="btn btn-danger">刪除</button>
-                        </td>
+                        @foreach($machineinfo as $key=>$data)
+                        <tr>     
+                            <th scope="row">
+                                 {{ ++$key + ($machineinfo->currentPage() - 1) * 10 }}
+                            </th>
+                            <td>{{ $data->machine_id }}</td>
+                            <td>{{ $data->machine_name }}</td>
+                            <td>{{ $data->type }}</td>
+                            <td>{{ $data->auto }}</td>
+                            <td>{{ $data->interface }}</td>
+                            <td>
+                            <a href="{{ route('machine-category.edit', $data->id) }}" class="btn btn-primary">編輯</a>
+                            <form action="{{ route('machine-category.destroy', $data->id) }}" onsubmit="return checkyn()" method="POST" style="display:inline-block"> 
+                                    @csrf
+                                    @method('delete')
+                                    <button class="btn btn-danger">刪除</button>
+                                </form>
+                            </td>
+                        </tr>
+                        @endforeach
                     </tr>
                 </tbody>
             </table>
+            
     </div>
     <form action="">
             <div class="total-page a">每頁顯示筆數
@@ -166,6 +122,13 @@
     </form>
 </div>
 <script>
-
+    function checkyn(){
+        var check = confirm("是否要刪除該筆資料");
+        if (check) {
+            return true;
+        } else {
+            return false;
+        }
+    }
 </script>
 @endsection

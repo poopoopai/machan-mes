@@ -64,10 +64,11 @@
         <div class="breadcrumb-custom">
             <span>資料列表</span>
             <div style="float:right; margin-top:-7px">
-                    <a  href="{{ route('resource') }}">
-                <button class="btn btn-success">新增
-                    </a>    
+                <a  href="{{ route('resource') }}">
+                <button class="btn btn-success">
+                    新增 
                 </button> 
+                </a>
             </div> 
         </div>
         <div class="total-data">載入筆數 | 共 5 筆</div>

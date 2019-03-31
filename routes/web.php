@@ -20,7 +20,8 @@ Route::group(['middleware' => ['auth']], function () {
 
     Route::get('/machine-definition', 'web\MachineDefinitionController@index')->name('machine-definition');
 
-    Route::get('/resource', 'web\ResourceController@index')->name('resource');
+    Route::get('/resource', 'ResourceController@index')->name('resource');
+    Route::resource('machine-category', 'MachineCategoryController');
 
 
 
@@ -36,7 +37,7 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('/home', 'HomeController@index')->name('home');
         Route::get('/work-type', 'web\WorkTypeController@index')->name('work-type');
         Route::get('/break-time', 'web\BreakTimeController@index')->name('break-time');
-        Route::get('/machine-category', 'web\MachineCategoryController@index')->name('machine-category');
+        
        
         Route::get('/aps-processcode', 'web\ApsProcessCodeController@index')->name('aps-processcode');
         Route::get('/process-routing', 'web\ProcessRoutingController@index')->name('process-routing');
@@ -44,7 +45,6 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('/abnormal-reason', 'web\AbnormalReasonController@index')->name('abnormal-reason');
         Route::get('/processing-time', 'web\ProcessingTimeController@index')->name('processing-time');
         Route::get('/processing-time-result', 'web\ProcessingTimeController@result')->name('processing-time-result');
-        Route::post('/store-machine-category', 'web\MachineCategoryController@store')->name('store-machine-category');
 
         Route::get('/machine-performance', 'web\MachinePerformanceController@index')->name('machine-performance');
         Route::get('/order-load', 'web\OrderLoadController@index')->name('order-load');
@@ -59,7 +59,6 @@ Route::group(['middleware' => ['auth']], function () {
     Route::group(['prefix' => 'edit'], function () {
         Route::get('/work-type', 'web\WorkTypeController@edit')->name('edit-work-type');
         Route::get('/break-time', 'web\BreakTimeController@edit')->name('edit-break-time');
-        Route::get('/machine-category', 'web\MachineCategoryController@edit')->name('edit-machine-category');
         Route::get('/machine-definition', 'web\MachineDefinitionController@edit')->name('edit-machine-definition');
         Route::get('/aps-processcode', 'web\ApsProcessCodeController@edit')->name('edit-aps-processcode'); //前url 後表單
         Route::get('/process-routing', 'web\ProcessRoutingController@edit')->name('edit-process-routing');
@@ -74,10 +73,10 @@ Route::group(['middleware' => ['auth']], function () {
     });
 
     Route::group(['prefix' => 'calendar'], function () {
-        Route::get('/full-calendar', 'web\CalendarController@fullcalendar')->name('full-calendar');
-        Route::get('/year-calendar', 'web\CalendarController@yearcalendar')->name('year-calendar');
-        Route::get('/process-calendar', 'web\ProcessCalendarController@processcalendar')->name('process-calendar');
-        Route::get('/adjust-process-calendar', 'web\ProcessCalendarController@showProcessCalendar')->name('show-process-calendar');
+        Route::get('/full-calendar', 'CalendarController@fullcalendar')->name('full-calendar');
+        Route::get('/year-calendar', 'CalendarController@yearcalendar')->name('year-calendar');
+        Route::get('/process-calendar', 'ProcessCalendarController@processcalendar')->name('process-calendar');
+        Route::get('/adjust-process-calendar', 'ProcessCalendarController@showProcessCalendar')->name('show-process-calendar');
     });
 
     Route::group(['prefix' => 'uptime'], function () {

@@ -89,9 +89,8 @@
                 <div class="panel panel-default">
                     <div class="panel-heading">資料編輯</div>
                     <div class="panel-body">
-                    <form class="form-horizontal" action="{{ route('machine-category.update',$data->id)}}" method="POST">
-                            @csrf
-                            @method("PUT")
+                    <form class="form-horizontal" action="{{ route('machine-category.store')}}" method="POST">
+                        {{ csrf_field() }}
                             <div class="form-group">
                                 <label class="col-md-2 control-label">機台類別</label>
                                 <div class="col-md-10">
@@ -129,11 +128,11 @@
                                 <label class="col-md-2 control-label">人機介面</label>
                                 <div class="col-md-10">
                                     <select name="interface"class="form-control" required>
-                                            <option value="A">可離線生產</option>
-                                            <option value="B">人機同步生產</option>
-                                            <option value="C">遠端遙控生產</option>
-                                            <option value="D">無人化自動生產</option>
-                                            <option value="E">人機手動</option>
+                                            <option value="可離線生產">可離線生產</option>
+                                            <option value="人機同步生產">人機同步生產</option>
+                                            <option value="遠端遙控生產">遠端遙控生產</option>
+                                            <option value="無人化自動生產">無人化自動生產</option>
+                                            <option value="人機手動">人機手動</option>
                                     </select>
                                 </div>
                             </div>
@@ -141,11 +140,11 @@
                             <div class="form-group">
                                 <label class="col-md-2 control-label">休息時間可生產</label>
                                     <div class="col-md-10">
-                                        <select  name="rest"class="form-control" required >
-                                            <option value="1">是</option>
-                                            <option value="0">否</option>
-                                            <option value="2">部分</option>
-                                            <option value="3">強制</option>
+                                        <select  name="break_time"class="form-control" required >
+                                            <option value="是">是</option>
+                                            <option value="否">否</option>
+                                            <option value="部分">部分</option>
+                                            <option value="強制">強制</option>
                                         </select>
                                     </div>
                             </div>
