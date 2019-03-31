@@ -30,15 +30,16 @@ class MachineCategoryController extends Controller
 
     public function store(Request $request)
     {
-    // dd($request);
+    //  dd($request);
         $data = request()->only(
             'machine_name','type', 'auto', 'auto_up', 'auto_down','arrange',
             'auto_arrange','auto_change','auto_pay','auto_finish','interface','break_time'
             );    
+        $find = $this->machineRepo->identify($data);
+        
+        MachineCategory::create($find);
 
-             MachineCategory::create($data);
-
-           return redirect('machine-category');
+        return redirect('machine-category');
     }
 
     public function show($id)
@@ -83,8 +84,9 @@ class MachineCategoryController extends Controller
         }
         // $this->machineRepo->interface($data);
         // dd($data);
-        MachineCategory::find($id)->update($data);
-        
+        $find = $this->machineRepo->identify($data);
+
+        MachineCategory::find($id)->update($find);
 
         return redirect()->route('machine-category.index');
     }
