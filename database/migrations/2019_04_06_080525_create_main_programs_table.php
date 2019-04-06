@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateMainProgramCodesTable extends Migration
+class CreateMainProgramsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,7 +13,7 @@ class CreateMainProgramCodesTable extends Migration
      */
     public function up()
     {
-        Schema::create('main_program_codes', function (Blueprint $table) {
+        Schema::create('main_programs', function (Blueprint $table) {
             $table->increments('id');
             $table->unsignedInteger('status');
             $table->string('description');
@@ -31,6 +31,6 @@ class CreateMainProgramCodesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('main_program_codes');
+        Schema::dropIfExists('main_programs');
     }
 }

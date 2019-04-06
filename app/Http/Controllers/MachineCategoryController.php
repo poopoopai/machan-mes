@@ -56,7 +56,6 @@ class MachineCategoryController extends Controller
          {
              return back();
          }
-       
         return view('system/edit/editmachinecategory',['data'=>$data]);
     }
 
@@ -67,25 +66,10 @@ class MachineCategoryController extends Controller
         'machine_name','type', 'auto', 'auto_up', 'auto_down','arrange',
         'auto_arrange','auto_change','auto_pay','auto_finish','interface','break_time'
         );
-        switch ($data['interface'])
-        {
-            case 'A': $data['interface']="可離線生產";
-            break;
-            case 'B': $data['interface']="人機同步生產";
-            break;
-            case 'C': $data['interface']="遠端遙控生產";
-            break;
-            case 'D': $data['interface']="無人化自動生產";
-            break;
-            case 'E': $data['interface']="人機手動";
-            break;     
-            default:
-            return false;    
-        }
-        // $this->machineRepo->interface($data);
-        // dd($data);
-        $find = $this->machineRepo->identify($data);
-
+      
+        $interface = $this->machineRepo->interface($data);
+        $find = $this->machineRepo->identify($interface);
+       
         MachineCategory::find($id)->update($find);
 
         return redirect()->route('machine-category.index');

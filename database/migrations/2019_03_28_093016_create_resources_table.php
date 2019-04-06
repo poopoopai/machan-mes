@@ -16,7 +16,7 @@ class CreateResourcesTable extends Migration
         Schema::create('resources', function (Blueprint $table) {
             $table->unsignedInteger('id');
             $table->string('orderno')->nullable();
-            $table->unsignedInteger('status');
+            $table->unsignedInteger('status_id');
             $table->unsignedInteger('code');
             $table->timestamps();
         });

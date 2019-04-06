@@ -95,18 +95,19 @@
                             <div class="form-group">
                                 <label class="col-md-2 control-label">機台類別</label>
                                 <div class="col-md-10">
-                                    <input  name="machine_name"type="text" value="" class="clearable form-control" required>
+                                <input  name="machine_name"type="text" value="{{$data->machine_name}}" class="clearable form-control" required>
                                 </div>
                             </div>
                             <hr>
                             <div class="form-group">
                                 <label class="col-md-2 control-label">單機 ／ 多機</label>
                                 <div class="col-md-10">
-                                        <select name="type"class="form-control" required >
-                                            <option value="SS">單工序單機</option>
-                                            <option value="SM">單工序多機</option>
-                                            <option value="MS">多工序單機</option>
-                                            <option value="MM">多工序多機</option>
+                                        <select name="type"class="form-control" required >  
+                                            <option value=""></option>          
+                                            <option value="SS" {{$data->type=="SS"?'selected':""}}>單工序單機</option>
+                                            <option value="SM" {{$data->type=="SM"?'selected':""}}>單工序多機</option>
+                                            <option value="MS" {{$data->type=="MS"?'selected':""}}>多工序單機</option>
+                                            <option value="MM" {{$data->type=="MM"?'selected':""}}>多工序多機</option>
                                         </select>
                                     </div>
                             </div>
@@ -115,12 +116,13 @@
                                 <label class="col-md-2 control-label">自動化</label>
                                 <div class="col-md-10">
                                         <select name="auto" class="form-control" required >
-                                            <option value="FA">無人全自動化</option>
-                                            <option value="HA">人機同步全自動化</option>
-                                            <option value="SH">人機同步半自動化</option>
-                                            <option value="SA">人機半自動</option>
-                                            <option value="MN">手動數控</option>
-                                            <option value="MM">手動機械</option>
+                                            <option value=""></option>
+                                            <option value="FA"{{$data->auto=="FA"?'selected':""}}>無人全自動化</option>
+                                            <option value="HA"{{$data->auto=="HA"?'selected':""}}>人機同步全自動化</option>
+                                            <option value="SH"{{$data->auto=="SH"?'selected':""}}>人機同步半自動化</option>
+                                            <option value="SA"{{$data->auto=="SA"?'selected':""}}>人機半自動</option>
+                                            <option value="MN"{{$data->auto=="MN"?'selected':""}}>手動數控</option>
+                                            <option value="MM"{{$data->auto=="MM"?'selected':""}}>手動機械</option>
                                         </select>
                                     </div>
                             </div>
@@ -129,11 +131,12 @@
                                 <label class="col-md-2 control-label">人機介面</label>
                                 <div class="col-md-10">
                                     <select name="interface"class="form-control" required>
-                                            <option value="A">可離線生產</option>
-                                            <option value="B">人機同步生產</option>
-                                            <option value="C">遠端遙控生產</option>
-                                            <option value="D">無人化自動生產</option>
-                                            <option value="E">人機手動</option>
+                                            <option value=""></option>
+                                            <option value="A"{{$data->interface=="A"?'selected':""}}>可離線生產</option>
+                                            <option value="B"{{$data->interface=="B"?'selected':""}}>人機同步生產</option>
+                                            <option value="C"{{$data->interface=="C"?'selected':""}}>遠端遙控生產</option>
+                                            <option value="D"{{$data->interface=="D"?'selected':""}}>無人化自動生產</option>
+                                            <option value="E"{{$data->interface=="E"?'selected':""}}>人機手動</option>
                                     </select>
                                 </div>
                             </div>
@@ -141,11 +144,12 @@
                             <div class="form-group">
                                 <label class="col-md-2 control-label">休息時間可生產</label>
                                     <div class="col-md-10">
-                                        <select  name="rest"class="form-control" required >
-                                            <option value="1">是</option>
-                                            <option value="0">否</option>
-                                            <option value="2">部分</option>
-                                            <option value="3">強制</option>
+                                        <select  name="break_time"class="form-control" required >
+                                            <option value=""></option>
+                                            <option value="是"{{$data->break_time=="是"?'selected':""}}>是</option>
+                                            <option value="否"{{$data->break_time=="否"?'selected':""}}>否</option>
+                                            <option value="部分"{{$data->break_time=="部分"?'selected':""}}>部分</option>
+                                            <option value="強制"{{$data->break_time=="強制"?'selected':""}}>強制</option>
                                         </select>
                                     </div>
                             </div>
@@ -155,8 +159,9 @@
                                 <div class="col-md-10">
                                 <label class="col-md-3 ">
                                      <span class="text">自動上料&nbsp;
+                                         
                                         <input type="hidden" name="auto_up" value="0">
-                                        <input type="checkbox" name="auto_up" value="1" class="checkbox">
+                                        <input type="checkbox" name="auto_up" value="1" class="checkbox" {{$data->auto_up=='1'?'checked':'0'}}>
                                             <span class="btn-box">
                                                 <span class="btn"></span>  
                                             </span> 
@@ -166,7 +171,7 @@
                                 <label class="col-md-3 ">
                                         <span class="text">自動下料&nbsp;
                                            <input type="hidden" name="auto_down" value="0">
-                                           <input type="checkbox" name="auto_down" value="1" class="checkbox" >
+                                           <input type="checkbox" name="auto_down" value="1" class="checkbox"{{$data->auto_down=='1'?'checked':'0'}} >
                                                <span class="btn-box">
                                                    <span class="btn"></span>  
                                                </span> 
@@ -176,7 +181,7 @@
                                 <label class="col-md-3 ">
                                         <span class="text">排板系統　　&nbsp;
                                             <input type="hidden" name="arrange" value="0">
-                                           <input type="checkbox" name="arrange" value="1" class="checkbox" >
+                                           <input type="checkbox" name="arrange" value="1" class="checkbox" {{$data->arrange=='1'?'checked':'0'}}>
                                                <span class="btn-box">
                                                    <span class="btn"></span>  
                                                </span> 
@@ -185,8 +190,8 @@
 
                                 <label class="col-md-3 ">
                                         <span class="text">自動加工排程&nbsp;
-                                            <input type="hidden" name="auto arrange" value="0">
-                                           <input type="checkbox" name="auto arrange" value="1" class="checkbox" >
+                                            <input type="hidden" name="auto_arrange" value="0">
+                                           <input type="checkbox" name="auto_arrange" value="1" class="checkbox" {{$data->auto_arrange=='1'?'checked':'0'}}>
                                                <span class="btn-box">
                                                    <span class="btn"></span>  
                                                </span> 
@@ -198,8 +203,8 @@
                                 <div class="col-md-10">
                                     <label class="col-md-3 ">
                                          <span class="text">自動換模&nbsp;
-                                            <input type="hidden" name="auto change" value="0">
-                                            <input type="checkbox" name="auto change" value="1" class="checkbox" >
+                                            <input type="hidden" name="auto_change" value="0">
+                                            <input type="checkbox" name="auto_hange" value="1" class="checkbox" {{$data->auto_change=='1'?'checked':'0'}}>
                                                 <span class="btn-box">
                                                     <span class="btn"></span>  
                                                 </span> 
@@ -208,8 +213,8 @@
                                     
                                     <label class="col-md-3 ">
                                             <span class="text">自動給料&nbsp;
-                                                <input type="hidden" name="auto pay" value="0">
-                                               <input type="checkbox" name="auto pay" value="1" class="checkbox" >
+                                                <input type="hidden" name="auto_pay" value="0">
+                                               <input type="checkbox" name="auto_pay" value="1" class="checkbox" {{$data->auto_pay=='1'?'checked':'0'}}>
                                                    <span class="btn-box">
                                                        <span class="btn"></span>  
                                                    </span> 
@@ -218,8 +223,8 @@
     
                                     <label class="col-md-3 ">
                                             <span class="text">自動完工取料&nbsp;
-                                               <input type="hidden" name="auto finish" value="0">
-                                               <input type="checkbox" name="auto finish" value="1" class="checkbox" >
+                                               <input type="hidden" name="auto_finish" value="0">
+                                               <input type="checkbox" name="auto_finish" value="1" class="checkbox" {{$data->auto_finish=='1'?'checked':'0'}}>
                                                    <span class="btn-box">
                                                        <span class="btn"></span>  
                                                    </span> 

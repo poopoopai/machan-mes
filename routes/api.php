@@ -18,3 +18,4 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 });
 Route::get('/calendar-data', 'CalendarController@getCalnedar')->name('getcalendar');
 Route::post('/calendar-data', 'CalendarController@calendar')->name('calendar-data');
+Route::post('/resource', 'api\ResourceController@show');

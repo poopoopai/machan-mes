@@ -25,9 +25,4 @@ class MachineDefinition extends Model
         'production_time',
         'change_line_time',
     ];
-
-    public function mainProgramCode()
-    {
-        return $this->hasOne('App\Entities\MainProgramCode', 'group_setting', 'group');
-    }
 }

@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateSummaryTablesTable extends Migration
+class CreateSummariesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,7 +13,8 @@ class CreateSummaryTablesTable extends Migration
      */
     public function up()
     {
-        Schema::create('summary_tables', function (Blueprint $table) {
+        Schema::create('summaries', function (Blueprint $table) {
+            $table->increments('id');
             $table->string('description');
             $table->string('unit');
             $table->string('abnormal_state');
@@ -65,6 +66,6 @@ class CreateSummaryTablesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('summary_tables');
+        Schema::dropIfExists('summaries');
     }
 }
