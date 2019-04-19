@@ -15,6 +15,7 @@ Auth::routes();
 Route::get('/', function () {
     return redirect('login');
 });
+Route::get('/test', 'ResourceController@test');
 Route::group(['middleware' => ['auth']], function () {
 
 

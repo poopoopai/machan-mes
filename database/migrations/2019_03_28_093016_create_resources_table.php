@@ -14,10 +14,15 @@ class CreateResourcesTable extends Migration
     public function up()
     {
         Schema::create('resources', function (Blueprint $table) {
-            $table->unsignedInteger('id');
+            $table->increments('id');
+            $table->string('machine_name')->default('roller');
+            $table->unsignedInteger('machine_id');         
             $table->string('orderno')->nullable();
             $table->unsignedInteger('status_id');
             $table->unsignedInteger('code');
+            $table->date('date');
+            $table->time('time');
+            $table->unsignedInteger('flag')->default(0);
             $table->timestamps();
         });
     }
