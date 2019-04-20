@@ -9,8 +9,8 @@ class Summary extends Model
     protected $fillable = 
     [
         'description',
-        'unit',
-        'abnormal_state',
+        'type',
+        'abnormal',
         'open',
         'turn_off',
         'machine_completion',
