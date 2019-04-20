@@ -27,7 +27,7 @@ class CreateSummariesTable extends Migration
             $table->unsignedInteger('sensro_inputs')->default(0);
             $table->time('break')->nullable();
             $table->time('break_time')->nullable();
-            $table->string('message_state')->nullable();
+            $table->string('message_status')->nullable();
             $table->time('down_time')->nullable();
             $table->string('completion_status')->nullable();
             $table->unsignedInteger('total_processing_time')->nullable();

@@ -4,9 +4,9 @@ namespace App\Http\Controllers\api;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\Http\Repositories\SummaryRepository;
-use App\Http\Repositories\ResourceRepository;
-use App\Http\Repositories\MainProgramRepository;
+use App\Repositories\SummaryRepository;
+use App\Repositories\ResourceRepository;
+use App\Repositories\MainProgramRepository;
 
 class ResourceController extends Controller
 {
@@ -23,30 +23,38 @@ class ResourceController extends Controller
 
     public function show()
     {
-        $parmas = request()->only('id','orderno','status','code');
+        $parmas = request()->only('id','orderno','status','code','time');
 
+        
         $description = $this->MainRepo->description($parmas);
+        
         //  dd($description); collection
         $status = $this->ResRepo->abnormal($parmas,$description);
-        //  dd($status); string
-        $count = $this->SumRepo->counts($parmas);
-        // dd($count); //arrary
-
-        $message = $this->ResRepo->message($parmas,$status);
-        
-
         $description->abnormal = $status;
+        //  dd($status); //string
+        $count = $this->SumRepo->counts($parmas);
+        // dd($count); //collection
+        $message = $this->ResRepo->message($parmas,$description);
+         //  dd($message); //string
+        $completion = $this->ResRepo->completion($parmas,$message);
+         //  dd($completion); //string
         
-        $sum = $description->toArray();//把collection 轉陣列
-    
-        //  $parmas = Resource::with('status')->first();
-        $status2 = array_merge($sum,$count);
         
-        $show = $this->SumRepo->create($status2);
+        $description->message_status = $message;
+        $description->completion_status = $completion;
+        
+       
+        
 
-        
+        $sum = $description->toArray();//把collection 轉陣列
+        $sum1= $count->toArray();
+        //  $parmas = Resource::with('status')->first();
+        $status2 = array_merge($sum,$sum1);
+       
+        $show = $this->SumRepo->create($status2);
 
         return response()->json(['status' => $show]);
           
     }
+   
 }

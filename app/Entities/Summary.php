@@ -20,7 +20,7 @@ class Summary extends Model
         'sensro_inputs',
         'break',
         'break_time',
-        'message_state',
+        'message_status',
         'down_time',
         'completion_status',
         'total_processing_time',

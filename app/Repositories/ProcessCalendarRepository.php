@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Repositories;
+namespace App\Repositories;
 
 use App\Entities\Resource;
 use App\Entities\ProcessCalendar;
