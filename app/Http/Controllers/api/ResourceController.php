@@ -32,9 +32,13 @@ class ResourceController extends Controller
         $description->abnormal = $status;
         //  dd($status); //string
         $count = $this->SumRepo->counts($parmas);
-        // dd($count); //collection
+        //  dd($count); //collection
         $machineT = $this->SumRepo->machineT($parmas,$count);
         // dd($machineT);//collection
+        $refueling = $this->SumRepo->refueling($machineT);
+        // dd($refueling);//collection
+        $cal = $this->SumRepo->calculate($parmas,$machineT);
+
         $message = $this->ResRepo->message($parmas,$description);
          //  dd($message); //string
         $completion = $this->ResRepo->completion($parmas,$message);
@@ -48,7 +52,7 @@ class ResourceController extends Controller
         
 
         $sum = $description->toArray();//把collection 轉陣列
-        $sum1= $machineT->toArray();
+        $sum1= $refueling->toArray();
         //  $parmas = Resource::with('status')->first();
         $status2 = array_merge($sum,$sum1);
        

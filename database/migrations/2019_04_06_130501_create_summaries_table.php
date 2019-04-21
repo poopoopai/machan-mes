@@ -22,6 +22,7 @@ class CreateSummariesTable extends Migration
             $table->unsignedInteger('serial_number_day')->default(0);
             $table->unsignedInteger('open')->default(0);
             $table->unsignedInteger('turn_off')->default(0);
+            $table->time('time')->nullable();
             $table->unsignedInteger('machine_completion')->default(0);
             $table->unsignedInteger('machine_inputs')->default(0);
             $table->unsignedInteger('machine_completion_day')->default(0);
@@ -38,8 +39,8 @@ class CreateSummariesTable extends Migration
             $table->time('processing_start_time')->nullable();
             $table->time('processing_completion_time')->nullable();
             $table->time('working_time')->nullable();
-            $table->double('roll_t')->nullable();
-            $table->double('second_t')->nullable();
+            $table->time('roll_t')->nullable();
+            $table->time('second_t')->nullable();
             $table->time('ct_processing_time')->nullable();
             $table->unsignedInteger('restart_count')->default(0);
             $table->unsignedInteger('restop_count')->default(0);
@@ -51,12 +52,12 @@ class CreateSummariesTable extends Migration
             $table->unsignedInteger('aggregate_end')->default(0);
             $table->time('aggregate_time')->nullable();
             $table->time('collector_time')->nullable();
-            $table->double('uat-h-36-233')->nullable();
-            $table->double('uat-h-36-75')->nullable();
-            $table->double('uat-h-36-154')->nullable();
-            $table->double('standard_uat-h-36-233')->nullable();
-            $table->double('standard_uat-h-36-75')->nullable();
-            $table->double('standard_uat-h-36-154')->nullable();
+            $table->time('uat_h_36_233')->nullable();
+            $table->time('uat_h_36_75')->nullable();
+            $table->time('uat_h_36_154')->nullable();
+            $table->double('standard_uath_36_233')->nullable();
+            $table->double('standard_uat_h_36_75')->nullable();
+            $table->double('standard_uat_h_36_154')->nullable();
             $table->timestamps();
         });
     }

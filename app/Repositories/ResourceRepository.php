@@ -12,7 +12,7 @@ class ResourceRepository
        
        $mutable = Carbon::now()->format('Y-m-d');
        
-        $Statusid = Resource::where('id','>',$data['id'])->wheredate('date','=','2019-03-07')->first(); //判斷後面的id
+        $Statusid = Resource::where('id','>',$data['id'])->wheredate('date','=','2019-03-07')->first(); //判斷後面的id date要等於當日
        
         $summary = '0';
         //   dd($data['orderno']);
