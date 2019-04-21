@@ -22,9 +22,8 @@ class ResourceController extends Controller
     }
 
     public function show()
-    {
-        $parmas = request()->only('id','orderno','status','code','time');
-
+    {  
+        $parmas = request()->only('id','orderno','status','code','date','time');
         
         $description = $this->MainRepo->description($parmas);
         
@@ -34,6 +33,8 @@ class ResourceController extends Controller
         //  dd($status); //string
         $count = $this->SumRepo->counts($parmas);
         // dd($count); //collection
+        $machineT = $this->SumRepo->machineT($parmas,$count);
+        // dd($machineT);//collection
         $message = $this->ResRepo->message($parmas,$description);
          //  dd($message); //string
         $completion = $this->ResRepo->completion($parmas,$message);
@@ -47,7 +48,7 @@ class ResourceController extends Controller
         
 
         $sum = $description->toArray();//把collection 轉陣列
-        $sum1= $count->toArray();
+        $sum1= $machineT->toArray();
         //  $parmas = Resource::with('status')->first();
         $status2 = array_merge($sum,$sum1);
        

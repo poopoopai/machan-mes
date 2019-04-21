@@ -17,7 +17,7 @@ class ResourceRepository
         $summary = '0';
         //   dd($data['orderno']);
         
-        if ($data['status']=='9'||$data['status']=='10'||$data['status']=='3'||$data['status']=='15'||$data['status']=='16') {
+        if ($data['status'] =='9'||$data['status'] == '10'||$data['status'] =='3'||$data['status'] == '15'||$data['status'] == '16') {
             
                 if($data['orderno']!=$Statusid['orderno']&&$Statusid['id']!=null) {
                     $summary = "換線";
@@ -25,16 +25,16 @@ class ResourceRepository
                 else{
                     $summary = '0';
                 }
-        } elseif($data['code']==0) {
+        } elseif($data['code'] == 0) {
             $summary = $status->description;
-        } elseif($data['code']!=0){
+        } elseif($data['code'] != 0){
             $summary = ErrorCode::with('resources')->where('machine_type',$status->type)->where('code',$data['code'])->first();
              return $summary->message;
         } else{
             $summary = '0';
         }
        
-        if($summary==null){
+        if($summary == null){
             return response()->json(['status' => 'error', 'data' => 'Data Not Found'], 403);
         }else{
             return $summary;
@@ -48,11 +48,11 @@ class ResourceRepository
     // dd($status);
         $status->abnormal == '0' ? $message = $status->description : $message = $status->abnormal;
         
-        if($data['status']=='3'){
+        if($data['status'] =='3'){
             $message = '開機';
-        }elseif($data['status']=='4'){
+        }elseif($data['status'] =='4'){
             $message = '關機';
-        }elseif($data['status']=='20'|| $data['status']=='21'){
+        }elseif($data['status'] =='20'|| $data['status'] =='21'){
             $message = '換料';
         }
          
@@ -66,7 +66,7 @@ class ResourceRepository
         // dd($Statusid->status_id - $data['status']);
 
         $comletion = '0';
-        if ($data['status']=='9'||$data['status']=='10'||$data['status']=='15'||$data['status']=='16') {
+        if ($data['status'] =='9'||$data['status'] =='10'||$data['status'] =='15'||$data['status'] =='16') {
             
                 switch ($data['status'])
                     {
@@ -86,16 +86,16 @@ class ResourceRepository
                         return false;    
                     }
                     
-        }elseif($data['status']=='3'||$data['status']=='4'||$data['status']=='20'||$data['status']=='21'){
+        }elseif($data['status'] =='3'||$data['status'] =='4'||$data['status'] =='20'||$data['status'] =='21'){
             $comletion = $status;
         }else{
             $comletion = '異常';
         }
         
         // dd($comletion);
-        return $comletion ;
-        
+        return $comletion ;    
     }
+ 
   
 
 }

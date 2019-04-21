@@ -18,6 +18,8 @@ class CreateSummariesTable extends Migration
             $table->string('description');
             $table->string('type')->default(0);
             $table->string('abnormal')->default(0);
+            $table->unsignedInteger('serial_number')->default(0);
+            $table->unsignedInteger('serial_number_day')->default(0);
             $table->unsignedInteger('open')->default(0);
             $table->unsignedInteger('turn_off')->default(0);
             $table->unsignedInteger('machine_completion')->default(0);

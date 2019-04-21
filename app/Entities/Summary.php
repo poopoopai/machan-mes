@@ -11,6 +11,8 @@ class Summary extends Model
         'description',
         'type',
         'abnormal',
+        'serial_number',
+        'serial_number_day',
         'open',
         'turn_off',
         'machine_completion',
