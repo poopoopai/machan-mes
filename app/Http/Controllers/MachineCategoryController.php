@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Entities\MachineCategory;
-use App\Http\Repositories\MachineCategoryRepository;
+use App\Repositories\MachineCategoryRepository;
 
 class MachineCategoryController extends Controller
 {   

@@ -55,7 +55,7 @@ class CreateSummariesTable extends Migration
             $table->time('uat_h_36_233')->nullable();
             $table->time('uat_h_36_75')->nullable();
             $table->time('uat_h_36_154')->nullable();
-            $table->double('standard_uath_36_233')->nullable();
+            $table->double('standard_uat_h_36_233')->nullable();
             $table->double('standard_uat_h_36_75')->nullable();
             $table->double('standard_uat_h_36_154')->nullable();
             $table->timestamps();

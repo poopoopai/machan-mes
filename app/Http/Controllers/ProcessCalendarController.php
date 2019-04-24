@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Repositories\ProcessCalendarRepository;
+use App\Repositories\ProcessCalendarRepository;
 use App\Http\Controllers\Controller;
 
 class ProcessCalendarController extends Controller

@@ -33,12 +33,15 @@ class ResourceController extends Controller
         //  dd($status); //string
         $count = $this->SumRepo->counts($parmas);
         //  dd($count); //collection
+        $restart = $this->SumRepo->restart($parmas,$count);
+
         $machineT = $this->SumRepo->machineT($parmas,$count);
         // dd($machineT);//collection
-        $refueling = $this->SumRepo->refueling($machineT);
-        // dd($refueling);//collection
-        $cal = $this->SumRepo->calculate($parmas,$machineT);
-
+       
+        $calculate = $this->SumRepo->calculate($parmas,$machineT);
+        // dd($calculate);//collection
+        $standard = $this->SumRepo->standard($parmas,$calculate);
+// dd($standard);
         $message = $this->ResRepo->message($parmas,$description);
          //  dd($message); //string
         $completion = $this->ResRepo->completion($parmas,$message);
@@ -52,11 +55,23 @@ class ResourceController extends Controller
         
 
         $sum = $description->toArray();//把collection 轉陣列
-        $sum1= $refueling->toArray();
+        $sum1= $standard->toArray();
         //  $parmas = Resource::with('status')->first();
         $status2 = array_merge($sum,$sum1);
        
         $show = $this->SumRepo->create($status2);
+
+
+
+
+
+
+        $refueling = $this->SumRepo->refueling($machineT);
+        $changerefueling = $refueling->toArray();
+        // dd($refueling);//collection
+        $show2 = $this->SumRepo->update($show->id,$changerefueling);
+
+        
 
         return response()->json(['status' => $show]);
           
