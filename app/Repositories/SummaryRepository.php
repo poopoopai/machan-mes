@@ -13,7 +13,8 @@ class SummaryRepository
         
         $count = Summary::select('serial_number','serial_number_day','open','turn_off','time','machine_completion','machine_inputs',
         'sensro_inputs','machine_completion_day','machine_inputs_day','second_completion','processing_start_time',
-        'processing_completion_time','refueling_start','refueling_end','aggregate_start','aggregate_end','restart_count','restop_count')->orderby('created_at','desc')->first();
+        'processing_completion_time','refueling_start','refueling_end','aggregate_start','aggregate_end','restart_count','restop_count'
+        )->orderby('created_at','desc')->first();
         
         $mutable = Carbon::now()->format('Y-m-d');
         
@@ -186,7 +187,7 @@ class SummaryRepository
         $aggregate = date("H:i:s",$aggregate-8*60*60);
         
         $status->refueler_time = $refueling;
-        $status->aggregate_time = $aggregate;
+        $status->collector_time = $aggregate;
 
         return $status;
     }
@@ -256,5 +257,58 @@ class SummaryRepository
 
         return $status;
     }
+    public function breaktime($data,$status,$description)
+    {
+         $time = array("08:00:00","10:10:00","12:00:00","13:10:00","15:10:00","17:20:00","17:50:00","19:20:00","19:30:00");
+       
+         $hour = explode(':',$status->time)[0];
+        // $breaktime = '0';
+         
+         $breaktime = "休息";
+            $description->completion_status == '異常' ?
+            strtotime($status->time) - strtotime($time[0]) < 0 && $data['status'] =='4' ? $breaktime = "休息" :
+            $hour == "10" && strtotime($status->time) - strtotime($time[1]) <= 0 ? $breaktime = "休息" :
+            $hour == "12" && strtotime($status->time) - strtotime($time[2]) <= 0 ? $breaktime = "休息" :
+            $hour == "13" && strtotime($status->time) - strtotime($time[3]) <= 0 ? $breaktime = "休息" :
+            $hour == "15" && strtotime($status->time) - strtotime($time[4]) <= 0 ? $breaktime = "休息" :
+            strtotime($status->time) >= strtotime($time[5]) && strtotime($status->time) <= strtotime($time[6]) ? $breaktime = "休息" :
+            strtotime($status->time) >= strtotime($time[7]) && strtotime($status->time) <= strtotime($time[8]) ? $breaktime = "休息" :
+            $breaktime = "" 
+            :$breaktime = "" ; 
+     
+            $status->break = $breaktime ;
+        
+        return  $status ;
+    }
 
+    public function worktime($data,$status)
+    {
+        $hour = explode(':',$status->time)[0];
+        $time = date("08:00:00");
+
+        $worktime = '0';
+        //  dd($time);
+        $beforeid = Resource::where('id','<',$data['id'])->wheredate('date','=','2019-03-07')->first();
+        // dd($beforeid);
+        
+        if($beforeid->date != $data['date']){
+
+            strtotime($hour) <= strtotime($time) ? $worktime = '0' : strtotime($status->time) + strtotime($time);
+
+        } else{
+
+            $status->time == "" ? $worktime = '0' : 
+            strtotime($status->time) - strtotime($beforeid->time) < 0 ? $worktime = '0':
+            $worktime =  strtotime($status->time) - strtotime($beforeid->time) ;
+        }
+       
+        $worktime = date("H:i:s",$worktime-8*60*60);
+
+        // dd($worktime);
+        $status->working_time = $worktime;
+
+        return $status;
+            // if($hour < $time)
+        
+    }
 }

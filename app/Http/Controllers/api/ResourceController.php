@@ -34,6 +34,7 @@ class ResourceController extends Controller
         $count = $this->SumRepo->counts($parmas);
         //  dd($count); //collection
         $restart = $this->SumRepo->restart($parmas,$count);
+        // dd($restart);//collection
 
         $machineT = $this->SumRepo->machineT($parmas,$count);
         // dd($machineT);//collection
@@ -41,21 +42,23 @@ class ResourceController extends Controller
         $calculate = $this->SumRepo->calculate($parmas,$machineT);
         // dd($calculate);//collection
         $standard = $this->SumRepo->standard($parmas,$calculate);
-// dd($standard);
+        // dd($standard);//collection
         $message = $this->ResRepo->message($parmas,$description);
          //  dd($message); //string
         $completion = $this->ResRepo->completion($parmas,$message);
          //  dd($completion); //string
-        
+       
         
         $description->message_status = $message;
         $description->completion_status = $completion;
+
         
-       
+        $breaktime = $this->SumRepo->breaktime($parmas,$standard,$description);
+        $worktime = $this->SumRepo->worktime($parmas,$breaktime);
         
 
         $sum = $description->toArray();//把collection 轉陣列
-        $sum1= $standard->toArray();
+        $sum1= $worktime->toArray();
         //  $parmas = Resource::with('status')->first();
         $status2 = array_merge($sum,$sum1);
        

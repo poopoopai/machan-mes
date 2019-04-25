@@ -26,7 +26,7 @@ class ResourceRepository
                     $summary = '0';
                 }
         } elseif($data['code'] == 0) {
-            $summary = $status->description;
+            $summary = $status->description;         
         } elseif($data['code'] != 0){
             $summary = ErrorCode::with('resources')->where('machine_type',$status->type)->where('code',$data['code'])->first();
              return $summary->message;
@@ -87,7 +87,7 @@ class ResourceRepository
                     }
                     
         }elseif($data['status'] =='3'||$data['status'] =='4'||$data['status'] =='20'||$data['status'] =='21'){
-            $comletion = $status;
+            $comletion = '異常';//$status;
         }else{
             $comletion = '異常';
         }
