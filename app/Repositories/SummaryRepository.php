@@ -19,9 +19,14 @@ class SummaryRepository
         $mutable = Carbon::now()->format('Y-m-d');
         
         $Statusid = Resource::where('id','>',$data['id'])->wheredate('date','=','2019-03-07')->first();  //date要等於當日
+
+
+        $oldopen = Summary::where('open','!=','')->orderby('created_at','desc')->first();
         
-        $data['status'] == 3 ? $count->open++ : $count->open;
-        $data['status'] == 4 ? $count->turn_off++ : $count->turn_off;
+         $oldturn = Summary::where('turn_off','!=','')->orderby('created_at','desc')->first();
+       
+        $data['status'] == 3 ? $count->open = $oldopen->open + 1 : $count->open = '';
+        $data['status'] == 4 ? $count->turn_off = $oldturn->turn_off + 1 : $count->turn_off = '';
         $data['status'] == 9 ? $count->second_completion++ : $count->second_completion;
         $data['status'] == 15 ? $count->sensro_inputs++ : $count->sensro_inputs;
         
@@ -64,6 +69,7 @@ class SummaryRepository
     {
         
         // dd($status);
+
         $beforeid = Resource::where('id','<',$data['id'])->orderby('created_at','desc')->first(); //上一筆status=3
         
         $openid = Summary::where('time','<',$status['time'])->orderby('created_at','desc')->first();
@@ -72,23 +78,24 @@ class SummaryRepository
             if ($status->open != $openid->open && $status->open > 1){       
                 $status->restart_count++;
             }else{
-                $status->restart_count;
+                $status->restart_count ;
             }
         }
         else{
-            $status->restart_count;
+            $status->restart_count ;
         }
 
         if($data['status'] == '4' && $beforeid->status_id == '4'){
             if ($status->turn_off != $openid->turn_off && $status->turn_off > 1){       
                 $status->restop_count++;
             }else{
-                $status->restop_count;
+                $status->restop_count ;
             }
         }
         else{
-            $status->restop_count;
+            $status->restop_count ;
         }
+
 // dd($restartopen);
 
         return $status;
@@ -257,7 +264,7 @@ class SummaryRepository
 
         return $status;
     }
-    public function breaktime($data,$status,$description)
+    public function break($data,$status,$description)
     {
          $time = array("08:00:00","10:10:00","12:00:00","13:10:00","15:10:00","17:20:00","17:50:00","19:20:00","19:30:00");
        
@@ -310,5 +317,38 @@ class SummaryRepository
         return $status;
             // if($hour < $time)
         
+    }
+    public function manufacturing($data,$status,$description)
+    { 
+        $mutable =  Carbon::today()->format('Y-m-d');
+        // dd($mutable);
+        //    dd($status->break);
+        
+         $manufacture = '0';
+        // // dd($manufacture);
+        if($status->serial_number_day < 10 && $status->open <= 1 && $mutable ){ //當天且開機小於等於1
+            $manufacture = '上班' ;
+        }elseif($data['status'] == '4' && $status->break == '休息' ){
+            $manufacture = '休息' ;
+        }elseif($data['status'] == '3'){
+            $manufacture = '開始生產';
+        }elseif($data['status'] == '9' && $data['code'] == '500'){
+            $manufacture = "自動完工";
+        }else{
+            $manufacture = $description->completion_status;
+        }
+
+        $status->manufacturing_status = $manufacture;
+        return $status;
+        // // $data['status'] == '4' && $status->break == '休息'? $manufacture = '休息' : 
+        // // $data['status'] == '3' ? $manufacture = '開始生產' :
+        // // // $data['status'] == '9' && $data['code'] == '500' ? $manufacture = "自動完工" :
+        // // $manufacture = $status->completion_status ;
+        
+        //  dd($manufacture);
+    }
+    public function breaktime($data,$status)
+    {
+        // dd($status);
     }
 }

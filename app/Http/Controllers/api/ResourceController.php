@@ -53,9 +53,14 @@ class ResourceController extends Controller
         $description->completion_status = $completion;
 
         
-        $breaktime = $this->SumRepo->breaktime($parmas,$standard,$description);
-        $worktime = $this->SumRepo->worktime($parmas,$breaktime);
-        
+        $break = $this->SumRepo->break($parmas,$standard,$description);
+        $worktime = $this->SumRepo->worktime($parmas,$break);
+        $manufacturing = $this->SumRepo->manufacturing($parmas,$worktime,$description);
+        $breaktime = $this->SumRepo->breaktime($parmas,$worktime);
+
+
+
+
 
         $sum = $description->toArray();//把collection 轉陣列
         $sum1= $worktime->toArray();
