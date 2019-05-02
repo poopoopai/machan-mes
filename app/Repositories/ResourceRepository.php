@@ -17,7 +17,7 @@ class ResourceRepository
         $summary = '0';
         //   dd($data['orderno']);
         
-        if ($data['status'] =='9'||$data['status'] == '10'||$data['status'] =='3'||$data['status'] == '15'||$data['status'] == '16') {
+        if ($data['status_id'] =='9'||$data['status_id'] == '10'||$data['status_id'] =='3'||$data['status_id'] == '15'||$data['status_id'] == '16') {
             
                 if($data['orderno']!=$Statusid['orderno']&&$Statusid['id']!=null) {
                     $summary = "換線";
@@ -45,14 +45,14 @@ class ResourceRepository
     {
         //  dd($status);
         $message = '0';
-    // dd($status);
+        // dd($status);
         $status->abnormal == '0' ? $message = $status->description : $message = $status->abnormal;
         
-        if($data['status'] =='3'){
+        if($data['status_id'] =='3'){
             $message = '開機';
-        }elseif($data['status'] =='4'){
+        }elseif($data['status_id'] =='4'){
             $message = '關機';
-        }elseif($data['status'] =='20'|| $data['status'] =='21'){
+        }elseif($data['status_id'] =='20'|| $data['status_id'] =='21'){
             $message = '換料';
         }
          
@@ -66,27 +66,27 @@ class ResourceRepository
         // dd($Statusid->status_id - $data['status']);
 
         $comletion = '0';
-        if ($data['status'] =='9'||$data['status'] =='10'||$data['status'] =='15'||$data['status'] =='16') {
+        if ($data['status_id'] =='9'||$data['status_id'] =='10'||$data['status_id'] =='15'||$data['status_id'] =='16') {
             
                 switch ($data['status'])
                     {
                         case '9': 
-                        $Statusid->status_id - $data['status'] =='1'?$comletion = '正常生產':$comletion ='不正常';
+                        $Statusid->status_id - $data['status_id'] =='1'?$comletion = '正常生產':$comletion ='不正常';
                         break;
                         case '10': 
-                        $Statusid->status_id - $data['status'] =='5'?$comletion = '正常生產':$comletion ='不正常';
+                        $Statusid->status_id - $data['status_id'] =='5'?$comletion = '正常生產':$comletion ='不正常';
                         break;
                         case '16': 
-                        $Statusid->status_id - $data['status'] =='6'?$comletion = '正常生產':$comletion ='不正常';
+                        $Statusid->status_id - $data['status_id'] =='6'?$comletion = '正常生產':$comletion ='不正常';
                         break;
                         case '15': 
-                        $Statusid->status_id - $data['status'] =='6'?$comletion = '正常生產':$comletion ='不正常';
+                        $Statusid->status_id - $data['status_id'] =='6'?$comletion = '正常生產':$comletion ='不正常';
                         break;     
                         default:
                         return false;    
                     }
                     
-        }elseif($data['status'] =='3'||$data['status'] =='4'||$data['status'] =='20'||$data['status'] =='21'){
+        }elseif($data['status_id'] =='3'||$data['status_id'] =='4'||$data['status_id'] =='20'||$data['status_id'] =='21'){
             $comletion = '異常';//$status;
         }else{
             $comletion = '異常';
@@ -95,7 +95,11 @@ class ResourceRepository
         // dd($comletion);
         return $comletion ;    
     }
- 
+    
+    public function data()
+    {
+        return Resource::where('flag',0)->take(10)->get();
+    }
   
 
 }

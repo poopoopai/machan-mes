@@ -15,6 +15,7 @@ class CreateSummariesTable extends Migration
     {
         Schema::create('summaries', function (Blueprint $table) {
             $table->increments('id');
+            $table->unsignedInteger('resources_id');
             $table->string('description');
             $table->string('type')->default(0);
             $table->string('abnormal')->default(0);
@@ -42,8 +43,8 @@ class CreateSummariesTable extends Migration
             $table->time('roll_t')->nullable();
             $table->time('second_t')->nullable();
             $table->time('ct_processing_time')->nullable();
-            $table->unsignedInteger('restart_count')->default(0);
-            $table->unsignedInteger('restop_count')->default(0);
+            $table->string('restart_count')->default(0);
+            $table->string('restop_count')->default(0);
             $table->unsignedInteger('refueling_start')->default(0);
             $table->unsignedInteger('refueling_end')->default(0);
             $table->time('refueling_time')->nullable();

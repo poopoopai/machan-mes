@@ -9,7 +9,7 @@ class MainProgramRepository
     public function description($data)
     {
         return MainProgram::select('description','type')
-            ->where('status', $data['status'])
+            ->where('status', $data['status_id'])
             ->first();
     }
 }

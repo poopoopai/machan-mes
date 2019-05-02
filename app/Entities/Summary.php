@@ -8,6 +8,7 @@ class Summary extends Model
 {
     protected $fillable = 
     [
+        'resources_id',
         'description',
         'type',
         'abnormal',
@@ -52,4 +53,5 @@ class Summary extends Model
         'standard_uat_h_36_75',
         'standard_uat_h_36_154',
     ]; 
+    
 }
