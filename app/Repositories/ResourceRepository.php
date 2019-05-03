@@ -12,7 +12,7 @@ class ResourceRepository
        
        $mutable = Carbon::now()->format('Y-m-d');
        
-        $Statusid = Resource::where('id','>',$data['id'])->wheredate('date','=','2019-03-07')->first(); //判斷後面的id date要等於當日
+        $Statusid = Resource::where('id','>',$data['id'])->wheredate('date',$data['time'])->first(); //判斷後面的id date要等於當日
        
         $summary = '0';
         //   dd($data['orderno']);
@@ -98,8 +98,11 @@ class ResourceRepository
     
     public function data()
     {
-        return Resource::where('flag',0)->take(10)->get();
+        return Resource::where('flag', 0)->orderBy('time', 'asc')->get();
     }
-  
 
+    public function updateflag($data)
+    { 
+        return Resource::where('id',$data->id)->update(['flag'=>1]); 
+    }
 }
