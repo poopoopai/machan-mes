@@ -4,6 +4,8 @@ namespace App\Repositories;
 
 use App\Entities\Resource;
 use App\Entities\ErrorCode;
+use App\Entities\StandardCt;
+use App\Entities\Summary;
 use Carbon\Carbon;
 class ResourceRepository
 {
@@ -104,5 +106,25 @@ class ResourceRepository
     public function updateflag($data)
     { 
         return Resource::where('id',$data->id)->update(['flag'=>1]); 
+    }
+
+    public function machine($data)
+    {
+        
+        $machine = '';
+
+        if ($data->orderno === null) {
+            $machineid = Summary::where('open','1')->first();
+            if($machineid){
+                $find = Resource::where('id',$machineid->resources_id)->first();
+                $order = StandardCt::where('orderno',$find->orderno)->first();
+                $machine = $order->machine;
+            }
+        } else {
+            $order = StandardCt::where('orderno',$data->orderno)->first();
+            $machine = $order->machine;
+        }
+       
+        return $machine;
     }
 }

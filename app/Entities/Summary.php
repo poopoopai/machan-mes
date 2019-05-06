@@ -10,6 +10,7 @@ class Summary extends Model
     [
         'resources_id',
         'description',
+        'machine',
         'type',
         'abnormal',
         'serial_number',

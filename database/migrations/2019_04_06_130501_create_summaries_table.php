@@ -16,6 +16,7 @@ class CreateSummariesTable extends Migration
         Schema::create('summaries', function (Blueprint $table) {
             $table->increments('id');
             $table->unsignedInteger('resources_id')->unique();
+            $table->string('machine')->nullable();
             $table->string('description');
             $table->string('type')->default(0);
             $table->string('abnormal')->default(0);

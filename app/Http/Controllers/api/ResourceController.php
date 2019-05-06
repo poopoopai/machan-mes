@@ -33,6 +33,7 @@ class ResourceController extends Controller
             //    dd($count); //collection
             // dd($parmas["status_id"]);
             $description = $this->MainRepo->description($parmas);
+            $machine = $this->ResRepo->machine($parmas);
             // dd($description);
                 // dd($description); //collection
             $status = $this->ResRepo->abnormal($parmas,$description);
@@ -55,7 +56,7 @@ class ResourceController extends Controller
             $completion = $this->ResRepo->completion($parmas,$message);
             //   dd($completion); //string
         
-            
+            $description->machine = $machine;
             $description->message_status = $message;
             $description->completion_status = $completion;
             
@@ -86,7 +87,7 @@ class ResourceController extends Controller
             //    dd($sum,$sum1);
            
             $status2 = array_merge($sum1,$sum);
-            //   dd($status2);
+            //    dd($status2);
             // dd($parmas);
             // dd($status2);
             echo $status2['resources_id'];
@@ -105,6 +106,7 @@ class ResourceController extends Controller
             // dd($changerefueling);//collection
             
             $show2 = $this->SumRepo->update($refueling);
+            // dd($show2);
             // dd($parmas,$changerefueling);
         }
 
