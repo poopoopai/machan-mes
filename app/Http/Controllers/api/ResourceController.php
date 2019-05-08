@@ -29,11 +29,13 @@ class ResourceController extends Controller
         $parme = $this->ResRepo->data();
         foreach($parme as $parmas) {
             // dd($parmas->id);
-            $count = $this->SumRepo->counts($parmas);
+            $machine = $this->ResRepo->machine($parmas);
+             //   dd($machine); //string
+            $count = $this->SumRepo->counts($parmas,$machine);
             //    dd($count); //collection
             // dd($parmas["status_id"]);
             $description = $this->MainRepo->description($parmas);
-            $machine = $this->ResRepo->machine($parmas);
+            
             // dd($description);
                 // dd($description); //collection
             $status = $this->ResRepo->abnormal($parmas,$description);
@@ -44,16 +46,17 @@ class ResourceController extends Controller
             $restart = $this->SumRepo->restart($parmas,$count);
             //  dd($restart);//collection
 
-            $machineT = $this->SumRepo->machineT($parmas,$count);
+            $machineT = $this->SumRepo->machineT($parmas,$count,$machine);
             //    dd($machineT);//collection
-        
+            $actual = $this->SumRepo->actual($parmas,$count,$machine);
+            //
             $calculate = $this->SumRepo->calculate($parmas,$machineT);
             // dd($calculate);//collection
             $standard = $this->SumRepo->standard($parmas,$calculate);
             // dd($standard);//collection
             $message = $this->ResRepo->message($parmas,$description);
             //   dd($message); //string
-            $completion = $this->ResRepo->completion($parmas,$message);
+            $completion = $this->ResRepo->completion($parmas,$message,$machine);
             //   dd($completion); //string
         
             $description->machine = $machine;

@@ -60,41 +60,48 @@ class ResourceRepository
          
        return  $message;
     }
-    public function completion($data,$status)
+    public function completion($data,$message,$machine)
     {
-        $Statusid = Resource::where('id','>',$data['id'])->wheredate('date','=','2019-03-07')->first();
-        // dd($data['status']);
-        // dd($Statusid);
-        // dd($Statusid->status_id - $data['status']);
-
-        $comletion = '0';
-        if ($data['status_id'] =='9'||$data['status_id'] =='10'||$data['status_id'] =='15'||$data['status_id'] =='16') {
-            
-                switch ($data['status'])
-                    {
-                        case '9': 
-                        $Statusid->status_id - $data['status_id'] =='1'?$comletion = '正常生產':$comletion ='不正常';
-                        break;
-                        case '10': 
-                        $Statusid->status_id - $data['status_id'] =='5'?$comletion = '正常生產':$comletion ='不正常';
-                        break;
-                        case '16': 
-                        $Statusid->status_id - $data['status_id'] =='6'?$comletion = '正常生產':$comletion ='不正常';
-                        break;
-                        case '15': 
-                        $Statusid->status_id - $data['status_id'] =='6'?$comletion = '正常生產':$comletion ='不正常';
-                        break;     
-                        default:
-                        return false;    
-                    }
+   
+        $Statusid = Resource::where('id','>',$data['id'])->wheredate('date',$data['date'])->first();
+       
+        $comletion = 0;
+        if ($machine == '捲料機1'){
+                if ($data['status_id'] == 9 ||$data['status_id'] == 10 ||$data['status_id'] == 15 ||$data['status_id'] == 16) {
                     
-        }elseif($data['status_id'] =='3'||$data['status_id'] =='4'||$data['status_id'] =='20'||$data['status_id'] =='21'){
-            $comletion = '異常';//$status;
-        }else{
-            $comletion = '異常';
+                   
+                    if($data['status_id'] == 9){
+                        $Statusid->status_id - $data['status_id'] == 1 ? $comletion = '正常生產' : $comletion = '不正常';
+                    } else{
+                        if($data['status_id'] == 10){
+                            $Statusid->status_id - $data['status_id'] == 5 ? $comletion = '正常生產' : $comletion = '不正常';
+                        } else{
+                            if($data['status_id'] == 16){
+                                $Statusid->status_id - $data['status_id'] == 6 ? $comletion = '正常生產' : $comletion = '不正常';
+                            } else{
+                                if($data['status_id'] == 15){
+                                    $Statusid->status_id - $data['status_id'] == 6 ? $comletion = '正常生產' : $comletion = '不正常';
+                                } else{
+                                    if($data['status_id'] == 3 ||$data['status_id'] == 4 ||$data['status_id'] == 20 ||$data['status_id'] == 21){
+                                        $comletion = $message;
+                                    } else{
+                                        $comletion = '異常';
+                                    }
+                                }
+                            }
+                        }        
+                    }           
+                } else{
+                        $comletion = '異常';
+                }
+        } else{
+            if($data['status_id'] == 10){
+                $comletion = '正常生產';
+            }else{
+                $comletion = '異常';
+            }
         }
-        
-        // dd($comletion);
+       
         return $comletion ;    
     }
     

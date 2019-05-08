@@ -8,7 +8,7 @@ use App\Entities\StandardCt;
 use Carbon\Carbon;
 class SummaryRepository
 {
-    public function counts($data)
+    public function counts($data,$machine)
     {
     
         $count = Summary::whereRaw('id = (select max(`id`) from summaries)')->first();
@@ -19,45 +19,100 @@ class SummaryRepository
         $count->id = $count->id + 1;
         $count->time = $data->time;
 
-        $Statusid = Resource::where('id','>',$data['id'])->wheredate('date',$data['date'])->first();  //date要等於當日
-
-        $oldopen = Summary::where('open','!=','')->orderby('created_at','desc')->first();
-        $oldturn = Summary::where('turn_off','!=','')->orderby('created_at','desc')->first();
+        $Statusid = Resource::where('id' , '<' , $data['id'])->wheredate('date' , $data['date'])->first();  //date要等於當日
+        
+        $oldopen = Summary::where('open' , '!=' , '')->orderby('created_at','desc')->first();
+        $oldturn = Summary::where('turn_off' , '!=' , '')->orderby('created_at','desc')->first();
        
         $data['status_id'] == 3 ? $count->open = $oldopen->open + 1 : $count->open = '';
         $data['status_id'] == 4 ? $count->turn_off = $oldturn->turn_off + 1 : $count->turn_off = '';
-        $data['status_id'] == 9 ? $count->second_completion++ : $count->second_completion;
+        $data['status_id'] == 3 ? $count->start_count++ : $count->start_count;
+        $data['status_id'] == 4 ? $count->stop_count++ : $count->stop_count;
         $data['status_id'] == 15 ? $count->sensro_inputs++ : $count->sensro_inputs;
+
+        if($machine == '捲料機1'){
+            $data['status_id'] == 9 ? $count->second_completion++ : $count->second_completion;
+        }else{
+            $data['status_id'] == 10 ? $count->second_completion++ : $count->second_completion;
+        }
         
         $count->serial_number++;
 
-        if($data['orderno'] != $Statusid['orderno'] && $Statusid['id'] != null) {
+        if($data['orderno'] != $Statusid['orderno'] && $Statusid['id'] == null) { //料號不相同
             $count->machine_completion = 0;
             $count->machine_inputs = 0;
         }else{
-            $data['status_id'] == 9 ? $count->machine_completion++ : $count->machine_completion;
+
             $data['status_id'] == 10 ? $count->machine_inputs++ : $count->machine_inputs;
-            $data['status_id'] == 9 ? $count->processing_completion_time = $data['time'] : $count->processing_completion_time = "";
-            $data['status_id'] == 10 ? $count->processing_start_time = $data['time'] : $count->processing_start_time = "";
+            
+            if ($machine == '捲料機1'){
+                $data['status_id'] == 9 ? $count->machine_completion++ : $count->machine_completion;
+                $data['status_id'] == 9 ? $count->processing_completion_time = $data['time'] : $count->processing_completion_time = "";
+            } else{
+                $data['status_id'] == 10 ? $count->machine_completion++ : $count->machine_completion;
+                $data['status_id'] == 10 ? $count->processing_completion_time = $data['time'] : $count->processing_completion_time = "";
+            } 
+
+            if($machine == '捲料機1'){
+                $data['status_id'] == 10 ? $count->processing_start_time = $data['time'] : $count->processing_start_time = "00:00:00";
+            }else{
+                if($data['status_id'] == 10){
+                    $count->processing_start_time = $data['time'];
+                }else{
+                    $completion = Summary::where('machine_completion_day' , $count->machine_completion_day-1)->first();
+                    $restart = Summary::where('start_count' , $count->start_count)->first();//建一個累加開或關的
+                    if($completion){
+                        if($completion->machine_completion_day > 0){
+                            $count->processing_start_time = $completion->time;
+                        }else{
+                            if($restart){
+                                $count->processing_start_time = $restart->time;
+                            }     
+                        }
+                    }
+                }
+                 
+            }
+                    
         }
 
-        if($data['date'] != $data->date) { //累積當天數量
-            $count->machine_completion_day = 0;
-            $count->machine_inputs_day = 0;
-        }else{
-            $data['status_id'] == 9 ? $count->machine_completion_day++ : $count->machine_completion_day;
-            $data['status_id'] == 10 ? $count->machine_inputs_day++ : $count->machine_inputs_day;
-            $data['status_id'] == 20 ? $count->refueling_start++ : $count->refueling_start;
-            $data['status_id'] == 21 ? $count->refueling_end++ : $count->refueling_end;
-            $data['status_id'] == 22 ? $count->aggregate_start++ : $count->aggregate_start;
-            $data['status_id'] == 23 ? $count->aggregate_end++ : $count->aggregate_end;
-        }
+            if($data['date'] != $data->date) { //累積當天數量
+                $count->machine_completion_day = 0;
+                $count->machine_inputs_day = 0;
+            }else{
+                if ($machine == '捲料機1'){
+                    $data['status_id'] == 9 ? $count->machine_completion_day++ : $count->machine_completion_day;
+                } else{
+                    $data['status_id'] == 10 ? $count->machine_completion_day++ : $count->machine_completion_day;
+                }
+                $data['status_id'] == 10 ? $count->machine_inputs_day++ : $count->machine_inputs_day;
+                $data['status_id'] == 20 ? $count->refueling_start++ : $count->refueling_start;
+                $data['status_id'] == 21 ? $count->refueling_end++ : $count->refueling_end;
+                $data['status_id'] == 22 ? $count->aggregate_start++ : $count->aggregate_start;
+                $data['status_id'] == 23 ? $count->aggregate_end++ : $count->aggregate_end;
+            }
 
-        if(($data['orderno'] != $Statusid['orderno']&&$Statusid['id'] != null)||($data->date != $data->date)){
-            $count->serial_number_day = 0 ;
-        }else{
-            $count->serial_number_day++;
-        }
+            if ($data['orderno'] == '' || !$data['date']){
+                // dd(123);
+                $count->serial_number_day = 1 ;
+            } else {
+                if($data['orderno'] == '' || $data['date']){
+                        $Status = Summary::where('resources_id' , $Statusid->id)->first();//前一筆serial +1
+                        if($Status){
+                            $count->serial_number_day = $Status->serial_number_day+1;
+                        } else{
+                            $count->serial_number_day++;
+                        }
+                } else{  //前面加總料號數量+1 且同料號同日期
+                    // dd(1234);
+                    $serial = Resource::where('orderno' , $data['orderno'])->where('date',$data['date'])->orderby('time','desc')->first();
+                    $Statusid = Summary::where('resources_id' , $serial->id)->first();
+                    $count->serial_number_day = $Statusid->serial_number_day+1;
+                }
+
+            }
+            // dd($count);
+
         return $count;
     }
 
@@ -128,31 +183,47 @@ class SummaryRepository
         return false;
     }
 
-    public function machineT($data,$status)
+    public function machineT($data,$status,$machine)
     {
+        //  dd($status);
+        $machinetime = Summary::where('machine_inputs_day',$status['machine_inputs_day']-1)->first();
+        $secondtime = Summary::where('machine_completion_day',$status['machine_completion_day']-1)->first();
+        $completionday = Summary::where('machine_completion_day',$status['machine_inputs_day'])->first();
+        $machinetime = Summary::where('machine_completion',$status['machine_completion']-1)->first();
         
-        $machinetime = Summary::where('machine_inputs_day',$status['machine_inputs_day']-1)->orderby('created_at','asc')->first();
-        $secondtime = Summary::where('machine_completion_day',$status['machine_completion_day']-1)->orderby('created_at','asc')->first();
-        // dd($machinetime);
         $machineT = 0;
         $secondT = 0;
-
-       if ($data['status_id'] == '10') {
-
-            if($status->machine_inputs_day >= 2){
-                $machineT = strtotime($status->processing_start_time) - strtotime($machinetime->processing_start_time);
-            } else{
-                $machineT = 0;
-            }     
-        }else{
-            $machineT = 0;
-        }
         
+        if($machine == '捲料機1'){
+            if ($data['status_id'] == '10') {
+
+                    if($status->machine_inputs_day >= 2){
+                        if($machinetime){
+                            $machineT = strtotime($status->processing_start_time) - strtotime($machinetime->processing_start_time);
+                        }
+                    } else{
+                        $machineT = 0;
+                    }     
+            }else{
+                $machineT = 0;
+            }
+        }else{
+            if ($data['status_id'] == '10'){
+                $machineT = strtotime($status->processing_completion_time) - strtotime($status->processing_start_time);
+            }else{
+                $machineT = 0;
+            }
+        }
+
         if($data['status_id'] == '9'){
-            
+             
             if($status->machine_completion_day >= 2){
-                $secondT = strtotime($status->processing_completion_time) - strtotime($secondtime->processing_completion_time);
-            } else{
+                if($completionday){
+                    $secondT = strtotime($status->processing_completion_time) - strtotime($machinetime->processing_completion_time);
+                } else{
+                    $secondT = strtotime($status->processing_start_time) - strtotime($machinetime->processing_start_time);
+                } 
+            } else{ 
                 $secondT = 0;
             }     
         }else{
@@ -161,8 +232,7 @@ class SummaryRepository
 
         $status->roll_t = $machineT;
         $status->second_t = $secondT;
-        
-
+       
         return $status;
     }
 
@@ -171,24 +241,30 @@ class SummaryRepository
         //    dd($status);
         $refueling = '00:00:00';
         $aggregate = '00:00:00';
-
-         $end = Summary::where('refueling_end',$status['refueling_end'])->first();//累計剛好只有一筆資料
+ 
+         $end = Summary::where('refueling_end',$status['refueling_end'])->first();//累計剛好只有一筆資料 會找不到
+         
          $start = Summary::where('refueling_start',$status['refueling_end'])->first();
-
+        //  dd($start);
          $end2 = Summary::where('aggregate_end',$status['aggregate_end'])->first();//累計剛好只有一筆資料
          $start2 = Summary::where('aggregate_start',$status['aggregate_end'])->first();
 
          
             if($status['refueling_end'] != 0){
-                $refueling = strtotime($end->time) - strtotime($start->time);
-                $refueling = date("H:i:s",$refueling-8*60*60);
+               
+                if($end && $start){
+                    $refueling = strtotime($end->time) - strtotime($start->time);
+                    $refueling = date("H:i:s",$refueling-8*60*60);
+                }     
             }else{
                 $refueling = '00:00:00';
             }
     
             if($status['aggregate_end'] != 0){
-                $aggregate = strtotime($end2->time) - strtotime($start2->time);
-                $aggregate = date("H:i:s",$aggregate-8*60*60);
+                if($end2 && $start2){
+                    $aggregate = strtotime($end2->time) - strtotime($start2->time);
+                    $aggregate = date("H:i:s",$aggregate-8*60*60);
+                }
             }else{
                 $aggregate = '00:00:00';
             }
@@ -202,36 +278,47 @@ class SummaryRepository
 
     public function calculate($data,$status)
     {
+      
+        $calculate262 = 0;
+        $calculate263 = 0;
+        $calculate363 = 0;
         
-        $calculate75 = '00:00:00';
-        $calculate154 = '00:00:00';
-        $calculate233 = '00:00:00';
+        if($status['actual_processing'] == 0){
+            $calculate262 = 0 ;
+        }else{
+           if($data->orderno =='UAT-H-26-2'){
+                $calculate262 = $status['actual_processing'];
+           }else{
+                $calculate262 = 0 ;
+           }
+        }
+
+        if($status['actual_processing'] == 0){
+            $calculate263 = 0 ;
+        }else{
+           if($data->orderno =='UAT-H-26-3'){
+                $calculate263 = $status['actual_processing'];
+           }else{
+                $calculate263 = 0 ;
+           }
+        }
+
+        if($status['actual_processing'] == 0){
+            $calculate363 = 0 ;
+        }else{
+           if($data->orderno =='UAT-H-36-3'){
+                $calculate363 = $status['actual_processing'];
+           }else{
+                $calculate363 = 0 ;
+           }
+        }
+
         
-        if($data['status_id'] == '9' && $status['second_t'] != 0 && $data['orderno'] == 'UAT-H-36-75'){
-            $calculate75 = $status['second_t'] ;
-            $calculate75 = date("H:i:s",$calculate75-8*60*60);
-        }else{
-            $calculate75 = '00:00:00';
-        }
 
-        if($data['status_id'] == '9' && $status['second_t'] != 0 && $data['orderno'] == 'UAT-H-36-154'){
-            $calculate154 = $status['second_t'] ;
-            $calculate154 = date("H:i:s",$calculate154-8*60*60);
-        }else{
-            $calculate154 = '00:00:00';
-        }
-
-        if($data['status_id'] == '9' && $status['second_t'] != 0 && $data['orderno'] == 'UAT-H-36-233'){
-            $calculate233 = $status['second_t'] ;
-            $calculate233 = date("H:i:s",$calculate233-8*60*60);
-        }else{
-            $calculate233 = '00:00:00';
-        }
-
-        $status['uat_h_36_75'] = $calculate75;
-        $status['uat_h_36_154'] = $calculate154;
-        $status['uat_h_36_233'] = $calculate233;
-        // dd($status);
+        $status['uat_h_26_2'] = $calculate262;
+        $status['uat_h_26_3'] = $calculate263;
+        $status['uat_h_36_3'] = $calculate363;
+        //  dd($status);
 
         return $status;
         
@@ -239,33 +326,37 @@ class SummaryRepository
 
     public function standard($data,$status)
     {
-    //    dd($status);
+       
         $standard = StandardCt::where('orderno',$data['orderno'])->first();
         
-        $standard75 = '0';
-        $standard154 = '0';
-        $standard233 = '0';
+        $standard262 = '0';
+        $standard263 = '0';
+        $standard363 = '0';
 
-        if($status['uat_h_36_75'] && $status['uat_h_36_75'] != "00:00:00"){ //一定要改
-            $standard75 = $standard->standard_ct;
+        if($status['uat_h_26_2'] == 0){ //一定要改
+            $standard262 = 0;
         }else{
-            $standard75 = NULL;
+            $standard262 = $standard->standard_ct;
         }
-        if($status['uat_h_36_154'] && $status['uat_h_36_154'] != "00:00:00"){
-            $standard154 = $standard->standard_ct;
-        }else{
-            $standard154 = NULL;
-        }
-        if($status['uat_h_36_233'] && $status['uat_h_36_233'] != "00:00:00"){
-            $standard233 = $standard->standard_ct;
-        }else{
-            $standard233 = NULL;
-        }
-//   dd($standard75);
-        $status['standard_uat_h_36_75'] = $standard75;
-        $status['standard_uat_h_36_154'] = $standard154;
-        $status['standard_uat_h_36_233'] = $standard233;
 
+        if($status['uat_h_26_3'] == 0){ //一定要改
+            $standard263 = 0;
+        }else{
+            $standard263 = $standard->standard_ct;
+        }
+
+        if($status['uat_h_36_3'] == 0){ //一定要改
+            $standard363 = 0;
+        }else{
+            $standard363 = $standard->standard_ct;
+        }
+
+        
+        $status['standard_uat_h_26_2'] = $standard262;
+        $status['standard_uat_h_26_3'] = $standard263;
+        $status['standard_uat_h_36_3'] = $standard363;
+
+        
         return $status;
     }
     public function break($data,$status,$description)
@@ -611,6 +702,30 @@ class SummaryRepository
         }else{
             return False;
         }
+    }
+
+    public function actual($data,$status,$machine)
+    {
+        
+        $actual = 0;
+        if($machine == '捲料機1'){
+            if($data['status_id'] == 9 ){
+                $actual = $status->second_t = 0;
+            }else{
+                if($machine == '捲料機2'){
+                    if($data['status_id'] == 10){
+                        $actual = $status->roll_t;
+                    }else{
+                        $actual = 0;
+                    }
+                } else{
+                    $actual = 0;
+                }
+            }
+        }
+
+        $status['actual_processing'] = $actual;
+        return $status;
     }
 
 }
