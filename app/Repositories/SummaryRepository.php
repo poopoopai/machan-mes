@@ -76,7 +76,7 @@ class SummaryRepository
                     
         }
 
-            if($data['date'] != $data->date) { //累積當天數量
+            if(!$data->date) { //累積當天數量
                 $count->machine_completion_day = 0;
                 $count->machine_inputs_day = 0;
             }else{
@@ -85,18 +85,24 @@ class SummaryRepository
                 } else{
                     $data['status_id'] == 10 ? $count->machine_completion_day++ : $count->machine_completion_day;
                 }
+                $oldrefs = Summary::where('refueling_start' , $count->refueling_start)->orderby('created_at','desc')->first();
+                $oldrefe = Summary::where('refueling_end' , $count->refueling_end)->orderby('created_at','desc')->first();
+                $oldags = Summary::where('aggregate_start' , $count->aggregate_start)->orderby('created_at','desc')->first();
+                $oldage = Summary::where('aggregate_end' , $count->aggregate_end)->orderby('created_at','desc')->first();
+
+               
                 $data['status_id'] == 10 ? $count->machine_inputs_day++ : $count->machine_inputs_day;
-                $data['status_id'] == 20 ? $count->refueling_start++ : $count->refueling_start;
-                $data['status_id'] == 21 ? $count->refueling_end++ : $count->refueling_end;
-                $data['status_id'] == 22 ? $count->aggregate_start++ : $count->aggregate_start;
-                $data['status_id'] == 23 ? $count->aggregate_end++ : $count->aggregate_end;
+                $data['status_id'] == 20 ? $count->refueling_start = $oldrefs->refueling_start+1 : $count->refueling_start =0;
+                $data['status_id'] == 21 ? $count->refueling_end = $oldrefe->refueling_end : $count->refueling_end = 0;
+                $data['status_id'] == 22 ? $count->aggregate_start = $oldags->aggregate_start+1 : $count->aggregate_start = 0;
+                $data['status_id'] == 23 ? $count->aggregate_end = $oldage->aggregate_end+1: $count->aggregate_end = 0;
             }
 
-            if ($data['orderno'] == '' || !$data['date']){
-                // dd(123);
+            
+            if ($data['orderno'] == '' && !$data['date']){
                 $count->serial_number_day = 1 ;
             } else {
-                if($data['orderno'] == '' || $data['date']){
+                if($data['orderno'] == '' && $data['date']){
                         $Status = Summary::where('resources_id' , $Statusid->id)->first();//前一筆serial +1
                         if($Status){
                             $count->serial_number_day = $Status->serial_number_day+1;
@@ -106,12 +112,16 @@ class SummaryRepository
                 } else{  //前面加總料號數量+1 且同料號同日期
                     // dd(1234);
                     $serial = Resource::where('orderno' , $data['orderno'])->where('date',$data['date'])->orderby('time','desc')->first();
+                    //  dd($serial->id);
                     $Statusid = Summary::where('resources_id' , $serial->id)->first();
-                    $count->serial_number_day = $Statusid->serial_number_day+1;
+                    if($Statusid){
+                        $count->serial_number_day = $Statusid->serial_number_day+1;
+                    }else{
+                        $count->serial_number_day++ ;
+                    }       
                 }
 
             }
-            // dd($count);
 
         return $count;
     }
@@ -187,41 +197,55 @@ class SummaryRepository
     {
         //  dd($status);
         $machinetime = Summary::where('machine_inputs_day',$status['machine_inputs_day']-1)->first();
+        
         $secondtime = Summary::where('machine_completion_day',$status['machine_completion_day']-1)->first();
         $completionday = Summary::where('machine_completion_day',$status['machine_inputs_day'])->first();
-        $machinetime = Summary::where('machine_completion',$status['machine_completion']-1)->first();
+        $machinetime2 = Summary::where('machine_completion',$status['machine_completion']-1)->first();
         
         $machineT = 0;
         $secondT = 0;
         
         if($machine == '捲料機1'){
-            if ($data['status_id'] == '10') {
+            if ($data['status_id'] == 10) {
 
                     if($status->machine_inputs_day >= 2){
-                        if($machinetime){
+                        if($machinetime->processing_start_time){
                             $machineT = strtotime($status->processing_start_time) - strtotime($machinetime->processing_start_time);
+                            // dd($status->processing_start_time);
+                        }else{
+                            $machineT = 0;
                         }
-                    } else{
+                    } 
+                    else{
                         $machineT = 0;
                     }     
             }else{
                 $machineT = 0;
             }
         }else{
-            if ($data['status_id'] == '10'){
+            if ($data['status_id'] == 10){
                 $machineT = strtotime($status->processing_completion_time) - strtotime($status->processing_start_time);
             }else{
                 $machineT = 0;
             }
         }
+        
 
         if($data['status_id'] == '9'){
              
             if($status->machine_completion_day >= 2){
                 if($completionday){
-                    $secondT = strtotime($status->processing_completion_time) - strtotime($machinetime->processing_completion_time);
+                    if($machinetime2->processing_completion_time){
+                        $secondT = strtotime($status->processing_completion_time) - strtotime($machinetime2->processing_completion_time);
+                    }else{
+                        $secondT = strtotime($status->processing_start_time);
+                    }
                 } else{
-                    $secondT = strtotime($status->processing_start_time) - strtotime($machinetime->processing_start_time);
+                    if($machinetime->processing_start_time){
+                        $secondT = strtotime($status->processing_completion_time) - strtotime($machinetime->processing_completion_time);
+                    }else{
+                        $secondT = strtotime($status->processing_start_time);
+                    }    
                 } 
             } else{ 
                 $secondT = 0;
@@ -242,34 +266,37 @@ class SummaryRepository
         $refueling = '00:00:00';
         $aggregate = '00:00:00';
  
-         $end = Summary::where('refueling_end',$status['refueling_end'])->first();//累計剛好只有一筆資料 會找不到
+         //累計剛好只有一筆資料 會找不到
+            
+        //  dd($status);
          
-         $start = Summary::where('refueling_start',$status['refueling_end'])->first();
-        //  dd($start);
-         $end2 = Summary::where('aggregate_end',$status['aggregate_end'])->first();//累計剛好只有一筆資料
-         $start2 = Summary::where('aggregate_start',$status['aggregate_end'])->first();
-
-         
-            if($status['refueling_end'] != 0){
-               
-                if($end && $start){
-                    $refueling = strtotime($end->time) - strtotime($start->time);
-                    $refueling = date("H:i:s",$refueling-8*60*60);
-                }     
+            if($status['refueling_end'] != 0){     
+                $end = Summary::where('refueling_end',$status['refueling_end'])->first();
+                $start = Summary::where('refueling_start',$status['refueling_end'])->first();
+                    if($end && $start){ //有小問題
+                        $refueling = strtotime($end->time) - strtotime($start->time);
+                        $refueling = date("H:i:s",$refueling-8*60*60);
+                    }else{
+                        $refueling = '00:00:00';//如果沒有找到顯示初始值
+                    }     
             }else{
                 $refueling = '00:00:00';
             }
     
             if($status['aggregate_end'] != 0){
+                $end2 = Summary::where('aggregate_end',$status['aggregate_end'])->first();//累計剛好只有一筆資料
+                $start2 = Summary::where('aggregate_start',$status['aggregate_end'])->first();
                 if($end2 && $start2){
                     $aggregate = strtotime($end2->time) - strtotime($start2->time);
                     $aggregate = date("H:i:s",$aggregate-8*60*60);
+                }else{
+                    $aggregate = '00:00:00';//如果沒有找到顯示初始值
                 }
             }else{
                 $aggregate = '00:00:00';
             }
         
-          
+         
         $status['refueler_time'] = $refueling;
         $status['collector_time'] = $aggregate;
 
@@ -282,7 +309,7 @@ class SummaryRepository
         $calculate262 = 0;
         $calculate263 = 0;
         $calculate363 = 0;
-        
+
         if($status['actual_processing'] == 0){
             $calculate262 = 0 ;
         }else{
@@ -329,9 +356,9 @@ class SummaryRepository
        
         $standard = StandardCt::where('orderno',$data['orderno'])->first();
         
-        $standard262 = '0';
-        $standard263 = '0';
-        $standard363 = '0';
+        $standard262 = 0;
+        $standard263 = 0;
+        $standard363 = 0;
 
         if($status['uat_h_26_2'] == 0){ //一定要改
             $standard262 = 0;

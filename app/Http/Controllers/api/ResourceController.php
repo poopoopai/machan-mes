@@ -80,12 +80,12 @@ class ResourceController extends Controller
             // dd($refue_time);
             $total = $this->SumRepo->total($parmas,$refue_time);
             // dd($total);
-
+            $refueling = $this->SumRepo->refueling($total);
 
             // dd($total);
             $sum = $description->toArray();//把collection 轉陣列
             $total->resources_id = $parmas->id;
-            $sum1= $total->toArray();
+            $sum1= $refueling->toArray();
             
             //    dd($sum,$sum1);
            
@@ -103,17 +103,15 @@ class ResourceController extends Controller
             }else{
                 dd($check);
             }
-            $refueling = $this->SumRepo->refueling($status2);
-            // dd($refueling);
-            
-            // dd($changerefueling);//collection
-            
-            $show2 = $this->SumRepo->update($refueling);
+      
+            // $show2 = $this->SumRepo->update($refueling);
             // dd($show2);
             // dd($parmas,$changerefueling);
+            //  return view('machineperformance',['data' => $show]);
         }
-
-        return response()->json(['status' => $show]);
+       return response()->json(['status' => $show]);
+        
+        
           
     }
    

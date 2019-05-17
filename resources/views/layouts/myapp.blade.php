@@ -232,6 +232,9 @@
                                 <li>
                                     <a href="{{route('machine-performance')}}" style="color: white;">機台績效查詢</a>
                                 </li>
+                                <li>
+                                    <a href="{{route('show_machine')}}" style="color: white;">機台績效</a>
+                                </li>
                             </ul>
                         </li>
                     </ul>

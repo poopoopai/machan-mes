@@ -23,6 +23,7 @@ Route::group(['middleware' => ['auth']], function () {
 
     Route::get('/resource', 'ResourceController@index')->name('resource');
     Route::resource('machine-category', 'MachineCategoryController');
+    Route::get('machineperformance', 'ResourceController@show')->name('show_machine');
 
 
 

@@ -20,7 +20,7 @@ class MachineCategoryController extends Controller
         
         $data = $this->machineRepo->index();
         //  dd($data);
-        return view('system/machinecategory', ['machineinfo'=>$data]);
+        return view('system/machinecategory', ['machineinfo' => $data]);
     }
 
     public function create()

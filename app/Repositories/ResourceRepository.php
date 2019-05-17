@@ -63,9 +63,10 @@ class ResourceRepository
     public function completion($data,$message,$machine)
     {
    
-        $Statusid = Resource::where('id','>',$data['id'])->wheredate('date',$data['date'])->first();
-       
+        $Statusid = Resource::where('id','>',$data['id'])->first();
+    
         $comletion = 0;
+        if($Statusid){
         if ($machine == '捲料機1'){
                 if ($data['status_id'] == 9 ||$data['status_id'] == 10 ||$data['status_id'] == 15 ||$data['status_id'] == 16) {
                     
@@ -101,6 +102,11 @@ class ResourceRepository
                 $comletion = '異常';
             }
         }
+
+    }else{// 最後一筆
+        $comletion = '異常';
+    }
+
        
         return $comletion ;    
     }
@@ -129,7 +135,12 @@ class ResourceRepository
             }
         } else {
             $order = StandardCt::where('orderno',$data->orderno)->first();
-            $machine = $order->machine;
+            if($order){
+                $machine = $order->machine;
+            }else{
+                $machine = null; // 如果沒有找到料號
+            }
+            
         }
        
         return $machine;

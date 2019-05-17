@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Entities\Resource;
+use App\Entities\Summary;
 
 class ResourceController extends Controller
 {
@@ -20,5 +21,11 @@ class ResourceController extends Controller
         echo "Host information: " . mysqli_get_host_info($link) . PHP_EOL;
         
         mysqli_close($link);
+    }
+    public function show()
+    {
+        $data = Summary::get();
+        
+        return view('machineperformance', ['datas' => $data]);
     }
 }

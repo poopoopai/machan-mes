@@ -57,9 +57,9 @@ class CreateSummariesTable extends Migration
             $table->unsignedInteger('aggregate_end')->default(0);
             $table->time('aggregate_time')->nullable();
             $table->time('collector_time')->nullable();
-            $table->time('uat_h_26_2')->nullable();
-            $table->time('uat_h_26_3')->nullable();
-            $table->time('uat_h_36_3')->nullable();
+            $table->double('uat_h_26_2')->nullable();
+            $table->double('uat_h_26_3')->nullable();
+            $table->double('uat_h_36_3')->nullable();
             $table->double('standard_uat_h_26_2')->nullable();
             $table->double('standard_uat_h_26_3')->nullable();
             $table->double('standard_uat_h_36_3')->nullable();
