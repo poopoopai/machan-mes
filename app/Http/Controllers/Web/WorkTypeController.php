@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Web;
+namespace App\Http\Controllers\web;
 
 use Illuminate\Http\Request;
 use App\Entities\SetupShift;
