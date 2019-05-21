@@ -183,15 +183,7 @@
             </table>
             
     </div>
-    <form action="">
-            <div class="total-page a">每頁顯示筆數
-                <select class ="slectbtn" name="" id="">
-                        <option value="">10 </option>
-                        <option value="">25</option>
-                        <option value="">50</option>
-                </select>
-            </div>
-    </form>
+    
 </div>
 <script>
     
