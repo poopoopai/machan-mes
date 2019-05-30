@@ -57,5 +57,10 @@ class Summary extends Model
         'standard_uat_h_26_3',
         'standard_uat_h_36_3',
     ]; 
+
+    public function resource()
+    {
+        return $this->hasOne('App\Entities\Resource', 'id', 'resources_id');
+    }
     
 }

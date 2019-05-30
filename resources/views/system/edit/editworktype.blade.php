@@ -66,21 +66,50 @@
                             <div class="form-group">
                                 <label class="col-md-2 control-label">班別類型</label>
                                 <div class="col-md-10">
-                                    <input class="form-control" required>
+                                    <select name="work_type" class="form-control" id="work-type"  required>
+                                        <option disabled selected value="">--- 請選擇班別類型 ---</option>
+                                        <option value="正常班">正常班</option>
+                                        <option value="早班">早班</option>
+                                        <option value="中班">中班</option>
+                                        <option value="晚班">晚班</option>
+                                        <option value="大夜班">大夜班</option>
+                                        <option value="混合型">混合型</option>
+                                    </select>
                                 </div>
                             </div>
                             <hr>
                             <div class="form-group">
                                 <label class="col-md-2 control-label">上班時間</label>
                                     <div class="col-md-4">
-                                        <input type=date class="clearable form-control" required>
+                                        <input type="time" name="work_start" class="clearable form-control"  list="limittimeslist" >
                                     </div>
+
+                                    <datalist id="limittimeslist">
+
+                                        <option value="08:00:00">
+                                      
+                                        <option value="16:50:00">
+                                      
+                                        <option value="23:00:00">
+                                      
+                                    </datalist>
+
                                     <div class="col-md-2" style="text-align:center;">
                                         <label style="margin:7px;"> ~ </label>
                                     </div>
                                     <div class="col-md-4">
-                                        <input type=date class="clearable form-control" required>
+                                        <input type="time" name="work_ned" class="clearable form-control"  list="limittimeslist2">
                                     </div>
+
+                                    <datalist id="limittimeslist2">
+
+                                        <option value="17:00:00">
+                                      
+                                        <option value="01:30:00">
+                                      
+                                        <option value="08:00:00">
+                                      
+                                    </datalist>
                             </div>
                             <hr>
                             <div class="form-group">

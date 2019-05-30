@@ -9,8 +9,7 @@ use App\Http\Controllers\Controller;
 class WorkTypeController extends Controller
 {
     public function index() 
-    {
-        
+    {     
         return view('system/worktype');
     }
 

@@ -26,7 +26,7 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('machineperformance', 'ResourceController@show')->name('show_machine');
 
 
-
+    Route::get('/work-type', 'web\WorkTypeController@index')->name('work-type');
 
 
 
@@ -37,7 +37,7 @@ Route::group(['middleware' => ['auth']], function () {
 
 
         Route::get('/home', 'HomeController@index')->name('home');
-        Route::get('/work-type', 'web\WorkTypeController@index')->name('work-type');
+        
         Route::get('/break-time', 'web\BreakTimeController@index')->name('break-time');
         
        

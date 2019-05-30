@@ -122,41 +122,7 @@
                         <li>
                             <a href="{{ route('home') }}" style="color: white;">首頁</a>
                         </li>
-                        {{-- <li>
-                          <a href="#" style="color: white;">系統管理<span class="fa arrow"></span></a>
-                          <ul class="nav nav-second-level">
-                              <li>
-                                  <a href="#" style="color: white;">班表設定<span class="fa arrow"></span></a>
-                                  <ul class="nav nav-third-level">
-                                      <li>
-                                          <a href="#" style="color: white;">公司行事曆</a>
-                                      </li>
-                                      <li>
-                                          <a href="#" style="color: white;">製程行事曆</a>
-                                      </li>
-                                      <li>
-                                          <a href="#" style="color: white;">班別設定</a>
-                                      </li>
-                                      <li>
-                                          <a href="#" style="color: white;">休息時間設定</a>
-                                      </li>
-                                  </ul>
-                              </li>
-                          </ul>
-                            <ul class="nav nav-second-level">
-                                <li>
-                                    <a href="#" style="color: white;">資料載入<span class="fa arrow"></span></a>
-                                    <ul class="nav nav-third-level">
-                                        <li>
-                                            <a href="#" style="color: white;">載入行事曆</a>
-                                        </li>
-                                        <li>
-                                            <a href="#" style="color: white;">載入訂單</a>
-                                        </li>
-                                    </ul>
-                                </li>
-                            </ul>
-                        </li> --}}
+                        
                         <li>
                             <a href="#" style="color: white;">系統設定<span class="fa arrow"></span></a>
                             <ul class="nav nav-second-level">

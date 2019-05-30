@@ -176,9 +176,13 @@
                             <td>{{ $data->uat_h_36_3 }}</td>
                             <td>{{ $data->standard_uat_h_26_2 }}</td>
                             <td>{{ $data->standard_uat_h_26_3 }}</td>
-                            <td>{{ $data->standard_uat_h_36_3 }}</td>       
+                            <td>{{ $data->standard_uat_h_36_3 }}</td>
+                            
+                            
                     </tr>
                     @endforeach
+
+                    {!! $datas->links() !!}
                 </tbody>
             </table>
             

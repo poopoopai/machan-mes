@@ -113,7 +113,7 @@ class ResourceRepository
     
     public function data()
     {
-        return Resource::where('flag', 0)->orderBy('time', 'asc')->get();
+        return Resource::where('flag', 0)->get();
     }
 
     public function updateflag($data)
