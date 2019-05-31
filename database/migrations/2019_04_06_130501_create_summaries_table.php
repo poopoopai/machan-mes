@@ -41,10 +41,10 @@ class CreateSummariesTable extends Migration
             $table->time('processing_start_time')->nullable();
             $table->time('processing_completion_time')->nullable();
             $table->time('working_time')->nullable();
-            $table->unsignedInteger('roll_t')->default(0);
-            $table->unsignedInteger('second_t')->default(0);
+            $table->Integer('roll_t')->default(0);
+            $table->Integer('second_t')->default(0);
             $table->time('ct_processing_time')->nullable();
-            $table->unsignedInteger('actual_processing')->default(0);
+            $table->Integer('actual_processing')->default(0);
             $table->string('restart_count')->default(0);
             $table->string('restop_count')->default(0);
             $table->unsignedInteger('start_count')->default(0);

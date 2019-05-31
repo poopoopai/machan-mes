@@ -13,7 +13,7 @@ class SummaryRepository
         $count = Summary::with('resource')->whereRaw('id = (select max(`id`) from summaries)')->first(); //前一筆資料
        
         if($count == null){
-            $count = Summary::create(['resources_id' => 0 , 'description' => '']);
+            $count = Summary::create(['resources_id' => 0 , 'description' => '', 'processing_start_time'=>'00:00:00', 'processing_completion_time'=>'00:00:00']);
         }
         
         $count->id = $count->id + 1;
@@ -186,10 +186,8 @@ class SummaryRepository
     public function machineT($data,$status,$machine)
     {
         
-        $machinetime = Summary::where('machine_inputs_day',$status['machine_inputs_day']-1)->first();     
-        $secondtime = Summary::where('machine_completion_day',$status['machine_completion_day']-1)->first();
-        $completionday = Summary::where('machine_completion_day',$status['machine_inputs_day'])->first();
-        $machinetime2 = Summary::where('machine_completion',$status['machine_completion']-1)->first();
+        $machinetime = Summary::where('machine_inputs_day',$status['machine_inputs_day']-1)->where('resources_id','>',0)->first();     
+        $completionday = Summary::where('machine_completion_day',$status['machine_inputs_day'])->where('resources_id','>',0)->first();
         
         $machineT = 0;
         $secondT = 0;
@@ -218,39 +216,54 @@ class SummaryRepository
             }
         }
         
+      
+        $machintime = Summary::where('machine_completion',$status['machine_completion'])->where('resources_id','>',0)->first();
+        $machinetime2 = Summary::where('machine_completion',$status['machine_completion']-1)->where('resources_id','>',0)->first();//前
+        $secondtime = Summary::where('machine_completion_day',$status['machine_completion_day']-1)->where('resources_id','>',0)->first();
 
         if($data['status_id'] == 9){
-             
-            if($status->machine_completion_day >= 2){
-                if($completionday){
-                    if($machinetime2->processing_completion_time){
-                        $secondT = strtotime($status->processing_completion_time) - strtotime($machinetime2->processing_completion_time);
-                    }else{
-                        $secondT = strtotime($status->processing_start_time);
+            
+
+            if($status->machine_inputs_day >= 2){
+            
+                if($completionday== null){
+                   
+                    if($machinetime2 && $machintime){
+                       
+                        $secondT = strtotime($machintime->processing_completion_time) - strtotime($machinetime2->processing_completion_time);
+                    }  else{
+                      
+                        if($machintime == null){
+                           
+                            $secondT = strtotime($status->processing_completion_time) - strtotime($machinetime2->processing_completion_time);            
+                        } 
+                       
+                    } 
+
+                }  else{
+                    
+                    if($secondtime){
+                        $secondT = strtotime($completionday->processing_completion_time)- strtotime($secondtime->processing_completion_time);
+                    }  else{
+                        $secondT = strtotime($completionday->processing_completion_time);
                     }
-                } else{
-                    if($machinetime->processing_start_time){
-                        $secondT = strtotime($status->processing_completion_time) - strtotime($machinetime->processing_completion_time);
-                    }else{
-                        $secondT = strtotime($status->processing_start_time);
-                    }    
-                } 
+                }
             } else{ 
                 $secondT = 0;
             }     
-        }else{
+        } else{
             $secondT = 0;
         }
-        
+            
         $status->roll_t = $machineT;
         $status->second_t = $secondT;
-        
+      
         return $status;
     }
 
     public function refueling($status) //
     {
-   
+  
         $refueling = '00:00:00';
         $aggregate = '00:00:00';
  
@@ -400,14 +413,16 @@ class SummaryRepository
         $before = Summary::with('resource')->where('resources_id',$data['id']-1)->first();
        
             if( $before->resources_id == 0 || $before->resource->date != $data['date']  ){
-                (int)$status->time < (int)$time ? $worktime = '00:00:00' : $worktime = strtotime($status->time) - strtotime($time);
+                (int)$status->time < (int)$time ? $worktime = '0' : $worktime = strtotime($status->time) - strtotime($time);
             } else{
-                $before->time == "" ? $worktime = '00:00:00' : 
-                strtotime($status->time) - strtotime($before->time) < 0 ? $worktime = '00:00:00':
+                $before->time == "" ? $worktime = '0' : 
+                strtotime($status->time) - strtotime($before->time) < 0 ? $worktime = '0' :
                 $worktime =  strtotime($status->time) - strtotime($before->time);
             }
-  
-            $worktime = date("H:i:s",$worktime-8*60*60);
+            
+    
+            $worktime = date("H:i:s",$worktime-8*3600);//
+            
             $status->working_time = $worktime;
             return $status;
         
@@ -511,9 +526,9 @@ class SummaryRepository
                         if($status->restart_count != ""){
                             $breaktime = '0';
                         }else{
-                            $currentoff =  Resource::where('id','<=',$data->id)->where('code',4)->count();
-                            $SameDateID =  Resource::where('id','<=',$data->id)->where('date',$data['date'])->get(['id']);
-                            $Dtime = Summary::whereIn('resources_id',$SameDateID)->where('turn_off',$currentoff);
+                            $currentoff =  Resource::where('id','<=', $data->id)->where('code', 4)->count();
+                            $SameDateID =  Resource::where('id','<=', $data->id)->where('date', $data['date'])->get(['id']);
+                            $Dtime = Summary::whereIn('resources_id', $SameDateID)->where('turn_off', $currentoff);
                             if($Dtime->count()==0){
                                 $Dtime->time = '00:00:00';
                             }
@@ -601,24 +616,33 @@ class SummaryRepository
     }
     public function total($data,$status)
     {
+
+        // if($status->resources_id==9){
+        //     dd($data);
+        // }
         
     $beforeID = Summary::whereRaw('id = (select max(`id`) from summaries)')->first();
-    if($status->machine_completion_day || $beforeID->machine_completion_day){
+    
+    if($status || $beforeID){
 
     $completion = Summary::where('machine_completion_day', $status->machine_completion_day)->first(); //找前面一筆相同的 顯示完工時間
-        if($completion){
-    $sensro = Summary::where('sensro_inputs' , $status->machine_completion_day-1)->first(); //Q4-1 = R
+    
+       
+           
+    $sensro  = Summary::where('sensro_inputs' , $status->machine_completion_day-1)->first(); //Q4-1 = R
     $sensro2 = Summary::where('sensro_inputs' , $status->machine_completion_day-2)->first();//Q4-2 = R
-    $sensro3 = Summary::where('sensro_inputs' , $status->machine_completion_day-3)->first();//Q4-3 = R
+    
 
     $sum = $status->machine_completion_day - $status->machine_inputs_day; //Q-R
-    $sensros = Summary::where('sensro_inputs' , $status->machine_completion_day - ($sum-1))->first(); //Q4-(Q-R)-1 = R
+    $sensros  = Summary::where('sensro_inputs' , $status->machine_completion_day - ($sum-1))->first(); //Q4-(Q-R)-1 = R
     $sensros2 = Summary::where('sensro_inputs' , $status->machine_completion_day - ($sum-2))->first();//Q4-(Q-R)-2 = R
-    $sensros3 = Summary::where('sensro_inputs' , $status->machine_completion_day - ($sum-3))->first();//Q4-(Q-R)-3 = R
+    
         
        
                     if($status->machine_completion_day > $beforeID->machine_completion_day   && $status->machine_completion_day != 1){
+                        //  dd($status);
                         if($status->machine_inputs_day - $status->machine_completion_day > 0){
+                            // dd(213);
                                 if(strtotime($completion->processing_completion_time) - strtotime($sensro->processing_completion_time) > 18) {
                                     if($sensro = null ){//前面沒資料就不用相減了
                                         $total = strtotime($completion->processing_completion_time);
@@ -651,6 +675,9 @@ class SummaryRepository
                     }else{
                         $total = 0;
                     }
+                    // dd(4422);
+                    $sensro3  = Summary::where('sensro_inputs' , $status->machine_completion_day-3)->first();//Q4-3 = R
+                    $sensros3 = Summary::where('sensro_inputs' , $status->machine_completion_day - ($sum-3))->first();//Q4-(Q-R)-3 = R
         
                     if($status->machine_completion_day > $beforeID->machine_completion_day && $status->processing_completion_time != ''){
                         
@@ -675,17 +702,14 @@ class SummaryRepository
                         $CTtime = 0;
                     }
 
-        }else{
-            $total = 0;
-            $CTtime = 0;
-        }   
+
         
     }else{
         $total = 0;
         $CTtime = 0;
     }
    
-
+    dd(442);
         $status->total_processing_time = $total;
         $status->ct_processing_time = $CTtime;
 
@@ -707,11 +731,11 @@ class SummaryRepository
 
     public function actual($data,$status,$machine)
     {
-        
+       
         $actual = 0;
         if($machine == '捲料機1'){
             if($data['status_id'] == 9 ){
-                $actual = $status->second_t = 0;
+                $actual = $status->second_t;
             }else{
                 if($machine == '捲料機2'){
                     if($data['status_id'] == 10){
@@ -724,7 +748,6 @@ class SummaryRepository
                 }
             }
         }
-
         $status['actual_processing'] = $actual;
         return $status;
     }
