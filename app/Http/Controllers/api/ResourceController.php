@@ -30,6 +30,7 @@ class ResourceController extends Controller
         foreach($parme as $parmas) {
             // dd($parmas->id);
             $machine = $this->ResRepo->machine($parmas);
+           
              //   dd($machine); //string
             $count = $this->SumRepo->counts($parmas,$machine);
             //    dd($count); //collection
@@ -64,8 +65,6 @@ class ResourceController extends Controller
             $description->completion_status = $completion;
             
             
-           
-            
             $break = $this->SumRepo->break($parmas,$standard,$description);
             // dd($break);
             $worktime = $this->SumRepo->worktime($parmas,$break);
@@ -78,23 +77,22 @@ class ResourceController extends Controller
              
             $refue_time = $this->SumRepo->refue_time($parmas,$breaktime);
             // dd($refue_time);
-            $total = $this->SumRepo->total($parmas,$refue_time);
+           
             // dd($total);
-            $refueling = $this->SumRepo->refueling($total);
+            $refueling = $this->SumRepo->refueling($refue_time);
 
             // dd($total);
             $sum = $description->toArray();//把collection 轉陣列
-            $total->resources_id = $parmas->id;
+            
+            $refue_time->resources_id = $parmas->id;
+           
             $sum1= $refueling->toArray();
             
             //    dd($sum,$sum1);
            
             $status2 = array_merge($sum1,$sum);
-            //    dd($status2);
-            // dd($parmas);
-            // dd($status2);
-            echo $status2['resources_id'];
-            // dd($status2);
+            
+
             $show = $this->SumRepo->create($status2);
 
             $check = $this->SumRepo->check($parmas);
@@ -103,13 +101,15 @@ class ResourceController extends Controller
             }else{
                 dd($check);
             }
+            
       
-            // $show2 = $this->SumRepo->update($refueling);
-            // dd($show2);
-            // dd($parmas,$changerefueling);
-            //  return view('machineperformance',['data' => $show]);
+            $total = $this->SumRepo->total($show);
+       
+            $updat = $this->SumRepo->update($total->toArray());
+
+            
         }
-       return response()->json(['status' => $show]);
+       return response()->json(['status' => $updat]);
         
         
           

@@ -14,7 +14,8 @@ class ModifySummariesColumnAttribute extends Migration
     public function up()
     {
         Schema::table('summaries', function (Blueprint $table) {
-           
+            $table->Integer('total_processing_time')->change();
+            $table->Integer('ct_processing_time')->change();
         });
     }
 
@@ -26,9 +27,8 @@ class ModifySummariesColumnAttribute extends Migration
     public function down()
     {
         Schema::table('summaries', function (Blueprint $table) {
-            $table->dropColumn('roll_t');
-            $table->dropColumn('second_t');
-            $table->dropColumn('actual_processing');
+            $table->unsignedInteger('total_processing_time')->change();
+            $table->unsignedInteger('second_completion')->change();
         });
     }
 }
