@@ -130,10 +130,13 @@
                                     <a href="{{ route('year-calendar') }}" style="color: white;">機台行事曆</a>
                                 </li>
                                 <li>
+                                    <a href="{{ route('process-calendar') }}" style="color: white;">製程行事曆</a>
+                                </li>
+                                <li>
                                     <a href="{{ route('work-type') }}" style="color: white;">班別設定</a>
                                 </li>
                                 <li>
-                                    <a href="{{ route('break-time') }}" style="color: white;">休息時間</a>
+                                    <a href="{{ route('rest-time.index') }}" style="color: white;">休息時間</a>
                                 </li>
                                 <li>
                                     <a href="{{ route('machine-category.index') }}" style="color: white;">機台類別定義</a>

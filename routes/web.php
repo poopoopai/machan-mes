@@ -28,9 +28,9 @@ Route::group(['middleware' => ['auth']], function () {
 
     Route::get('/work-type', 'web\WorkTypeController@index')->name('work-type');
 
-
-
-
+    Route::resource('rest-time', 'RestTimeController')->except('show');
+    Route::put('/rest-time/{id}/setup/{setup_id}', 'RestTimeController@updateData')->name('update-data');
+    Route::delete('/rest-time/{id}/setup/{setup_id}', 'RestTimeController@deleteData')->name('delete-data');
 
 
 
@@ -38,7 +38,7 @@ Route::group(['middleware' => ['auth']], function () {
 
         Route::get('/home', 'HomeController@index')->name('home');
         
-        Route::get('/break-time', 'web\BreakTimeController@index')->name('break-time');
+        
         
        
         Route::get('/aps-processcode', 'web\ApsProcessCodeController@index')->name('aps-processcode');
@@ -74,12 +74,12 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('/personnel-management', 'web\PersonnelManagementController@edit')->name('edit-personnel-management');
     });
 
-    Route::group(['prefix' => 'calendar'], function () {
+   
         Route::get('/full-calendar', 'CalendarController@fullcalendar')->name('full-calendar');
         Route::get('/year-calendar', 'CalendarController@yearcalendar')->name('year-calendar');
         Route::get('/process-calendar', 'ProcessCalendarController@processcalendar')->name('process-calendar');
         Route::get('/adjust-process-calendar', 'ProcessCalendarController@showProcessCalendar')->name('show-process-calendar');
-    });
+
 
     Route::group(['prefix' => 'uptime'], function () {
         Route::get('/time-shift-definition', 'web\TimeShiftDefinitionController@index')->name('time-shift-definition');
