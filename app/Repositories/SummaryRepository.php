@@ -226,7 +226,7 @@ class SummaryRepository
 
             if($status->machine_inputs_day >= 2){
             
-                if($completionday== null){
+                if($completionday == null){
                    
                     if($machinetime2 && $machintime){
                        
@@ -646,13 +646,13 @@ class SummaryRepository
                                     
                                     
                                     if($sensro == null ){//前面沒資料就不用相減了
-                                        $total = strtotime($completion->processing_completion_time);
+                                        $total = 0;
                                     }else{
                                         $total = strtotime($completion->processing_completion_time) - strtotime($sensro->processing_start_time);
                                     }
                                 }else{
                                     if($sensro2 == null ){
-                                        $total = strtotime($completion->processing_completion_time);
+                                        $total = 0;
                                     }else{
                                         $total = strtotime($completion->processing_completion_time) - strtotime($sensro2->processing_start_time);
                                     }
@@ -660,15 +660,16 @@ class SummaryRepository
                         }else{          
                                 if(strtotime($completion->processing_completion_time) - strtotime($sensros->processing_start_time) > 18) {
                                     if($sensros ==null ){
-                                        $total = strtotime($completion->processing_completion_time);
+                                        $total = 0;
                                     }else{
                                         $total = strtotime($completion->processing_completion_time) - strtotime($sensros->processing_start_time);
                                     }
                                 }else{
                                     
                                     if($sensros2 == null ){
-                                        $total = strtotime($completion->processing_completion_time);
+                                        $total = 0;
                                     }else{
+
                                         $total = strtotime($completion->processing_completion_time) - strtotime($sensros2->processing_start_time);
                                     }
                                 }       
@@ -681,22 +682,26 @@ class SummaryRepository
                     
                     $sensro3  = Summary::where('machine_inputs_day' , $status->machine_completion_day-3)->where('resources_id','>',0)->first();//Q4-3 = R
                     $sensros3 = Summary::where('machine_inputs_day' , $status->machine_completion_day - $sum-3)->where('resources_id','>',0)->first();//Q4-(Q-R)-3 = R
-
                     
+                    //    if($status->id == 5){
+                    //        dd(123);
+                    //    }
+
                     if($status->machine_completion_day > $beforeID->machine_completion_day && $status->processing_completion_time != ""){
-                        
+                      
                         if($total > 18 && $total < 28){
                             $CTtime = $total;
                         }else{
+                           
                             if($status->machine_inputs_day > $status->machine_completion_day){
                                     if($sensro3 == null ){//前面沒資料就不用相減了
-                                        $CTtime = strtotime($completion->processing_completion_time);
+                                        $CTtime = 0;
                                     }else{
                                         $CTtime = strtotime($completion->processing_completion_time) - strtotime($sensro3->processing_start_time);
                                     } 
                             }else{
                                 if($sensros3 == null){//前面沒資料就不用相減了
-                                    $CTtime = strtotime($completion->processing_completion_time);
+                                    $CTtime = 0;
                                 }else{
                                     $CTtime = strtotime($completion->processing_completion_time) - strtotime($sensros3->processing_start_time);
                                 }         
@@ -706,9 +711,7 @@ class SummaryRepository
                         $CTtime = 0;
                     }
 
-if($status->resources_id == 7){
-    dd($total);
-}
+                    dd(2454);
         $status->total_processing_time = $total;
         $status->ct_processing_time = $CTtime;
         return $status;
