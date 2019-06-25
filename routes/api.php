@@ -20,3 +20,5 @@ Route::get('/calendar-data', 'CalendarController@getCalnedar')->name('getcalenda
 Route::post('/calendar-data', 'CalendarController@calendar')->name('calendar-data');
 Route::post('/resource', 'api\ResourceController@show');
 Route::get('/rest-data', 'RestTimeController@getRestTime')->name('rest-data');
+Route::get('/work-type-data', 'WorkTypeController@getWorkTypeData')->name('work-type-data');
+Route::get('/rest-group', 'WorkTypeController@getRestGroup')->name('rest-group');

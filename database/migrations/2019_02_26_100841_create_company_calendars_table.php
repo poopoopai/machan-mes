@@ -16,8 +16,7 @@ class CreateCompanyCalendarsTable extends Migration
         Schema::create('company_calendars', function (Blueprint $table) {
             $table->increments('id');
             $table->date('date');
-            $table->time('start')->nullable();
-            $table->time('end')->nullable();
+            $table->unsignedInteger('work_type_id')->nullable();
             $table->unsignedInteger('status');
             $table->timestamps();
         });

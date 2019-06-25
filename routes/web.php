@@ -25,13 +25,11 @@ Route::group(['middleware' => ['auth']], function () {
     Route::resource('machine-category', 'MachineCategoryController');
     Route::get('machineperformance', 'ResourceController@show')->name('show_machine');
 
-
-    Route::get('/work-type', 'web\WorkTypeController@index')->name('work-type');
-
     Route::resource('rest-time', 'RestTimeController')->except('show');
     Route::put('/rest-time/{id}/setup/{setup_id}', 'RestTimeController@updateData')->name('update-data');
     Route::delete('/rest-time/{id}/setup/{setup_id}', 'RestTimeController@deleteData')->name('delete-data');
 
+    Route::resource('work-type', 'WorkTypeController')->except('show');
 
 
 
@@ -59,7 +57,7 @@ Route::group(['middleware' => ['auth']], function () {
         
 
     Route::group(['prefix' => 'edit'], function () {
-        Route::get('/work-type', 'web\WorkTypeController@edit')->name('edit-work-type');
+        
         Route::get('/break-time', 'web\BreakTimeController@edit')->name('edit-break-time');
         Route::get('/machine-definition', 'web\MachineDefinitionController@edit')->name('edit-machine-definition');
         Route::get('/aps-processcode', 'web\ApsProcessCodeController@edit')->name('edit-aps-processcode'); //前url 後表單

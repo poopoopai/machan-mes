@@ -133,7 +133,7 @@
                                     <a href="{{ route('process-calendar') }}" style="color: white;">製程行事曆</a>
                                 </li>
                                 <li>
-                                    <a href="{{ route('work-type') }}" style="color: white;">班別設定</a>
+                                    <a href="{{ route('work-type.index') }}" style="color: white;">班別設定</a>
                                 </li>
                                 <li>
                                     <a href="{{ route('rest-time.index') }}" style="color: white;">休息時間</a>

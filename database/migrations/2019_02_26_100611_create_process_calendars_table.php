@@ -17,8 +17,7 @@ class CreateProcessCalendarsTable extends Migration
             $table->increments('id');
             $table->unsignedInteger('resource_id');
             $table->date('date');
-            $table->time('start')->nullable();
-            $table->time('end')->nullable();
+            $table->unsignedInteger('work_type_id')->nullable();
             $table->unsignedInteger('status');
             $table->timestamps();
         });

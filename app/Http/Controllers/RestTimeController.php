@@ -7,6 +7,8 @@ use App\Repositories\RestTimeRepository;
 
 class RestTimeController extends Controller
 {
+    protected $restRepo;
+
     public function __construct(RestTimeRepository $restRepo)
     {
         $this->restRepo = $restRepo;
@@ -40,7 +42,6 @@ class RestTimeController extends Controller
     {
         $data = request()->only('rest_name', 'work_type');
         $this->restRepo->update($data, $id);
-        dd(123);
         return back();
     }
 
