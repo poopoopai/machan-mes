@@ -90,7 +90,7 @@
                     <div class="panel-heading">資料編輯</div>
                     <div class="panel-body">
                     <form class="form-horizontal" action="{{ route('machine-category.store')}}" method="POST">
-                        {{ csrf_field() }}
+                      @csrf
                             <div class="form-group">
                                 <label class="col-md-2 control-label">機台類別</label>
                                 <div class="col-md-10">
@@ -102,6 +102,7 @@
                                 <label class="col-md-2 control-label">單機 ／ 多機</label>
                                 <div class="col-md-10">
                                         <select name="type"class="form-control" required >
+                                            <option value=""></option>
                                             <option value="SS">單工序單機</option>
                                             <option value="SM">單工序多機</option>
                                             <option value="MS">多工序單機</option>
@@ -114,6 +115,7 @@
                                 <label class="col-md-2 control-label">自動化</label>
                                 <div class="col-md-10">
                                         <select name="auto" class="form-control" required >
+                                            <option value=""></option>
                                             <option value="FA">無人全自動化</option>
                                             <option value="HA">人機同步全自動化</option>
                                             <option value="SH">人機同步半自動化</option>
@@ -128,6 +130,7 @@
                                 <label class="col-md-2 control-label">人機介面</label>
                                 <div class="col-md-10">
                                     <select name="interface"class="form-control" required>
+                                            <option value=""></option>
                                             <option value="可離線生產">可離線生產</option>
                                             <option value="人機同步生產">人機同步生產</option>
                                             <option value="遠端遙控生產">遠端遙控生產</option>
@@ -141,6 +144,7 @@
                                 <label class="col-md-2 control-label">休息時間可生產</label>
                                     <div class="col-md-10">
                                         <select  name="break_time"class="form-control" required >
+                                            <option value=""></option>
                                             <option value="是">是</option>
                                             <option value="否">否</option>
                                             <option value="部分">部分</option>

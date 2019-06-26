@@ -95,7 +95,7 @@
                             <div class="form-group">
                                 <label class="col-md-2 control-label">機台類別</label>
                                 <div class="col-md-10">
-                                <input  name="machine_name"type="text" value="{{$data->machine_name}}" class="clearable form-control" required>
+                                <input  name="machine_name" type="text" value="{{$data->machine_name}}" class="clearable form-control" required>
                                 </div>
                             </div>
                             <hr>
@@ -131,12 +131,12 @@
                                 <label class="col-md-2 control-label">人機介面</label>
                                 <div class="col-md-10">
                                     <select name="interface"class="form-control" required>
-                                            <option value=""></option>
-                                            <option value="A"{{$data->interface=="A"?'selected':""}}>可離線生產</option>
-                                            <option value="B"{{$data->interface=="B"?'selected':""}}>人機同步生產</option>
-                                            <option value="C"{{$data->interface=="C"?'selected':""}}>遠端遙控生產</option>
-                                            <option value="D"{{$data->interface=="D"?'selected':""}}>無人化自動生產</option>
-                                            <option value="E"{{$data->interface=="E"?'selected':""}}>人機手動</option>
+                                            
+                                            <option value="可離線生產"{{$data->interface=="可離線生產"?'selected':""}}>可離線生產</option>
+                                            <option value="人機同步生產"{{$data->interface=="人機同步生產"?'selected':""}}>人機同步生產</option>
+                                            <option value="遠端遙控生產"{{$data->interface=="遠端遙控生產"?'selected':""}}>遠端遙控生產</option>
+                                            <option value="無人化自動生產"{{$data->interface=="無人化自動生產"?'selected':""}}>無人化自動生產</option>
+                                            <option value="人機手動"{{$data->interface=="人機手動"?'selected':""}}>人機手動</option>
                                     </select>
                                 </div>
                             </div>
@@ -204,7 +204,7 @@
                                     <label class="col-md-3 ">
                                          <span class="text">自動換模&nbsp;
                                             <input type="hidden" name="auto_change" value="0">
-                                            <input type="checkbox" name="auto_hange" value="1" class="checkbox" {{$data->auto_change=='1'?'checked':'0'}}>
+                                            <input type="checkbox" name="auto_change" value="1" class="checkbox" {{$data->auto_change=='1'?'checked':'0'}}>
                                                 <span class="btn-box">
                                                     <span class="btn"></span>  
                                                 </span> 
@@ -237,7 +237,7 @@
                             <div style="text-align:center">
                              @csrf
                                 <button type="submit" id="sendBtn" class="btn btn-success btn-lg" style="width:45%">確認</button>
-                                <button type="reset" onclick="" class="btn btn-secondary btn-lg" style="width:45%">清除資料</button>
+                                <a class="btn btn-secondary btn-lg" href="{{ route('machine-category.index') }}" style="width:45%">返回</a>
                             </div>
                         </form>
                     </div>

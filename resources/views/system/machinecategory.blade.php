@@ -86,10 +86,10 @@
                 </thead>
                 <tbody>
                     <tr>
-                        @foreach($machineinfo as $key=>$data)
+                        @foreach($datas as $key => $data)
                         <tr>     
                             <th scope="row">
-                                 {{ ++$key + ($machineinfo->currentPage() - 1) * 10 }}
+                                 {{ ++$key + ($datas->currentPage() - 1) * 10 }}
                             </th>
                             <td>{{ $data->machine_id }}</td>
                             <td>{{ $data->machine_name }}</td>

@@ -17,10 +17,9 @@ class MachineCategoryController extends Controller
 
     public function index()
     {
-        
-        $data = $this->machineRepo->index();
-        //  dd($data);
-        return view('system/machinecategory', ['machineinfo' => $data]);
+        $data = $this->machineRepo->page();
+       
+        return view('system/machinecategory', ['datas' => $data]);
     }
 
     public function create()
@@ -30,55 +29,40 @@ class MachineCategoryController extends Controller
 
     public function store(Request $request)
     {
-    //  dd($request);
-        $data = request()->only(
-            'machine_name','type', 'auto', 'auto_up', 'auto_down','arrange',
-            'auto_arrange','auto_change','auto_pay','auto_finish','interface','break_time'
-            );    
-        $find = $this->machineRepo->identify($data);
         
-        MachineCategory::create($find);
+        $data = $this->machineRepo->identify($request->all());
 
+        $result = $this->machineRepo->create($data);
+      
         return redirect('machine-category');
-    }
-
-    public function show($id)
-    {
-
     }
 
     public function edit($id)
     {
         
-       $data = MachineCategory::find($id);
+       $data = $this->machineRepo->find($id);
 
          if (!$data) 
          {
              return back();
          }
-        return view('system/edit/editmachinecategory',['data'=>$data]);
+        return view('system/edit/editmachinecategory',[ 'data' => $data]);
     }
 
     public function update(Request $request, $id)
     {
-
-        $data = request()->only(
-        'machine_name','type', 'auto', 'auto_up', 'auto_down','arrange',
-        'auto_arrange','auto_change','auto_pay','auto_finish','interface','break_time'
-        );
-      
-        $interface = $this->machineRepo->interface($data);
-        $find = $this->machineRepo->identify($interface);
+ 
+        $find = $this->machineRepo->identify($request->all());
        
-        MachineCategory::find($id)->update($find);
+        $this->machineRepo->find($id)->update($find);
 
-        return redirect()->route('machine-category.index');
+        return redirect('machine-category');
     }
 
     public function destroy($id)
     {
-        $data = MachineCategory::destroy($id);
+        $this->machineRepo->destroy($id);
 
-        return redirect()->route('machine-category.index');
+        return redirect('machine-category');
     }
 }

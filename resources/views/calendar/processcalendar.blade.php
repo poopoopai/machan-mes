@@ -38,12 +38,12 @@
 @section('content')
 <div id="page-wrapper">
     <div class="container-fluid">
-        <h2>製程行事曆</h2>
+        <h2>機台行事曆</h2>
         <ol class="breadcrumb">
             <img src="{{ asset('img/u12.png') }}">
             <span class="space-item">系統管理</span>
             <span class="space-item">></span>
-            <span class="space-item">製程行事曆<span>
+            <span class="space-item">機台行事曆<span>
         </ol>
         <div class="row">
             <div class="col-md-12">
@@ -61,7 +61,7 @@
                             </div>
                             <hr>
                             <div class="form-group">
-                                <label class="col-md-2 control-label">資源中心</label>
+                                <label class="col-md-2 control-label">機台</label>
                                 <div class="col-md-10">
                                     <select class="form-control" id="sel2" name="id" required>  
                                     </select>
@@ -87,42 +87,9 @@
     </div>
 </div>
 <script>
-    const getOrganization = () => {
-        axios.get('{{ route('getorganization') }}')
-            .then(({ data }) => {
-                data.forEach(data => {
-                    $('#sel1').append(`
-                        <option value="${data.type}">${data.name}</option>
-                    `);
-                });
-            });
-    }
+   
 
-    const getResource = () => {
-        axios.get('{{ route('getresource') }}', {
-            params: {
-                value: $('#sel1').val(),
-            }
-        })
-        .then(({ data }) => {
-            $('#sel2').empty();
-            $('#sel2').append(`
-                <option disabled selected value="">--- 請選擇 ---</option>
-            `)
-            data.forEach(data => {
-                $('#sel2').append(`
-                    <option value="${data.id}">${data.resource_name}</option>
-                `);
-            })
-        });
-    }
-
-    const resetOption = () => {
-        $('#sel2').empty();
-        $('#sel2').append(`
-            <option disabled selected value="">--- 請選擇 ---</option>
-        `)
-    }
-    getOrganization();
+    
+  
 </script>
 @endsection

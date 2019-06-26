@@ -6,12 +6,20 @@ use App\Entities\MachineCategory;
 
 class MachineCategoryRepository
 {
-    public function index()
+    public function page()
     {
-        return  MachineCategory::select('id', 'machine_id', 'machine_name', 'type', 'auto', 'interface')->paginate(100);
+        return  MachineCategory::select('id','machine_id', 'machine_name', 'type', 'auto', 'interface')->paginate(100);
     }
 
-    public function update($id, array $data)
+    public function destroy($id)
+    {
+        return MachineCategory::destroy($id);
+    }
+    public function create($data)
+    {
+        return MachineCategory::create($data);
+    }
+    public function update($id , array $data)
     {
         $Machine = MachineCategory::find($id);
 
@@ -20,79 +28,62 @@ class MachineCategoryRepository
         }
         return false;
     }
-    public function interface($data)
+    public function find($id)
     {
-        switch ($data['interface'])
-        {
-            case 'A': $data['interface']="可離線生產";
-            break;
-            case 'B': $data['interface']="人機同步生產";
-            break;
-            case 'C': $data['interface']="遠端遙控生產";
-            break;
-            case 'D': $data['interface']="無人化自動生產";
-            break;
-            case 'E': $data['interface']="人機手動";
-            break;     
-            default:
-            return false;    
-        }
-        // dd($data);
-           return $data;
+        return  MachineCategory::find($id);
     }
+    
     public function identify($data){
-
-        //  dd($data);
-       
-        $data['machine_id'] = $data['auto'];
+  
+            $data['machine_id'] = $data['auto'];
         
-        if(($data['auto_up']&&$data['auto_down'])==1)
+        if(($data['auto_up'] && $data['auto_down'])==1)
         {
-            $change='L';  
+            $change ='L';  
             $data['machine_id'] = $data['machine_id'].$change; 
         }
-        elseif(($data['auto_up']&&$data['auto_down'])==0)
+        elseif(($data['auto_up'] && $data['auto_down'])==0)
         {
-            $change='U';  
+            $change ='U';  
             $data['machine_id'] = $data['machine_id'].$change;
         }
    
         switch ($data['type'])
         {
             case 'SS': 
-            $change='S';
-            $data['machine_id'] = $data['machine_id'].$change;
-            break;
+                $change ='S';
+                $data['machine_id'] = $data['machine_id'].$change;
+                break;
             case 'SM':   
-            $change='M';
-            $data['machine_id'] = $data['machine_id'].$change;
-            break;
+                $change ='M';
+                $data['machine_id'] = $data['machine_id'].$change;
+                break;
             case 'MS':  
-            $change='S';
-            $data['machine_id'] = $data['machine_id'].$change;
-            break;
+                $change ='S';
+                $data['machine_id'] = $data['machine_id'].$change;
+                break;
             case 'MM':   
-            $change='M';
-            $data['machine_id'] = $data['machine_id'].$change;
-            break; 
+                $change ='M';
+                $data['machine_id'] = $data['machine_id'].$change;
+                break; 
             default:
-            return false;    
+                return false;    
         }
-        if(($data['arrange']||$data['auto_arrange']||$data['auto_change']||$data['auto_pay']||$data['auto_finish'])==1)
+        if(($data['arrange'] || $data['auto_arrange'] || $data['auto_change'] || $data['auto_pay'] || $data['auto_finish']) == 1)
         {
             $data['machine_id'] = $data['machine_id'] .'_';
 
-            $arrange='p';
-            $auto_arrange='s';
-            $auto_change='t';
-            $auto_pay='f';
-            $auto_finish='d';
-           
-            $data['machine_id'] =  ($data['arrange']=="1")? $data['machine_id'].$arrange:$data['machine_id'];
-            $data['machine_id'] =  ($data['auto_arrange']=="1")? $data['machine_id'].$auto_arrange:$data['machine_id'];
-            $data['machine_id'] =  ($data['auto_change']=="1")? $data['machine_id'].$auto_change:$data['machine_id'];
-            $data['machine_id'] =  ($data['auto_pay']=="1")? $data['machine_id'].$auto_pay:$data['machine_id'];
-            $data['machine_id'] =  ($data['auto_finish']=="1")? $data['machine_id'].$auto_finish:$data['machine_id'];
+            $arrange ='p';
+            $auto_arrange ='s';
+            $auto_change ='t';
+            $auto_pay ='f';
+            $auto_finish ='d';
+          
+            $data['machine_id'] =  ($data['arrange'] == "1") ? $data['machine_id'].$arrange : $data['machine_id'];
+            $data['machine_id'] =  ($data['auto_arrange'] == "1") ? $data['machine_id'].$auto_arrange : $data['machine_id'];
+            $data['machine_id'] =  ($data['auto_change'] == "1") ? $data['machine_id'].$auto_change : $data['machine_id'];
+            $data['machine_id'] =  ($data['auto_pay'] == "1") ? $data['machine_id'].$auto_pay : $data['machine_id'];
+            $data['machine_id'] =  ($data['auto_finish'] == "1") ? $data['machine_id'].$auto_finish:$data['machine_id'];
             
         }
         

@@ -22,7 +22,7 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('/machine-definition', 'web\MachineDefinitionController@index')->name('machine-definition');
 
     Route::get('/resource', 'ResourceController@index')->name('resource');
-    Route::resource('machine-category', 'MachineCategoryController');
+    Route::resource('machine-category', 'MachineCategoryController')->except('show');
     Route::get('machineperformance', 'ResourceController@show')->name('show_machine');
 
     Route::resource('rest-time', 'RestTimeController')->except('show');
