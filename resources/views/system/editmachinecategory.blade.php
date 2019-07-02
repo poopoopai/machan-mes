@@ -142,6 +142,19 @@
                             </div>
                             <hr>
                             <div class="form-group">
+                                    <label class="col-md-2 control-label">數據整合方案</label>
+                                        <div class="col-md-10">
+                                            <select  name="data_integration"class="form-control" required >
+                                                <option value=""></option>
+                                                <option value="SMB"{{$data->data_integration=="SMB"?'selected':""}}>SMB</option>
+                                                <option value="影像辨識"{{$data->data_integration=="影像辨識"?'selected':""}}>影像辨識</option>
+                                                <option value="自行開發"{{$data->data_integration=="自行開發"?'selected':""}}>自行開發</option>
+                                                <option value="廠商提供數據再分析整合"{{$data->data_integration=="廠商提供數據再分析整合"?'selected':""}}>廠商提供數據再分析整合</option>
+                                            </select>
+                                        </div>
+                                </div>
+                            <hr>
+                            <div class="form-group">
                                 <label class="col-md-2 control-label">休息時間可生產</label>
                                     <div class="col-md-10">
                                         <select  name="break_time"class="form-control" required >
@@ -153,6 +166,26 @@
                                         </select>
                                     </div>
                             </div>
+
+                            <hr>
+                            <div class="form-group">
+                                    <label class="col-md-2 control-label">機台類別</label>
+                                        <div class="col-md-10">
+                                            <select  name="machine_type"class="form-control" required >
+                                                <option value=""></option>
+                                                <option value="L"{{$data->machine_type=="L"?'selected':""}}>雷射</option>
+                                                <option value="N"{{$data->machine_type=="N"?'selected':""}}>NCT</option>
+                                                <option value="S"{{$data->machine_type=="S"?'selected':""}}>P1</option>
+                                                <option value="P"{{$data->machine_type=="P"?'selected':""}}>沖床</option>
+                                                <option value="B"{{$data->machine_type=="B"?'selected':""}}>拆床</option>
+                                                <option value="W"{{$data->machine_type=="W"?'selected':""}}>點焊</option>
+                                                <option value="R"{{$data->machine_type=="R"?'selected':""}}>捲料</option>
+                                                <option value="M"{{$data->machine_type=="M"?'selected':""}}>複合機台</option>
+                                                <option value="C"{{$data->machine_type=="C"?'selected':""}}>塗裝</option>
+                                                <option value="A"{{$data->machine_type=="A"?'selected':""}}>組裝</option>
+                                            </select>
+                                        </div>
+                                </div>
                             <hr>
                              <div class="form-group">
                                 <label class="col-md-2 control-label">休息時間可生產</label>

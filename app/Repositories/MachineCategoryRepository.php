@@ -15,10 +15,12 @@ class MachineCategoryRepository
     {
         return MachineCategory::destroy($id);
     }
+
     public function create($data)
     {
         return MachineCategory::create($data);
     }
+
     public function update($id , array $data)
     {
         $Machine = MachineCategory::find($id);
@@ -28,11 +30,16 @@ class MachineCategoryRepository
         }
         return false;
     }
+
     public function find($id)
     {
         return  MachineCategory::find($id);
     }
-    
+
+    public function getAll()
+    {
+        return  MachineCategory::get();
+    }
     public function identify($data){
   
             $data['machine_id'] = $data['auto'];

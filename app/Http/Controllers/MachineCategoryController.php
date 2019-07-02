@@ -29,7 +29,6 @@ class MachineCategoryController extends Controller
 
     public function store(Request $request)
     {
-        
         $data = $this->machineRepo->identify($request->all());
 
         $result = $this->machineRepo->create($data);
@@ -46,12 +45,12 @@ class MachineCategoryController extends Controller
          {
              return back();
          }
-        return view('system/edit/editmachinecategory',[ 'data' => $data]);
+        return view('system/editmachinecategory',[ 'data' => $data]);
     }
 
     public function update(Request $request, $id)
     {
- 
+    
         $find = $this->machineRepo->identify($request->all());
        
         $this->machineRepo->find($id)->update($find);
@@ -64,5 +63,11 @@ class MachineCategoryController extends Controller
         $this->machineRepo->destroy($id);
 
         return redirect('machine-category');
+    }
+
+    public function getMachineId()
+    {
+        $data = $this->machineRepo->getAll();
+        return response()->json($data);
     }
 }

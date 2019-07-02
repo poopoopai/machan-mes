@@ -19,8 +19,6 @@ Route::get('/test', 'ResourceController@test');
 Route::group(['middleware' => ['auth']], function () {
 
 
-    Route::get('/machine-definition', 'web\MachineDefinitionController@index')->name('machine-definition');
-
     Route::get('/resource', 'ResourceController@index')->name('resource');
     Route::resource('machine-category', 'MachineCategoryController')->except('show');
     Route::get('machineperformance', 'ResourceController@show')->name('show_machine');
@@ -30,7 +28,7 @@ Route::group(['middleware' => ['auth']], function () {
     Route::delete('/rest-time/{id}/setup/{setup_id}', 'RestTimeController@deleteData')->name('delete-data');
 
     Route::resource('work-type', 'WorkTypeController')->except('show');
-
+    Route::resource('machine-definition', 'MachineDefinitionController');
 
 
 
@@ -59,7 +57,6 @@ Route::group(['middleware' => ['auth']], function () {
     Route::group(['prefix' => 'edit'], function () {
         
         Route::get('/break-time', 'web\BreakTimeController@edit')->name('edit-break-time');
-        Route::get('/machine-definition', 'web\MachineDefinitionController@edit')->name('edit-machine-definition');
         Route::get('/aps-processcode', 'web\ApsProcessCodeController@edit')->name('edit-aps-processcode'); //前url 後表單
         Route::get('/process-routing', 'web\ProcessRoutingController@edit')->name('edit-process-routing');
         Route::get('/exclusion-reason', 'web\ExclusionReasonController@edit')->name('edit-exclusion-reason');

@@ -153,6 +153,38 @@
                                     </div>
                             </div>
                             <hr>
+                            <div class="form-group">
+                                <label class="col-md-2 control-label">數據整合方案</label>
+                                    <div class="col-md-10">
+                                        <select  name="data_integration"class="form-control" required >
+                                            <option value=""></option>
+                                            <option value="SMB">SMB</option>
+                                            <option value="影像辨識">影像辨識</option>
+                                            <option value="自行開發">自行開發</option>
+                                            <option value="廠商提供數據再分析整合">廠商提供數據再分析整合</option>
+                                        </select>
+                                    </div>
+                            </div>
+                            <hr>
+                            <div class="form-group">
+                                <label class="col-md-2 control-label">機台類別</label>
+                                    <div class="col-md-10">
+                                        <select  name="machine_type"class="form-control" required >
+                                            <option value=""></option>
+                                            <option value="L">雷射</option>
+                                            <option value="N">NCT</option>
+                                            <option value="S">P1</option>
+                                            <option value="P">沖床</option>
+                                            <option value="B">拆床</option>
+                                            <option value="W">點焊</option>
+                                            <option value="R">捲料</option>
+                                            <option value="M">複合機台</option>
+                                            <option value="C">塗裝</option>
+                                            <option value="A">組裝</option>
+                                        </select>
+                                    </div>
+                            </div>
+                            <hr>
                              <div class="form-group">
                                 <label class="col-md-2 control-label">休息時間可生產</label>
                                 <div class="col-md-10">

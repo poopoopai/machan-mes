@@ -53,34 +53,34 @@
                 <div class="panel panel-default">
                     <div class="panel-heading">資料編輯</div>
                     <div class="panel-body">
-                        <form class="form-horizontal">
+                    <form class="form-horizontal" action="{{ route('machine-definition.store') }}" method="POST">
+                        @csrf
                             <div class="form-group">
                                 <label class="col-md-2 control-label">機台名稱</label>
                                 <div class="col-md-10">
-                                    <input class="clearable form-control" required>
+                                    <input name="" class="clearable form-control" required>
                                 </div>
                             </div>
                             <hr>
                             <div class="form-group">
                                 <label class="col-md-2 control-label">機台類別</label>
                                 <div class="col-md-10">
-                                    <select class="form-control" required>
-                                        <option value="">全自動化上下料單機</option>
-                                        <option value="">全自動化手動上下料單機</option>
-                                        <option value="">半自動化手動上下料單機</option>    
-                                        <option value="">全自動化給料多機</option>  
-                                    </select>
+                                   
+                                        <select name="machine_name" class="form-control" id="machine-name"   required>
+                                                <option disabled selected value="">--- 請選擇機台類型 ---</option>
+                                        </select>
                                 </div>
                             </div>
                             <hr>
                             <div class="form-group">
                                 <label class="col-md-2 control-label">製程別</label>
                                 <div class="col-md-10">
-                                    <select class="form-control" required>
-                                        <option value="">一群雷射</option>
-                                        <option value="">一群NCT</option>
-                                        <option value="">五群NCT</option>    
-                                        <option value="">五群P1</option>  
+                                    <select name="" class="form-control" required>
+                                        <option value=""></option>
+                                        <option value="1">一群雷射</option>
+                                        <option value="2">一群NCT</option>
+                                        <option value="3">五群NCT</option>    
+                                        <option value="4">五群P1</option>  
                                     </select>
                                 </div>
                             </div>
@@ -88,12 +88,14 @@
                             <div class="form-group">
                                 <label class="col-md-2 control-label">班別</label>
                                 <div class="col-md-10">
-                                    <select class="form-control" required>
-                                        <option value="">正常班 _ 標準</option>
-                                        <option value="">正常班 _ 加班3小時</option>
-                                        <option value="">正常班 _ 加班3.5小時</option>
-                                        <option value="">中班 _ 標準</option>
-                                        <option value="">晚班 _ 標準</option> 
+                                    <select name="work_type" class="form-control" id="work-type" onchange="getRestId()" required>
+                                        <option disabled selected value="">--- 請選擇班別類型 ---</option>
+                                        <option value="正常班">正常班</option>
+                                        <option value="早班">早班</option>
+                                        <option value="中班">中班</option>
+                                        <option value="晚班">晚班</option>
+                                        <option value="大夜班">大夜班</option>
+                                        <option value="混合型">混合型</option>
                                     </select>
                                 </div>
                             </div>
@@ -101,31 +103,15 @@
                             <div class="form-group">
                                     <label class="col-md-2 control-label">標準換線(分)</label>
                                     <div class="col-md-10">
-                                        <input class="clearable form-control" required>
+                                        <input name="" class="clearable form-control" required>
                                     </div>
                                 </div>
                             <hr>
                             <div class="form-group">
                                 <label class="col-md-2 control-label">休息類別</label>
-                                <div class="col-md-3">
-                                    <select class="form-control" required>
-                                        <option value="">正常班之休息時段</option>
-                                        <option value="">中班之休息時段</option>
-                                        <option value="">晚班之休息時段</option>      
-                                     </select>
-                                </div>
-                                <div class="col-md-4">
-                                    <select class="form-control" required>
-                                        <option value="">正常班之休息時段</option>
-                                        <option value="">中班之休息時段</option>
-                                        <option value="">晚班之休息時段</option>      
-                                    </select>
-                                </div>
-                                <div class="col-md-3">
-                                    <select class="form-control" required>
-                                        <option value="">正常班之休息時段</option>
-                                        <option value="">中班之休息時段</option>
-                                        <option value="">晚班之休息時段</option>    
+                                <div class="col-md-10">
+                                    <select name="rest_id" class="form-control"  id="rest-id" required>
+                                        <option disabled selected value="">--- 請選擇 ---</option>
                                     </select>
                                 </div>
                             </div>
@@ -133,9 +119,10 @@
                             <div class="form-group">
                                 <label class="col-md-2 control-label">適用OEE</label>
                                 <div class="col-md-10">
-                                    <select class="form-control" required>
-                                        <option value="">雷射專用</option>
-                                        <option value="">P1&NCT專用</option>   
+                                    <select name="" class="form-control" required>
+                                        <option value=""></option>
+                                        <option value="3">雷射專用</option>
+                                        <option value="4">P1&NCT專用</option>   
                                 </select>
                                 </div>
                             </div>
@@ -151,4 +138,44 @@
         </div>
     </div>
 </div>
+
+<script>
+    if ('{{ session('message') }}') {
+        alert('{{ session('message') }}');
+    }
+    const getRestId = () => {
+        axios.get('{{ route('rest-group') }}', {
+            params: {
+                value: $('#work-type').val()
+            }
+        })
+        .then(({ data }) => {
+            $('#rest-id').empty();
+            $('#rest-id').append(`
+                <option disabled selected value="">--- 請選擇 ---</option>
+            `)
+            data.forEach(data => {
+                $('#rest-id').append(`
+                    <option value="${data.id}">${data.rest_name}</option>
+                `);
+            })
+        });
+    }
+   
+    const getMachineId = () => {
+        
+            axios.get('{{ route('machine-data') }}', {
+            })
+            .then(({ data }) => {
+           
+                data.forEach(data => {
+                    $('#machine-name').append(`
+                        <option value="${data.machine_id}"> ${data.machine_name}</option>
+                    `);
+                })
+            });  
+    }
+    getMachineId();
+    
+</script>
 @endsection

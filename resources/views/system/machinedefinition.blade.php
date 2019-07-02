@@ -64,7 +64,9 @@
         <div class="breadcrumb-custom">
             <span>資料列表</span>
             <div style="float:right; margin-top:-7px">
+            <a href="{{route('machine-definition.create')}}">
                 <button class="btn btn-success">新增</button>
+            </a>
             </div> 
         </div>
         <div class="total-data">載入筆數 | 共 5 筆</div>
@@ -81,65 +83,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        <th scope="row">1</th>
-                        <td>1011L01</td>
-                        <td>Otto</td>
-                        <td>@mdo</td>
-                        <td>
-                            <a  href="{{ route('edit-machine-definition') }}">
-                                <button class="btn btn-primary" >
-                                 編輯
-                                </button>
-                            </a>
-                            &nbsp
-                            <button class="btn btn-danger">刪除</button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <th scope="row">2</th>
-                        <td>1011L01</td>
-                        <td>Thornton</td>
-                        <td>@fat</td>
-                        <td>
-                            <button class="btn btn-primary">編輯</button>
-                            &nbsp
-                            <button class="btn btn-danger">刪除</button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <th scope="row">3</th>
-                        <td>1011L01</td>
-                        <td>the Bird</td>
-                        <td>@twitter</td>
-                        <td>
-                            <button class="btn btn-primary">編輯</button>
-                            &nbsp
-                            <button class="btn btn-danger">刪除</button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <th scope="row">4</th>
-                        <td>1011L01</td>
-                        <td>the Bird</td>
-                        <td>@twitter</td>
-                        <td>
-                            <button class="btn btn-primary" >編輯</button>
-                            &nbsp
-                            <button class="btn btn-danger">刪除</button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <th scope="row">5</th>
-                        <td>1011L01</td>
-                        <td>the Bird</td>
-                        <td>@twitter</td>
-                        <td>
-                            <button class="btn btn-primary">編輯</button>
-                            &nbsp
-                            <button class="btn btn-danger">刪除</button>
-                        </td>
-                    </tr>
+                   
                 </tbody>
             </table>
     </div>
