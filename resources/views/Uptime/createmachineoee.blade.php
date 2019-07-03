@@ -39,12 +39,12 @@
 @section('content')
 <div id="page-wrapper">
     <div class="container-fluid">
-        <h2>機台OEE定義</h2>
+        <h2>機台OEE設定</h2>
         <ol class="breadcrumb">
             <img src="{{ asset('img/u12.png') }}">
             <span class="space-item">稼動參數</span>
             <span class="space-item">></span>
-            <span class="space-item">機台OEE定義<span>
+            <span class="space-item">機台OEE設定<span>
             <span class="space-item">></span>
             <span class="space-item">資料編輯頁</span>
         </ol>
@@ -60,28 +60,33 @@
                                             <input class="clearable form-control" required>
                                         </div>
                                 </div>
-                                 <hr>
+                                    <hr>
                                     <div class="form-group">
                                         <label class="col-md-2 control-label"> OEE公式</label>
                                         <div class="col-md-3">
                                             <select class="form-control" required>
-                                                <option value="">---時間稼動率---</option>
-                                                <option value="">雷射時間稼動</option>
+                                                <option value="">---機台稼動類---</option>
                                             </select>
                                         </div>
-                                        <div class="col-md-4">
+
+                                        <div class="col-md-3">
                                             <select class="form-control" required>
-                                                <option value="">---性能稼動率---</option>    
-                                                <option value="">雷射性能稼動</option> 
+                                                <option value="">---性能稼動(捲料)---</option>   
                                             </select>
                                         </div>
+
                                         <div class="col-md-3">
                                                 <select class="form-control" required>
-                                                    <option value="">---良率---</option>
-                                                    <option value="">雷射良率</option>     
+                                                    <option value="">---良率(捲料)---</option>
                                                 </select>
-                                            </div>
-                                        </div>               
+                                        </div>
+            
+                                        <label class="col-md-2 control-label"> </label>
+                                        <div class="col-md-10" style="padding-top:2%;">
+                                            <textarea name="" id="" cols="90" rows="10" style="resize: none;"></textarea>
+                                        </div>
+                                    </div>
+                                
                                 <hr>
                             <div style="text-align:center">
                                 <button type="submit" id="sendBtn" class="btn btn-success btn-lg" style="width:45%">確認</button>

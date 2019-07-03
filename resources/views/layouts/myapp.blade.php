@@ -165,17 +165,15 @@
                             <a href="#" style="color: white;">稼動參數<span class="fa arrow"></span></a>
                             <ul class="nav nav-second-level">
                                 <li>
-                                    <a href="{{ route('time-shift-definition') }}" style="color: white;">時間稼動定義</a>
+                                    <a href="{{ route('variable-formula.index') }}" style="color: white;">公式變數設定</a>
                                 </li>
                                 <li>
-                                    <a href="{{ route('performance') }}" style="color: white;">性能稼動定義</a>
+                                    <a href="{{ route('formula-setting.index') }}" style="color: white;">公式設定</a>
                                 </li>
                                 <li>
-                                    <a href="{{ route('quality') }}" style="color: white;">良率定義</a>
+                                    <a href="{{ route('machineoee.index') }}" style="color: white;">機台OEE設定</a>
                                 </li>
-                                <li>
-                                    <a href="{{ route('machine-oee') }}" style="color: white;">機台OEE定義</a>
-                                </li>
+                               
                             </ul>
                         </li>
                         <li>

@@ -53,17 +53,19 @@
 @section('content')
 <div id="page-wrapper">
     <div class="container-fluid">
-        <h2>時間稼動定義</h2>
+        <h2>公式變數設定</h2>
         <ol class="breadcrumb">
             <img src="{{ asset('img/u12.png') }}">
             <span class="space-item">稼動參數</span>
             <span class="space-item">></span>
-            <span class="space-item">時間稼動定義<span>
+            <span class="space-item">公式變數設定<span>
         </ol>
         <div class="breadcrumb-custom">
             <span>資料列表</span>
             <div style="float:right; margin-top:-7px">
-                <button class="btn btn-success">新增</button>
+                <a href="{{route('variable-formula.create')}}">
+                    <button class="btn btn-success">新增</button>
+                </a>
             </div> 
         </div>
         <div class="total-data">載入筆數 | 共 3 筆</div>
@@ -72,51 +74,13 @@
                 <thead class="thead-color">
                     <tr>
                         <th scope="col">序</th>
-                        <th scope="co1">時間稼動組</th>
-                        <th scope="col" >時間稼動組名稱</th>
-                        <th scope="col" >機台類別</th>
-                        <th scope="col" >操作</th>
+                        <th scope="co1">變數代碼</th>
+                        <th scope="col">變數名稱</th>
+                        <th scope="col">備註</th>
+                        <th scope="col">操作</th>
                     </tr>
                 </thead>
-                <tbody>
-                    <tr>
-                        <th scope="row">1</th>
-                        <td>Mark</td>
-                        <td>Mark</td>
-                        <td>Mark</td>
-                        <td>
-                            <a  href="{{ route('edit-time-shift-definition') }}">
-                                <button class="btn btn-primary" >
-                                 編輯
-                                </button>
-                            </a>
-                            &nbsp
-                            <button class="btn btn-danger">刪除</button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <th scope="row">2</th>
-                        <td>Jaco</td>
-                        <td>Mark</td>
-                        <td>Mark</td>
-                        <td>
-                            <button class="btn btn-primary">編輯</button>
-                            &nbsp
-                            <button class="btn btn-danger">刪除</button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <th scope="row">3</th>
-                        <td>Larry</td>
-                        <td>Mark</td>
-                        <td>Mark</td>
-                        <td>
-                            <button class="btn btn-primary">編輯</button>
-                            &nbsp
-                            <button class="btn btn-danger">刪除</button>
-                        </td>
-                    </tr>
-                </tbody>
+                
             </table>
     </div>
     <form action="">
