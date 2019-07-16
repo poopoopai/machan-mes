@@ -14,8 +14,7 @@ class ResourceRepository
        
        $mutable = Carbon::now()->format('Y-m-d');
        
-        $Statusid = Resource::where('id','>',$data['id'])->wheredate('date',$data['time'])->first(); //判斷後面的id date要等於當日
-       
+        $Statusid = Resource::where('id','>',$data['id'])->wheredate('date',$data['date'])->first(); //判斷後面的id date要等於當日
         $summary = '0';
         //   dd($data['orderno']);
         
@@ -30,7 +29,7 @@ class ResourceRepository
         } elseif($data['code'] == 0) {
             $summary = $status->description;         
         } elseif($data['code'] != 0){
-            $summary = ErrorCode::with('resources')->where('machine_type',$status->type)->where('code',$data['code'])->first();
+            $summary = ErrorCode::with('resource')->where('machine_type',$status->type)->where('code',$data['code'])->first();
              return $summary->message;
         } else{
             $summary = '0';

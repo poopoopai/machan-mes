@@ -135,7 +135,7 @@ class SummaryRepository
     {   
     
        if($status->open != ''){
-            $restart = Summary::where('open',$status['open']-1)->first(); //上一筆開機關機
+            $restart = Summary::where('open' , $status['open']-1)->first(); //上一筆開機關機
             if($status['open'] == ''){
                 $status["restart_count"] = '';
             } else{
@@ -155,7 +155,7 @@ class SummaryRepository
 
         if($status['turn_off'] != ''){
 
-        $restop = Summary::where('turn_off',$status['turn_off']-1)->first();
+        $restop = Summary::where('turn_off', $status['turn_off']-1)->first();
        
         if($status['turn_off'] == ''){
             $status['restop_count'] = '';
@@ -228,8 +228,7 @@ class SummaryRepository
             
                 if($completionday == null){
                    
-                    if($machinetime2 && $machintime){
-                       
+                    if($machinetime2 && $machintime){           
                         $secondT = strtotime($machintime->processing_completion_time) - strtotime($machinetime2->processing_completion_time);
                     }  else{
                       
@@ -616,77 +615,79 @@ class SummaryRepository
     public function total($status)
     {
 
-       
-      
-    $beforeID = Summary::where('resources_id',$status->resources_id - 1)->first();
+    $beforeID = Summary::where('resources_id', $status->resources_id - 1)->first();
     
-    
-    $completion = Summary::where('machine_completion_day', $status->machine_completion_day)->where('resources_id','>',0)->first(); //找前面一筆相同的 顯示完工時間
-
+    $completion = Summary::where('machine_completion_day' , $status->machine_completion_day)->where('resources_id','>',0)->first(); //找前面一筆相同的 顯示完工時間
       
     $sensro  = Summary::where('machine_inputs_day' , $status->machine_completion_day-1)->where('resources_id','>',0)->first(); //Q4-1 = R
     $sensro2 = Summary::where('machine_inputs_day' , $status->machine_completion_day-2)->where('resources_id','>',0)->first();//Q4-2 = R
-    
-
+  
     $sum = $status->machine_completion_day - $status->machine_inputs_day; //Q-R
     $sensros  = Summary::where('machine_inputs_day' , $status->machine_completion_day - $sum-1)->where('resources_id','>',0)->first(); //Q4-(Q-R)-1 = R
     $sensros2 = Summary::where('machine_inputs_day' , $status->machine_completion_day - $sum-2)->where('resources_id','>',0)->first();//Q4-(Q-R)-2 = R
+     
     
-    // dd($sensros2);
-    // if($status->resources_id==10){
-    //     dd($beforeID);
-    // }   
        
-   
                     if($status->machine_completion_day > $beforeID->machine_completion_day   && $status->machine_completion_day != 1){
                         
                         if($status->machine_inputs_day - $status->machine_completion_day > 0){
-                           
+
+                            if($sensro != null ){
                                 if(strtotime($completion->processing_completion_time) - strtotime($sensro->processing_start_time) > 18) {
-                                    
-                                    
-                                    if($sensro == null ){//前面沒資料就不用相減了
-                                        $total = 0;
-                                    }else{
                                         $total = strtotime($completion->processing_completion_time) - strtotime($sensro->processing_start_time);
-                                    }
                                 }else{
-                                    if($sensro2 == null ){
-                                        $total = 0;
-                                    }else{
+                                    if($sensro2 != null ){
                                         $total = strtotime($completion->processing_completion_time) - strtotime($sensro2->processing_start_time);
+                                    }else{
+                                        $total = strtotime($completion->processing_completion_time);
                                     }
                                 } 
-                        }else{          
-                                if(strtotime($completion->processing_completion_time) - strtotime($sensros->processing_start_time) > 18) {
-                                    if($sensros ==null ){
-                                        $total = 0;
-                                    }else{
-                                        $total = strtotime($completion->processing_completion_time) - strtotime($sensros->processing_start_time);
-                                    }
+                            }else{
+                                if(strtotime($completion->processing_completion_time) > 18) {
+                                    $total = strtotime($completion->processing_completion_time);
                                 }else{
-                                    
-                                    if($sensros2 == null ){
-                                        $total = 0;
+                                    if($sensro2 != null ){
+                                        $total = strtotime($completion->processing_completion_time) - strtotime($sensro2->processing_start_time);
                                     }else{
-
+                                        $total = strtotime($completion->processing_completion_time);
+                                    }
+                                } 
+                            }
+                        }else{      
+                            if($sensros != null){ //$sensros存在
+                                if(strtotime($completion->processing_completion_time) - strtotime($sensros->processing_start_time) > 18) {
+                                        $total = strtotime($completion->processing_completion_time) - strtotime($sensros->processing_start_time);
+                                }else{
+                                    if($sensros2 != null){
                                         $total = strtotime($completion->processing_completion_time) - strtotime($sensros2->processing_start_time);
+                                    }else{
+                                        $total = strtotime($completion->processing_completion_time);
                                     }
                                 }       
+                            }else{  //$sensros不存在
+                                if(strtotime($completion->processing_completion_time > 18)){
+                                    $total = strtotime($completion->processing_completion_time);
+                                }else{
+                                    if($sensros2 != null){
+                                        $total = strtotime($completion->processing_completion_time) - strtotime($sensros2->processing_start_time);
+                                    }else{
+                                        $total = strtotime($completion->processing_completion_time);
+                                    }
+                                }
+                            }
                         }
                         
                     }else{
                         $total = 0;
                     }
-                    
+                    // if($status->resources_id==100){
+                    //     dd(date("H:i:s",$total-8*60*60));
+                        
+                    //  }              
                     
                     $sensro3  = Summary::where('machine_inputs_day' , $status->machine_completion_day-3)->where('resources_id','>',0)->first();//Q4-3 = R
                     $sensros3 = Summary::where('machine_inputs_day' , $status->machine_completion_day - $sum-3)->where('resources_id','>',0)->first();//Q4-(Q-R)-3 = R
                     
-                    //    if($status->id == 5){
-                    //        dd(123);
-                    //    }
-
                     if($status->machine_completion_day > $beforeID->machine_completion_day && $status->processing_completion_time != ""){
                       
                         if($total > 18 && $total < 28){
@@ -694,24 +695,24 @@ class SummaryRepository
                         }else{
                            
                             if($status->machine_inputs_day > $status->machine_completion_day){
-                                    if($sensro3 == null ){//前面沒資料就不用相減了
-                                        $CTtime = 0;
-                                    }else{
+                                    if($sensro3 != null ){//前面沒資料就不用相減了
                                         $CTtime = strtotime($completion->processing_completion_time) - strtotime($sensro3->processing_start_time);
+                                    }else{
+                                        $CTtime = strtotime($completion->processing_completion_time);
                                     } 
                             }else{
-                                if($sensros3 == null){//前面沒資料就不用相減了
-                                    $CTtime = 0;
-                                }else{
-                                    $CTtime = strtotime($completion->processing_completion_time) - strtotime($sensros3->processing_start_time);
-                                }         
+                                    if($sensros3 != null){//前面沒資料就不用相減了
+                                        $CTtime = strtotime($completion->processing_completion_time) - strtotime($sensros3->processing_start_time);
+                                    }else{
+                                        $CTtime = strtotime($completion->processing_completion_time);
+                                    }         
                             }
                         }
                     }else{
                         $CTtime = 0;
                     }
 
-                    dd(2454);
+                    // dd(2454);
         $status->total_processing_time = $total;
         $status->ct_processing_time = $CTtime;
         return $status;

@@ -106,7 +106,6 @@
                     </div>
                     <div class="col-md-5">
                         <select name="type[]" class="form-control" required>
-                            <option disabled selected value="">--- 請選擇類型 ---</option>
                             <option value="休息">休息</option>
                             <option value="用餐">用餐</option>
                         </select>

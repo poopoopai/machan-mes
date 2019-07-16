@@ -127,9 +127,11 @@
                         <tr>     
                             <th scope="row">      
                             </th>
-                            @foreach ($datas as $data)
-                    
-                            <td>{{ $data->id}}</td>
+                            @foreach ($datas as $key =>$data)
+                            
+                            @if($data->id>1)
+
+                            <td>{{ $key}}</td>
                             <td>{{ $data->machine }}</td>
                             <td>{{ $data->description }}</td>
                             <td>{{ $data->type }}</td>
@@ -178,6 +180,7 @@
                             <td>{{ $data->standard_uat_h_26_3 }}</td>
                             <td>{{ $data->standard_uat_h_36_3 }}</td>
                             
+                            @endif
                             
                     </tr>
                     @endforeach

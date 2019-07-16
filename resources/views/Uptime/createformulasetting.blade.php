@@ -94,7 +94,9 @@
 
                 <div class="col-md-12">
                     <div class="panel panel-default">
-                        <div class="panel-heading">子公式設定</div>
+                        <div class="panel-heading">子公式設定
+                            <button class="btn btn-success" onclick="addFormularow()" style="float:right;margin-top: -6px;" type="button">+</button>
+                        </div>
                         <div class="panel-body">
                                 <label class="col-md-2 control-label">運算符號</label>
                                     <button class="btn btn-default" onclick="addFormula()" type="button">+</button>
@@ -104,10 +106,107 @@
                                     <button class="btn btn-default" >()</button>
                                     <button class="btn btn-default" >Σ</button>
                                     <button class="btn btn-default" >變</button>
-                                    <button class="btn btn-success" onclick="addFormularow()" style="float:right;" type="button">+</button>
+                                    
                                     <button class="btn btn-default" onclick="" style="float:right;margin-right:1em;">+</button>
                                     <button class="btn btn-default" onclick="" style="float:right;margin-right:1em;">+</button>
-                                <hr>
+                                <br><br>
+                            <div class="col-md-12">
+                                    <div class="col-md-2" style="padding-top:3px;">
+                                        <input type="text" name='variable' class="form-control" required >
+                                    </div>
+                                        <label class="col-md-1 control-label">=</label>
+                                    <div class="col-md-2" style="padding-top:3px;">
+                                            <input type="text" name='variable' class="form-control" required>
+                                    </div>
+                                    <div id="formula" >
+                                        
+                                    </div>
+                            </div>
+                            
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="formularow" >
+                                
+                                
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+<script>
+   
+   let mulaId = 1;
+   let rowId = 1;
+    const addFormula = () => {
+                $('#formula').append(`      
+                <div id="addFormula${mulaId}">      
+                    <label class="col-md-1 control-label">+</label>
+                    <div class="col-md-2" id="add${mulaId}" style="padding-top:3px;">
+                        <input type="text" name='variable' class="form-control" required>
+                    </div>
+                </div>
+            `);  
+            mulaId++;    
+    }
+    const subtractFormula = () => {
+                $('#formula').append(`    
+                <div id="subtractFormula${mulaId}">    
+                    <label class="col-md-1 control-label">-</label>
+                    <div class="col-md-2" id="subtract${mulaId}" style="padding-top:3px;">
+                        <input type="text" name='variable' class="form-control" required>
+                    </div>
+                </div>
+            `);  
+            mulaId++;    
+    }
+    const multiplyFormula = () => {
+                $('#formula').append(`   
+                <div id="multiplyFormula${mulaId}">     
+                    <label class="col-md-1 control-label">x</label>
+                    <div class="col-md-2" id="multiply${mulaId}" style="padding-top:3px;">
+                        <input type="text" name='variable' class="form-control" required>
+                    </div>
+                </div>
+            `);   
+            mulaId++;   
+    }
+    const divisionFormula = () => {
+                $('#formula').append(` 
+                <div id="divisionFormula${mulaId}">       
+                    <label class="col-md-1 control-label">÷</label>
+                    <div class="col-md-2" id="division${mulaId}" style="padding-top:3px;">
+                        <input type="text" name='variable' class="form-control" required>
+                    </div>
+                </div>   
+            `);    
+            mulaId++;  
+    }
+  
+
+    const addFormularow = () => {
+                $('#formula').removeAttr('id');
+                
+                $('#formularow').append(`   
+                    <div class="col-md-12">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">第${rowId+1}子公式設定
+                            <button class="btn btn-success" onclick="addFormularow()" style="float:right;margin-top: -6px;" type="button">+</button>
+                        </div>
+                        <div class="panel-body">
+                                <label class="col-md-2 control-label">運算符號</label>
+                                    <button class="btn btn-default" onclick="addFormula()" type="button">+</button>
+                                    <button class="btn btn-default" onclick="subtractFormula()" type="button">-</button>
+                                    <button class="btn btn-default" onclick="multiplyFormula()" type="button">x</button>
+                                    <button class="btn btn-default" onclick="divisionFormula()" type="button">÷</button>
+                                    <button class="btn btn-default" >()</button>
+                                    <button class="btn btn-default" >Σ</button>
+                                    <button class="btn btn-default" >變</button>
+                                    
+                                    <button class="btn btn-default" onclick="" style="float:right;margin-right:1em;">+</button>
+                                    <button class="btn btn-default" onclick="" style="float:right;margin-right:1em;">+</button>
+                                <br><br>
                             <div class="col-md-12">
                                     <div class="col-md-2" style="padding-top:3px;">
                                         <input type="text" name='variable' class="form-control" required >
@@ -128,71 +227,8 @@
                     </div>
                 </div>
             </div>
-        </form>
-    </div>
-</div>
-<script>
-   
-   let mulaId = 1;
-   
-    const addFormula = () => {
-                $('#formula').append(`      
-                <div id="addFormula${mulaId}">      
-                    <label class="col-md-1 control-label">+</label>
-                    <div class="col-md-2" id="add${mulaId}" style="padding-top:3px;">
-                        <input type="text" name='variable' class="form-control" required>
-                    </div>
-                </div>
-            `);      
-    }
-    const subtractFormula = () => {
-                $('#formula').append(`    
-                <div id="subtractFormula${mulaId}">    
-                    <label class="col-md-1 control-label">-</label>
-                    <div class="col-md-2" id="subtract${mulaId}" style="padding-top:3px;">
-                        <input type="text" name='variable' class="form-control" required>
-                    </div>
-                </div>
-            `);      
-    }
-    const multiplyFormula = () => {
-                $('#formula').append(`   
-                <div id="multiplyFormula${mulaId}">     
-                    <label class="col-md-1 control-label">x</label>
-                    <div class="col-md-2" id="multiply${mulaId}" style="padding-top:3px;">
-                        <input type="text" name='variable' class="form-control" required>
-                    </div>
-                </div>
-            `);      
-    }
-    const divisionFormula = () => {
-                $('#formula').append(` 
-                <div id="divisionFormula${mulaId}">       
-                    <label class="col-md-1 control-label">÷</label>
-                    <div class="col-md-2" id="division${mulaId}" style="padding-top:3px;">
-                        <input type="text" name='variable' class="form-control" required>
-                    </div>
-                </div>   
-            `);      
-    }
-    mulaId++;
-
-    const addFormularow = () => {
-                $('#formula').removeAttr('id');
-                
-                $('#formularow').append(`   
-                <div id="mulaId${mulaId}" class="col-md-12">
-                <hr> 
-                    <div class="col-md-2" style="padding-top:3px;">
-                        <input type="text" name='variable' class="form-control" required >
-                    </div>
-                        <label class="col-md-1 control-label">=</label>
-                    <div class="col-md-2" style="padding-top:3px;">
-                        <input type="text" name='variable' class="form-control" required>
-                    </div>
-                    <div id="formula" ></div>
-                <div>
-            `);      
+            `);   
+            rowId++;   
     }
     
   
