@@ -3,9 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Entities\Resource;
 use App\Entities\Summary;
-
+use Carbon\Carbon;
 class ResourceController extends Controller
 {
     public function test(){
@@ -27,5 +26,19 @@ class ResourceController extends Controller
         $data = Summary::paginate (100);
         
         return view('machineperformance', ['datas' => $data]);
+    }
+     public function getdatabase()
+    {
+        $results = Summary::wheredate('created_at' , '>=' , Carbon::today())
+                    ->wheredate('created_at' , '<' , Carbon::tomorrow())
+                    ->orderby('id' , 'desc')
+                    ->first();
+        if($results){
+            return response()->json(['status' => $results]);
+            }
+        else{
+            return response()->json(['status' => 'error']);
+        }
+       
     }
 }

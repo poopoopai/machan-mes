@@ -55,11 +55,11 @@
                 </div>
                 <label class="col-md-2 control-label">公式類別</label>
                 <div class="col-md-3">
-                    <select name="" id="" class="form-control">
+                    <select name="" id="gettype" class="form-control" onchange="getdata()">
                         <option value="">---請選擇公式類別---</option>
-                        <option value="">機台稼動率</option>
-                        <option value="">性能稼動率</option>
-                        <option value="">良率類</option>
+                        <option value="111">機台稼動率</option>
+                        <option value="222">性能稼動率</option>
+                        <option value="333">良率類</option>
                     </select>
                 </div>
             </div>
@@ -229,6 +229,23 @@
             </div>
             `);   
             rowId++;   
+    }
+
+    function getdata(){
+        var selectBox = document.getElementById("gettype");
+        var selectedValue = selectBox.options[selectBox.selectedIndex].value;
+      
+
+        axios.get('{{ route('getdatabase') }}', {
+
+            })
+            .then(function ({ data }) {
+                console.log(data);
+            })
+            .catch(function (error) {
+                console.log(error);
+            });
+        
     }
     
   

@@ -451,27 +451,24 @@ class SummaryRepository
         $status->manufacturing_status = $manufacture;
         return $status;         
     }
-    public function downtime($data,$status)
+    public function downtime($data , $status)
     {
         
         $worktime = strtotime($status->working_time) - strtotime(Carbon::today());//轉秒數
-        $first = Resource::where('date' , $data['date'])->orderby('time')->first();//天最早的時間
-       
         $beforeturn =  Summary::where('turn_off' , $status->open)->first();
-        $beforeopen =  Summary::where('open' , $status->open -1)->first();//前一筆開機次數
+        $beforeopen =  Summary::where('open' , '<' ,$status->open)->orderby('open' , 'desc')->first();//前一筆開機次數
         $countRestop = Summary::where('resources_id' ,'<', $data['id'])->sum('restop_count');
-       
-        $bstart_count = $beforeopen->start_count;
-        $start_count = $status->start_count;
-     
-        $beforetime = Resource::where('date' , $data['date'])->with(['summary' => function ($query) use ($bstart_count , $countRestop){
-            $query->where('turn_off' , $bstart_count + $countRestop);
-        }])->first();//有可能有小錯
-        
-        $nowtime = Resource::where('date' , $data['date'])->with(['summary' => function ($query) use ($start_count , $countRestop){
-            $query->where('turn_off' , $start_count + $countRestop);
-        }])->first();//有可能有小錯
+      
+        $first = Summary::whereDate('created_at' , '>=' , Carbon::today())
+        ->whereDate('created_at' , '<' , Carbon::tomorrow())
+        ->orderby('time')
+        ->first();
 
+        $nowtime = Summary::whereDate('created_at' , '>=' , Carbon::today())
+                    ->whereDate('created_at' , '<' , Carbon::tomorrow())
+                    ->where('trun_off' , $status['start_count'] + $countRestop)
+                    ->first();
+      
         if($status->open == ''){
             if( $worktime > 180 && $data['status'] == 5){
                 $down_time = $status->working_time;
@@ -495,7 +492,14 @@ class SummaryRepository
                     }else{
                         if($beforeopen != NULL){
                             if($beforeopen->open > $status->open && $status->restart_count == ''){
-                                if($beforetime != NULL){
+                                
+
+                                $beforetime = Summary::whereDate('created_at' , '>=' , Carbon::today())
+                                ->whereDate('created_at' , '<' , Carbon::tomorrow())
+                                ->where('trun_off' , $beforeopen['start_count'] + $countRestop)
+                                ->first();
+
+                                if($beforetime->summary != NULL){
                                     $down_time = strtotime($status->time) - strtotime($beforetime->summary->time);
                                     $down_time = date("H:i:s" , $down_time-8*60*60);
                                 }else{
@@ -506,7 +510,7 @@ class SummaryRepository
                                 if($status->restart_count != ''){
                                     $down_time = '00:00:00';
                                 }else{
-                                    if($nowtime != NULL){
+                                    if($nowtime->summary != NULL){
                                         $down_time = strtotime($status->time) - strtotime($nowtime->summary->time);
                                         $down_time = date("H:i:s" , $down_time-8*60*60);
                                     }else{
@@ -533,7 +537,7 @@ class SummaryRepository
     public function breaktime($data,$status)
     {
         $breaktime = '';
-        $break =  Summary::where('turn_off',$status->open)->first();
+        $break =  Summary::where('turn_off' , $status->open)->first();
 
         if($break){
             if($break->break == '休息'){    
@@ -565,17 +569,16 @@ class SummaryRepository
         $aggregate_time = '';
         if($status->refueling_end == ''){
             $refue_time = '';
-        }else{
-                if($sum->count()==0){
-                    $refue_time="00:00:00";
-                } else{
-                    $sumtime = 0;
-                    foreach($sum as $sumitem){
-                        $sumitemSec = strtotime($sumitem->down_time) - strtotime(Carbon::today());
-                        $refue_time = $sumtime + $sumitemSec; 
-                    }
-             }
-            
+        } else{
+            if($sum->count()==0){
+                $refue_time="00:00:00";
+            } else{
+                $sumtime = 0;
+                foreach($sum as $sumitem){
+                    $sumitemSec = strtotime($sumitem->down_time) - strtotime(Carbon::today());
+                    $refue_time = $sumtime + $sumitemSec; 
+                }
+            }  
         }
 
         if($status->aggregate_end == ''){
@@ -611,8 +614,6 @@ class SummaryRepository
     $sensros  = Summary::where('machine_inputs_day' , $status->machine_completion_day - $sum-1)->where('resources_id','>',0)->first(); //Q4-(Q-R)-1 = R
     $sensros2 = Summary::where('machine_inputs_day' , $status->machine_completion_day - $sum-2)->where('resources_id','>',0)->first();//Q4-(Q-R)-2 = R
      
-    
-       
             if($status->machine_completion_day > $beforeID->machine_completion_day   && $status->machine_completion_day != 1){
                 
                 if($status->machine_inputs_day - $status->machine_completion_day > 0){
@@ -707,7 +708,7 @@ class SummaryRepository
 
     public function check($data)
     {
-        $check = Summary::where('resources_id',$data->id)->count();
+        $check = Summary::where('resources_id' , $data->id)->count();
         if($check != 0){
             return True;
         }else{
@@ -746,7 +747,6 @@ class SummaryRepository
             return $Machine->update($data);
         }
     }
-    
- 
+   
 
 }

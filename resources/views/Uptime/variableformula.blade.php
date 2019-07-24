@@ -80,6 +80,25 @@
                         <th scope="col">操作</th>
                     </tr>
                 </thead>
+                <tbody>
+                    @foreach ($datas as $key => $data)
+                        <tr>
+                            <th scope="col"> {{$key+1}}</th>
+                            <td scope="col"> {{$data->variable}}</td>
+                            <td scope="col"> {{$data->variablename}}</td>
+                            <td scope="col"> {{$data->remark}}</td>
+                            <td scope="col">
+                                    <a href="{{ route('variable-formula.edit', $data->id) }}" class="btn btn-primary">編輯</a>
+                                    <form action="{{ route('variable-formula.destroy', $data->id) }}" onsubmit="return checkyn()" method="POST" style="display:inline-block"> 
+                                            @csrf
+                                            @method('delete')
+                                            <button class="btn btn-danger">刪除</button>
+                                        </form>
+                            </td>
+                        </tr>
+                    @endforeach
+                   
+                </tbody>
                 
             </table>
     </div>
@@ -94,6 +113,13 @@
     </form>
 </div>
 <script>
-
+        function checkyn(){
+                var check = confirm("是否要刪除該筆資料");
+                if (check) {
+                    return true;
+                } else {
+                    return false;
+                }
+            }
 </script>
 @endsection

@@ -1,84 +1,61 @@
 <?php
 
 namespace App\Http\Controllers;
-
+use App\entities\VariableFormula;
+use Illuminate\Support\Collection;
 use Illuminate\Http\Request;
 
 class VariableFormulaController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
+    
     public function index()
     {
-        return view('uptime/variableformula');
+        $data = VariableFormula::select('id','variable', 'variablename', 'remark')->paginate(100);
+        return view('uptime/variableformula' , [ 'datas' => $data]);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
+   
     public function create()
     {
         return view('uptime/createvariableformula');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
+
     public function store(Request $request)
     {
-        //
+        $avx = request()->only('variable','variablename','remark');
+       
+       $store = VariableFormula::create(request()->only('variable','variablename','remark'));
+    
+       return redirect()->route('variable-formula.index');
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function show($id)
     {
         //
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function edit($id)
     {
-        //
+        $result = VariableFormula::find($id);
+        
+        return view('uptime/editvariableformula', ['result' => $result]);
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function update(Request $request, $id)
     {
-        //
+        
+        $variable = VariableFormula::find($id);
+
+        $variable->update(request()->only('variable','variablename','remark'));
+
+        return redirect()->route('variable-formula.index');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function destroy($id)
     {
-        //
+        $variable = VariableFormula::find($id)->delete();
+
+        return back();
     }
 }

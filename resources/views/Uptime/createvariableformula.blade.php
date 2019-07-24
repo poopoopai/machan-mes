@@ -52,7 +52,8 @@
                 <div class="panel panel-default">
                     <div class="panel-heading">資料編輯</div>
                     <div class="panel-body">
-                        <form class="form-horizontal" action="{{ route('variable-formula.store') }}" method="GET">
+                        <form class="form-horizontal" action="{{ route('variable-formula.store') }}" method="POST">
+                            @csrf
                             <div class="form-group">
                                 <label class="col-md-2 control-label">變數代碼</label>
                                 <div class="col-md-10">
