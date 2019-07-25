@@ -55,7 +55,7 @@
                 </div>
                 <label class="col-md-2 control-label">公式類別</label>
                 <div class="col-md-3">
-                    <select name="" id="gettype" class="form-control" onchange="getdata()">
+                    <select name="" id="gettype" class="form-control">
                         <option value="">---請選擇公式類別---</option>
                         <option value="111">機台稼動率</option>
                         <option value="222">性能稼動率</option>
@@ -84,7 +84,9 @@
                                 </div>
                                     <label class="col-md-1 control-label">=</label>
                                 <div class="col-md-2" style="padding-top:3px;">
-                                        <input type="text" name='variable' class="form-control" required>
+                                      <select name="" id="" class="form-control">
+                                          
+                                      </select>
                                 </div>
                             <div id="aa" ></div> 
                             
@@ -116,7 +118,9 @@
                                     </div>
                                         <label class="col-md-1 control-label">=</label>
                                     <div class="col-md-2" style="padding-top:3px;">
-                                            <input type="text" name='variable' class="form-control" required>
+                                        <select name="" id="sum0" class="form-control">
+                                          
+                                        </select>
                                     </div>
                                     <div id="formula" >
                                         
@@ -144,7 +148,10 @@
                 <div id="addFormula${mulaId}">      
                     <label class="col-md-1 control-label">+</label>
                     <div class="col-md-2" id="add${mulaId}" style="padding-top:3px;">
-                        <input type="text" name='variable' class="form-control" required>
+                        <select name="" id="sum${mulaId}" class="form-control" onclick = "getdata()">
+                        
+                                          
+                        </select>
                     </div>
                 </div>
             `);  
@@ -230,23 +237,39 @@
             `);   
             rowId++;   
     }
-
-    function getdata(){
-        var selectBox = document.getElementById("gettype");
-        var selectedValue = selectBox.options[selectBox.selectedIndex].value;
-      
+     
+    const getdata = () => {
+        
+        
 
         axios.get('{{ route('getdatabase') }}', {
 
             })
             .then(function ({ data }) {
-                console.log(data);
+                
+                givemachinedata(data);
+
             })
             .catch(function (error) {
                 console.log(error);
             });
         
     }
+
+    const givemachinedata = (data) => {
+        console.log(mulaId);
+        
+        $(`#sum${mulaId}`).empty();
+        $(`#sum${mulaId-1}`).append(` 
+                        <option value="">a</option>
+                        <option value="">b</option>
+                        <option value="">c</option>
+        `)
+        
+    }
+    getdata();
+
+    
     
   
 </script>

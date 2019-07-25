@@ -34,10 +34,10 @@ class ResourceController extends Controller
                     ->orderby('id' , 'desc')
                     ->first();
         if($results){
-            return response()->json(['status' => $results]);
-            }
+            return response()->json(['data' => $results]);
+        }
         else{
-            return response()->json(['status' => 'error']);
+            return response()->json(['data' => 'error']);
         }
        
     }
