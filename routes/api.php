@@ -25,3 +25,4 @@ Route::get('/rest-group', 'WorkTypeController@getRestGroup')->name('rest-group')
 Route::get('/machine-data', 'MachineCategoryController@getMachineId')->name('machine-data');
 
 Route::get('/getdatabase', 'ResourceController@getdatabase')->name('getdatabase');
+Route::get('/test', 'ResourceController@test');

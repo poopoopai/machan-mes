@@ -5,21 +5,11 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Entities\Summary;
 use Carbon\Carbon;
+use DB;
 class ResourceController extends Controller
 {
     public function test(){
-        $links = mysqli_connect("10.1.12.11", "sd", "1111", "db");
-        if (!$link) {
-            echo "Error: Unable to connect to MySQL." . PHP_EOL;
-            echo "Debugging errno: " . mysqli_connect_errno() . PHP_EOL;
-            echo "Debugging error: " . mysqli_connect_error() . PHP_EOL;
-            exit;
-        }
-        
-        echo "Success: A proper connection to MySQL was made! The my_db database is great." . PHP_EOL;
-        echo "Host information: " . mysqli_get_host_info($link) . PHP_EOL;
-        
-        mysqli_close($link);
+       
     }
     public function show()
     {
@@ -41,4 +31,21 @@ class ResourceController extends Controller
         }
        
     }
+    
+    public function inform()
+    {
+        $sum  = "" ; 
+        
+        $abc = request()->all();
+        
+        $bbb = collect($abc)->except('_token')->values();
+        
+        for( $i = 1 ; $i < sizeof($bbb) ; $i++){          
+            $sum = $sum.$bbb[$i];
+        }
+        dd($sum);
+        
+        dd($abc, $bbb ,$sum,$total,$i , data_get($abc , $default = null));
+    }
+    
 }

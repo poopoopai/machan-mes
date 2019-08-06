@@ -15,7 +15,7 @@ Auth::routes();
 Route::get('/', function () {
     return redirect('login');
 });
-Route::get('/test', 'ResourceController@test');
+
 Route::group(['middleware' => ['auth']], function () {
 
 
@@ -35,7 +35,7 @@ Route::group(['middleware' => ['auth']], function () {
     Route::resource('machineoee', 'MachineOeeController')->except('show');
 
     Route::get('/home', 'HomeController@index')->name('home');
-        
+    Route::post('/inform', 'ResourceController@inform')->name('inform');
         
         
        

@@ -19,6 +19,10 @@
     hr {
         border-top: 1px solid #ccc;
     }
+    .adjustment {
+        font-size:3px;
+        width: 120%;
+    }
     .btn-secondary {
         color: #fff;
         background-color: #6c757d;
@@ -47,7 +51,7 @@
             <span class="space-item">></span>
             <span class="space-item">資料編輯頁<span>
         </ol>
-        <form class="form-horizontal" action="" method="GET">
+        
             <div class="form-group">
                 <label class="col-md-2 control-label">公式名稱</label>
                 <div class="col-md-5">
@@ -63,7 +67,7 @@
                     </select>
                 </div>
             </div>
-
+        <br><br><br>
             <div class="row">
                 <div class="col-md-12">
                     <div class="panel panel-default">
@@ -80,20 +84,21 @@
                                 <button class="btn btn-default" >變</button>
                             <hr>
                                 <div class="col-md-2" style="padding-top:3px;">
-                                    <input type="text" name='variable' class="form-control" required >
+                                    <input type="text" name='variable' class="form-control adjustment" required >
                                 </div>
-                                    <label class="col-md-1 control-label">=</label>
+                                    <label class="col-md-1 control-label" style="padding-top:10px;padding-left:35px;" >=</label>
                                 <div class="col-md-2" style="padding-top:3px;">
-                                      <select name="" id="" class="form-control">
+                                      <select name="" id="" class="form-control adjustment">
                                           
                                       </select>
                                 </div>
-                            <div id="aa" ></div> 
+                             
                             
                         </div>
                     </div>
                 </div>
-
+            <form class="form-horizontal" action="{{route('inform')}}" method="POST">
+                @csrf
                 <div class="col-md-12">
                     <div class="panel panel-default">
                         <div class="panel-heading">子公式設定
@@ -101,24 +106,24 @@
                         </div>
                         <div class="panel-body">
                                 <label class="col-md-2 control-label">運算符號</label>
-                                    <button class="btn btn-default" onclick="addFormula()" type="button">+</button>
-                                    <button class="btn btn-default" onclick="subtractFormula()" type="button">-</button>
-                                    <button class="btn btn-default" onclick="multiplyFormula()" type="button">x</button>
-                                    <button class="btn btn-default" onclick="divisionFormula()" type="button">÷</button>
+                                    <button class="btn btn-default" onclick = "addFormula()" type="button">+</button>
+                                    <button class="btn btn-default" onclick = "subtractFormula()" type="button">-</button>
+                                    <button class="btn btn-default" onclick = "multiplyFormula()" type="button">x</button>
+                                    <button class="btn btn-default" onclick = "divisionFormula()" type="button">÷</button>
                                     <button class="btn btn-default" >()</button>
                                     <button class="btn btn-default" >Σ</button>
                                     <button class="btn btn-default" >變</button>
                                     
-                                    <button class="btn btn-default" onclick="" style="float:right;margin-right:1em;">+</button>
+                                    <button class="btn btn-default" type="submit" style="float:right;margin-right:1em;">儲存</button>
                                     <button class="btn btn-default" onclick="" style="float:right;margin-right:1em;">+</button>
                                 <br><br>
                             <div class="col-md-12">
                                     <div class="col-md-2" style="padding-top:3px;">
-                                        <input type="text" name='variable' class="form-control" required >
+                                        <input type="text" name='variable' class="form-control adjustment" required >
                                     </div>
                                         <label class="col-md-1 control-label">=</label>
                                     <div class="col-md-2" style="padding-top:3px;">
-                                        <select name="" id="sum0" class="form-control">
+                                        <select name="first" id="sum" class="form-control adjustment">
                                           
                                         </select>
                                     </div>
@@ -143,55 +148,139 @@
    
    let mulaId = 1;
    let rowId = 1;
+
+   const Formula = () => {
+    axios.get('{{ route('getdatabase') }}', {
+
+    })
+    .then(function ({ data }) {
+        $(`#sum`).append(` 
+            <option value="${data.data.machine_completion}">機台累積完工數</option>
+            <option value="${data.data.machine_inputs}">機台累計投入數</option>
+            <option value="${data.data.machine_completion_day}">當天完工數</option>
+            <option value="${data.data.machine_inputs_day}">當天投入數</option>
+            <option value="${data.data.sensro_inputs}">Sensor投入</option>
+        `);
+    })
+    .catch(function (error) {
+        console.log(error);
+    });
+    mulaId++;   
+    }         
+    Formula();
+
     const addFormula = () => {
-                $('#formula').append(`      
-                <div id="addFormula${mulaId}">      
+        axios.get('{{ route('getdatabase') }}', {
+
+        })
+        .then(function ({ data }) {     
+            console.log(data.data);
+              
+            $('#formula').append(`      
+                <div>      
                     <label class="col-md-1 control-label">+</label>
-                    <div class="col-md-2" id="add${mulaId}" style="padding-top:3px;">
-                        <select name="" id="sum${mulaId}" class="form-control" onclick = "getdata()">
-                        
-                                          
+                    <div class="col-md-2" style="padding-top:3px;">
+                        <input type="hidden" name="sign${mulaId}" value="+" class="form-control" required >
+                        <select name="add${mulaId}" id="sum${mulaId-1}" class="form-control adjustment"> 
+                                <option value="${data.data.machine_completion}">機台累積完工數</option>
+                                <option value="${data.data.machine_inputs}">機台累計投入數</option>
+                                <option value="${data.data.machine_completion_day}">當天完工數</option>
+                                <option value="${data.data.machine_inputs_day}">當天投入數</option>
+                                <option value="${data.data.sensro_inputs}">Sensor投入</option>
                         </select>
                     </div>
                 </div>
-            `);  
-            mulaId++;    
+            `);   
+        })
+        .catch(function ({ data }) {
+            alert('今天的資料沒有抓到');
+        });
+        mulaId++;   
     }
+                
+             
+    
     const subtractFormula = () => {
-                $('#formula').append(`    
-                <div id="subtractFormula${mulaId}">    
+        axios.get('{{ route('getdatabase') }}', {
+
+        })
+        .then(function ({ data }) {        
+            $('#formula').append(`      
+                <div>      
                     <label class="col-md-1 control-label">-</label>
-                    <div class="col-md-2" id="subtract${mulaId}" style="padding-top:3px;">
-                        <input type="text" name='variable' class="form-control" required>
-                    </div>
-                </div>
-            `);  
-            mulaId++;    
-    }
-    const multiplyFormula = () => {
-                $('#formula').append(`   
-                <div id="multiplyFormula${mulaId}">     
-                    <label class="col-md-1 control-label">x</label>
-                    <div class="col-md-2" id="multiply${mulaId}" style="padding-top:3px;">
-                        <input type="text" name='variable' class="form-control" required>
+                    <div class="col-md-2" style="padding-top:3px;">
+                        <input type="hidden" name="sign${mulaId}" value="-" class="form-control" required >
+                        <select name="subtract${mulaId}" id="sum${mulaId-1}" class="form-control adjustment"> 
+                                <option value="${data.data.machine_completion}">機台累積完工數</option>
+                                <option value="${data.data.machine_inputs}">機台累計投入數</option>
+                                <option value="${data.data.machine_completion_day}">當天完工數</option>
+                                <option value="${data.data.machine_inputs_day}">當天投入數</option>
+                                <option value="${data.data.sensro_inputs}">Sensor投入</option>
+                        </select>
                     </div>
                 </div>
             `);   
-            mulaId++;   
+        })
+        .catch(function (error) {
+            console.log(error);
+        });
+        mulaId++;   
+    }
+    const multiplyFormula = () => {
+        axios.get('{{ route('getdatabase') }}', {
+
+        })
+        .then(function ({ data }) {      
+                
+            $('#formula').append(`      
+                <div>      
+                    <label class="col-md-1 control-label">x</label>
+                    <div class="col-md-2" style="padding-top:3px;">
+                        <input type="hidden" name="sign${mulaId}" value="x" class="form-control" required >
+                        <select name="multiply${mulaId}" id="sum${mulaId-1}" class="form-control adjustment"> 
+                                <option value="${data.data.machine_completion}">機台累積完工數</option>
+                                <option value="${data.data.machine_inputs}">機台累計投入數</option>
+                                <option value="${data.data.machine_completion_day}">當天完工數</option>
+                                <option value="${data.data.machine_inputs_day}">當天投入數</option>
+                                <option value="${data.data.sensro_inputs}">Sensor投入</option>
+                        </select>
+                    </div>
+                </div>
+            `);   
+        })
+        .catch(function (error) {
+            console.log(error);
+        });
+        mulaId++;   
     }
     const divisionFormula = () => {
-                $('#formula').append(` 
-                <div id="divisionFormula${mulaId}">       
+        axios.get('{{ route('getdatabase') }}', {
+
+        })
+        .then(function ({ data }) {   
+               
+            $('#formula').append(`      
+                <div>      
                     <label class="col-md-1 control-label">÷</label>
-                    <div class="col-md-2" id="division${mulaId}" style="padding-top:3px;">
-                        <input type="text" name='variable' class="form-control" required>
+                    <div class="col-md-2" style="padding-top:3px;">
+                        <input type="hidden" name="sign${mulaId}" value="÷" class="form-control" required >
+                        <select name="division${mulaId}" id="sum${mulaId-1}" class="form-control adjustment"> 
+                                <option value="${data.data.machine_completion}">機台累積完工數</option>
+                                <option value="${data.data.machine_inputs}">機台累計投入數</option>
+                                <option value="${data.data.machine_completion_day}">當天完工數</option>
+                                <option value="${data.data.machine_inputs_day}">當天投入數</option>
+                                <option value="${data.data.sensro_inputs}">Sensor投入</option>
+                        </select>
                     </div>
-                </div>   
-            `);    
-            mulaId++;  
+                </div>
+            `);   
+        })
+        .catch(function (error) {
+            console.log(error);
+        });
+        mulaId++;   
     }
   
-
     const addFormularow = () => {
                 $('#formula').removeAttr('id');
                 
@@ -211,24 +300,25 @@
                                     <button class="btn btn-default" >Σ</button>
                                     <button class="btn btn-default" >變</button>
                                     
-                                    <button class="btn btn-default" onclick="" style="float:right;margin-right:1em;">+</button>
+                                    <button class="btn btn-default" onclick="" style="float:right;margin-right:1em;">儲存</button>
                                     <button class="btn btn-default" onclick="" style="float:right;margin-right:1em;">+</button>
                                 <br><br>
                             <div class="col-md-12">
                                     <div class="col-md-2" style="padding-top:3px;">
-                                        <input type="text" name='variable' class="form-control" required >
+                                        <input type="text" name='variable' class="form-control adjustment" required >
                                     </div>
                                         <label class="col-md-1 control-label">=</label>
                                     <div class="col-md-2" style="padding-top:3px;">
-                                            <input type="text" name='variable' class="form-control" required>
+                                        <select name="first" id="sum" class="form-control adjustment">
+                                          
+                                        </select>
                                     </div>
                                     <div id="formula" >
                                         
                                     </div>
                             </div>
                             <div id="formularow" >
-                                
-                                
+                                             
                             </div>
                         </div>
                     </div>
@@ -237,40 +327,6 @@
             `);   
             rowId++;   
     }
-     
-    const getdata = () => {
-        
-        
-
-        axios.get('{{ route('getdatabase') }}', {
-
-            })
-            .then(function ({ data }) {
-                
-                givemachinedata(data);
-
-            })
-            .catch(function (error) {
-                console.log(error);
-            });
-        
-    }
-
-    const givemachinedata = (data) => {
-        console.log(mulaId);
-        
-        $(`#sum${mulaId}`).empty();
-        $(`#sum${mulaId-1}`).append(` 
-                        <option value="">a</option>
-                        <option value="">b</option>
-                        <option value="">c</option>
-        `)
-        
-    }
-    getdata();
-
-    
-    
   
 </script>
 @endsection
