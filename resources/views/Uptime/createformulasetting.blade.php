@@ -160,6 +160,8 @@
             <option value="${data.data.machine_completion_day}">當天完工數</option>
             <option value="${data.data.machine_inputs_day}">當天投入數</option>
             <option value="${data.data.sensro_inputs}">Sensor投入</option>
+            <option value="28800">28800</option>
+            <option value="10">10</option>
         `);
     })
     .catch(function (error) {
@@ -187,6 +189,8 @@
                                 <option value="${data.data.machine_completion_day}">當天完工數</option>
                                 <option value="${data.data.machine_inputs_day}">當天投入數</option>
                                 <option value="${data.data.sensro_inputs}">Sensor投入</option>
+                                <option value="28800">28800</option>
+                                <option value="10">10</option>
                         </select>
                     </div>
                 </div>
@@ -216,6 +220,8 @@
                                 <option value="${data.data.machine_completion_day}">當天完工數</option>
                                 <option value="${data.data.machine_inputs_day}">當天投入數</option>
                                 <option value="${data.data.sensro_inputs}">Sensor投入</option>
+                                <option value="28800">28800</option>
+                                <option value="10">10</option>
                         </select>
                     </div>
                 </div>
@@ -236,13 +242,15 @@
                 <div>      
                     <label class="col-md-1 control-label">x</label>
                     <div class="col-md-2" style="padding-top:3px;">
-                        <input type="hidden" name="sign${mulaId}" value="x" class="form-control" required >
+                        <input type="hidden" name="sign${mulaId}" value="*" class="form-control" required >
                         <select name="multiply${mulaId}" id="sum${mulaId-1}" class="form-control adjustment"> 
                                 <option value="${data.data.machine_completion}">機台累積完工數</option>
                                 <option value="${data.data.machine_inputs}">機台累計投入數</option>
                                 <option value="${data.data.machine_completion_day}">當天完工數</option>
                                 <option value="${data.data.machine_inputs_day}">當天投入數</option>
                                 <option value="${data.data.sensro_inputs}">Sensor投入</option>
+                                <option value="28800">28800</option>
+                                <option value="10">10</option>
                         </select>
                     </div>
                 </div>
@@ -263,13 +271,15 @@
                 <div>      
                     <label class="col-md-1 control-label">÷</label>
                     <div class="col-md-2" style="padding-top:3px;">
-                        <input type="hidden" name="sign${mulaId}" value="÷" class="form-control" required >
+                        <input type="hidden" name="sign${mulaId}" value="/" class="form-control" required >
                         <select name="division${mulaId}" id="sum${mulaId-1}" class="form-control adjustment"> 
                                 <option value="${data.data.machine_completion}">機台累積完工數</option>
                                 <option value="${data.data.machine_inputs}">機台累計投入數</option>
                                 <option value="${data.data.machine_completion_day}">當天完工數</option>
                                 <option value="${data.data.machine_inputs_day}">當天投入數</option>
                                 <option value="${data.data.sensro_inputs}">Sensor投入</option>
+                                <option value="28800">28800</option>
+                                <option value="10">10</option>
                         </select>
                     </div>
                 </div>
@@ -280,7 +290,8 @@
         });
         mulaId++;   
     }
-  
+ 
+
     const addFormularow = () => {
                 $('#formula').removeAttr('id');
                 

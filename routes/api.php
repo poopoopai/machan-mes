@@ -26,3 +26,4 @@ Route::get('/machine-data', 'MachineCategoryController@getMachineId')->name('mac
 
 Route::get('/getdatabase', 'ResourceController@getdatabase')->name('getdatabase');
 Route::get('/test', 'ResourceController@test');
+Route::get('/test2', 'ResourceController@test2');

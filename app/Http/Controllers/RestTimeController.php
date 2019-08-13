@@ -65,6 +65,16 @@ class RestTimeController extends Controller
         }
         return back();
     }
+    
+    public function createData($id)
+    {
+        $data = request()->only('start', 'end', 'type', 'remark');
+        $result = $this->restRepo->createData($data, $id);
+        if (!$result) {
+            return back()->with('message', 'The time has repeated');
+        }
+        return back();
+    }
 
     public function deleteData($id, $restId)
     {

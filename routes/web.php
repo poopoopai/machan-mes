@@ -23,7 +23,7 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('machineperformance', 'ResourceController@show')->name('show_machine');
     Route::resource('machine-category', 'MachineCategoryController')->except('show');
     
-
+    Route::post('/rest-time/{id}', 'RestTimeController@createData');
     Route::resource('rest-time', 'RestTimeController')->except('show');
     Route::put('/rest-time/{id}/setup/{setup_id}', 'RestTimeController@updateData')->name('update-data');
     Route::delete('/rest-time/{id}/setup/{setup_id}', 'RestTimeController@deleteData')->name('delete-data');
