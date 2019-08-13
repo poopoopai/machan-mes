@@ -39,12 +39,12 @@
 @section('content')
 <div id="page-wrapper">
     <div class="container-fluid">
-        <h2>加工時間</h2>
+        <h2>加工時間表</h2>
         <ol class="breadcrumb">
             <img src="{{ asset('img/u12.png') }}">
             <span class="space-item">系統設定</span>
             <span class="space-item">></span>
-            <span class="space-item">加工時間<span>
+            <span class="space-item">加工時間表<span>
         </ol>
         <div class="row">
             <div class="col-md-12">

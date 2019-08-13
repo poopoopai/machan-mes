@@ -54,12 +54,12 @@
 @section('content')
 <div id="page-wrapper">
     <div class="container-fluid">
-        <h2>APS製碼</h2>
+        <h2>APS製程碼</h2>
         <ol class="breadcrumb">
             <img src="{{ asset('img/u12.png') }}">
             <span class="space-item">系統設定</span>
             <span class="space-item">></span>
-            <span class="space-item">APS製碼<span>
+            <span class="space-item">APS製程碼<span>
         </ol>
         <div class="breadcrumb-custom">
             <span>資料列表</span>
@@ -94,46 +94,7 @@
                             <button class="btn btn-danger">刪除</button>
                         </td>
                     </tr>
-                    <tr>
-                        <th scope="row">2</th>
-                        <td>1011L01</td>
-                        <td>@fat</td>
-                        <td>
-                            <button class="btn btn-primary">編輯</button>
-                            &nbsp
-                            <button class="btn btn-danger">刪除</button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <th scope="row">3</th>
-                        <td>1011L01</td>
-                        <td>@twitter</td>
-                        <td>
-                            <button class="btn btn-primary">編輯</button>
-                            &nbsp
-                            <button class="btn btn-danger">刪除</button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <th scope="row">4</th>
-                        <td>1011L01</td>
-                        <td>@twitter</td>
-                        <td>
-                            <button class="btn btn-primary" >編輯</button>
-                            &nbsp
-                            <button class="btn btn-danger">刪除</button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <th scope="row">5</th>
-                        <td>1011L01</td>
-                        <td>@twitter</td>
-                        <td>
-                            <button class="btn btn-primary">編輯</button>
-                            &nbsp
-                            <button class="btn btn-danger">刪除</button>
-                        </td>
-                    </tr>
+                    
                 </tbody>
             </table>
     </div>

@@ -72,6 +72,7 @@
                                 <label class="col-md-2 control-label">組織</label>
                                     <div class="col-md-10">
                                         <select class="form-control" required>
+                                            <option disabled selected value="">--- 請選擇組織 ---</option>
                                             <option value="">一群</option>
                                             <option value="">二群</option>
                                             <option value="">三群</option>

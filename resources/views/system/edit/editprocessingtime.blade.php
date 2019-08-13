@@ -74,7 +74,7 @@
                                 <label class="col-md-2 control-label">適用機台</label>
                                 <div class="col-md-10">
                                     <select class="form-control" required>
-                                        <option value="" disabled selected>Choose</option>
+                                        <option disabled selected value="" >>--- 請選擇機台類型 ---</option>
                                         <option value="">一群雷射機</option>
                                         <option value="">一群CNC轉塔沖孔機</option>
                                         <option value="">一群自動拆床機</option>

@@ -131,13 +131,21 @@
         (restId == 1) ? restId = 1 : restId--;
     }
     const judgeTime = () => {
-        for (let max = 1; max <= restId - 1; max++) {
-            let firstCondition = $(`#start${max}`).val() >= $(`#end${max}`).val();
-            let secondCondition = $(`#start${max + 1}`).val() <= $(`#end${max}`).val()
-            let thirdCondition = $(`#start${max + 1}`).val() >= $(`#end${max + 1}`).val();
-            if ( firstCondition || secondCondition || thirdCondition) {
-                alert('時間錯誤');
-                return false;
+
+        var slot = document.getElementById(`restRemark${restId-1}`);
+      
+        if(slot == null){
+            alert('請新增休息時段');
+            return false;
+        }else{
+            for (let max = 1; max <= restId - 1; max++) {
+                let firstCondition = $(`#start${max}`).val() >= $(`#end${max}`).val();
+                let secondCondition = $(`#start${max + 1}`).val() <= $(`#end${max}`).val()
+                let thirdCondition = $(`#start${max + 1}`).val() >= $(`#end${max + 1}`).val();
+                if ( firstCondition || secondCondition || thirdCondition) {
+                    alert('時間錯誤');
+                    return false;
+                }
             }
         }
     }

@@ -38,20 +38,19 @@ Route::group(['middleware' => ['auth']], function () {
     Route::post('/inform', 'ResourceController@inform')->name('inform');
         
         
-       
-        Route::get('/aps-processcode', 'web\ApsProcessCodeController@index')->name('aps-processcode');
-        Route::get('/process-routing', 'web\ProcessRoutingController@index')->name('process-routing');
-        Route::get('/exclusion-reason', 'web\ExclusionReasonController@index')->name('exclusion-reason');
-        Route::get('/abnormal-reason', 'web\AbnormalReasonController@index')->name('abnormal-reason');
-        Route::get('/processing-time', 'web\ProcessingTimeController@index')->name('processing-time');
-        Route::get('/processing-time-result', 'web\ProcessingTimeController@result')->name('processing-time-result');
+    Route::get('/aps-processcode', 'web\ApsProcessCodeController@index')->name('aps-processcode');
+    Route::get('/process-routing', 'web\ProcessRoutingController@index')->name('process-routing');
+    Route::get('/exclusion-reason', 'web\ExclusionReasonController@index')->name('exclusion-reason');
+    Route::get('/abnormal-reason', 'web\AbnormalReasonController@index')->name('abnormal-reason');
+    Route::get('/processing-time', 'web\ProcessingTimeController@index')->name('processing-time');
+    Route::get('/processing-time-result', 'web\ProcessingTimeController@result')->name('processing-time-result');
 
-        Route::get('/machine-performance', 'web\MachinePerformanceController@index')->name('machine-performance');
-        Route::get('/order-load', 'web\OrderLoadController@index')->name('order-load');
-        Route::get('/order-demand', 'web\OrderDemandController@index')->name('order-demand');
-        Route::get('/order-inbound', 'web\OrderInboundController@index')->name('order-inbound');
-        
-        Route::get('/personnel-management', 'web\PersonnelManagementController@index')->name('personnel-management');
+    Route::get('/machine-performance', 'web\MachinePerformanceController@index')->name('machine-performance');
+    Route::get('/order-load', 'web\OrderLoadController@index')->name('order-load');
+    Route::get('/order-demand', 'web\OrderDemandController@index')->name('order-demand');
+    Route::get('/order-inbound', 'web\OrderInboundController@index')->name('order-inbound');
+    
+    Route::get('/personnel-management', 'web\PersonnelManagementController@index')->name('personnel-management');
 
         
         
