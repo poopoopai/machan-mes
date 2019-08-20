@@ -8,7 +8,6 @@ class MachineDefinition extends Model
 {
     protected $fillable = 
     [ 
-        'id',
         'machine_id',
         'machine_name',
         'machine_category',

@@ -108,7 +108,7 @@
                         <td>${workType.work_off}</td>
                         <td style="width:20%">
                             <a class="btn btn-primary" href="work-type/${workType.id}/edit">編輯</a>
-                            <form action="work-type/${workType.id}" method="POST" style="display:inline-block">
+                            <form action="work-type/${workType.id}"  onsubmit="return checkyn()" method="POST" style="display:inline-block">
                                 @method('DELETE')
                                 @csrf
                                 <div>
@@ -133,6 +133,15 @@
                 }
             });
         });
+    }
+
+    function checkyn(){
+        var check = confirm("是否要刪除該筆資料");
+        if (check) {
+            return true;
+        } else {
+            return false;
+        }
     }
     getWorkTypeData();
 </script>

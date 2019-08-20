@@ -1,16 +1,22 @@
 <?php
 
 namespace App\Http\Controllers;
-use App\entities\VariableFormula;
-use Illuminate\Support\Collection;
-use Illuminate\Http\Request;
+
+use App\Repositories\VariableFormulaRepository;
 
 class VariableFormulaController extends Controller
 {
+    protected $variable;
+
+    public function __construct(VariableFormulaRepository $variableformula)
+    {
+        $this->variable = $variableformula;
+    }
     
     public function index()
     {
-        $data = VariableFormula::select('id','variable', 'variablename', 'remark')->paginate(100);
+        $data =  $this->variable->page();
+
         return view('uptime/variableformula' , [ 'datas' => $data]);
     }
 
@@ -21,13 +27,11 @@ class VariableFormulaController extends Controller
     }
 
 
-    public function store(Request $request)
+    public function store()
     {
-        $avx = request()->only('variable','variablename','remark');
-       
-       $store = VariableFormula::create(request()->only('variable','variablename','remark'));
+        $data = $this->variable->create(request()->only('variable', 'variablename', 'remark'));
     
-       return redirect()->route('variable-formula.index');
+        return redirect()->route('variable-formula.index');
     }
 
     public function show($id)
@@ -37,24 +41,29 @@ class VariableFormulaController extends Controller
 
     public function edit($id)
     {
-        $result = VariableFormula::find($id);
+        $data = $this->variable->find($id);
+
+        if (!$data) {
+            return redirect()->route('variable-formula.index');
+        }
         
-        return view('uptime/editvariableformula', ['result' => $result]);
+        return view('uptime/editvariableformula', ['datas' => $data]);
     }
 
-    public function update(Request $request, $id)
-    {
-        
-        $variable = VariableFormula::find($id);
-
-        $variable->update(request()->only('variable','variablename','remark'));
-
+    public function update($id)
+    {    
+        $variable = $this->variable->update($id, request()->only('variable','variablename','remark'));
+       
         return redirect()->route('variable-formula.index');
     }
 
     public function destroy($id)
     {
-        $variable = VariableFormula::find($id)->delete();
+        $variable = $this->variable->destroy($id);
+
+        if($variable){
+            return redirect()->route('variable-formula.index');
+        }
 
         return back();
     }

@@ -64,7 +64,9 @@
         <div class="breadcrumb-custom">
             <span>資料列表</span>
             <div style="float:right; margin-top:-7px">
+                <a href="{{ route('aps-processcode.create') }}">
                 <button class="btn btn-success">新增</button>
+                </a>
             </div> 
         </div>
         <div class="total-data">載入筆數 | 共 5 筆</div>
@@ -81,18 +83,25 @@
                 </thead>
                 <tbody>
                     <tr>
-                        <th scope="row">1</th>
-                        <td>1011L01</td>
-                        <td>@mdo</td>
-                        <td>
-                            <a  href="{{ route('edit-aps-processcode') }}">
-                                <button class="btn btn-primary" >
-                                 編輯
-                                </button>
-                            </a>
-                            &nbsp
-                            <button class="btn btn-danger">刪除</button>
-                        </td>
+                        @foreach($datas as $key => $data)
+                        <tr>     
+                            
+                            <th scope="row">
+                                 {{ ++$key + ($datas->currentPage() - 1) * 10 }}
+                            </th>
+                            <td>{{ $data->aps_process_code }}</td>
+                            <td>{{ $data->process_description }}</td>
+                            
+                            <td>
+                            <a href="{{ route('aps-processcode.edit', $data->id) }}" class="btn btn-primary">編輯</a>
+                                <form action="{{ route('aps-processcode.destroy', $data->id) }}" onsubmit="return checkyn()" style="display:inline-block" method ="POST"> 
+                                    @csrf
+                                    @method('delete')
+                                    <button class="btn btn-danger">刪除</button>
+                                </form>
+                            </td>
+                        </tr>
+                        @endforeach
                     </tr>
                     
                 </tbody>
@@ -109,6 +118,13 @@
     </form>
 </div>
 <script>
-
+    function checkyn(){
+        var check = confirm("是否要刪除該筆資料");
+        if (check) {
+            return true;
+        } else {
+            return false;
+        }
+    }
 </script>
 @endsection

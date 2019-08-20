@@ -18,7 +18,7 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 });
 Route::get('/calendar-data', 'CalendarController@getCalnedar')->name('getcalendar');
 Route::post('/calendar-data', 'CalendarController@calendar')->name('calendar-data');
-Route::get('/resource', 'api\ResourceController@show');
+Route::get('/change_resources', 'api\ResourceController@change_resources');
 Route::get('/rest-data', 'RestTimeController@getRestTime')->name('rest-data');
 Route::get('/work-type-data', 'WorkTypeController@getWorkTypeData')->name('work-type-data');
 Route::get('/rest-group', 'WorkTypeController@getRestGroup')->name('rest-group');

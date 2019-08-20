@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class ErrorCode extends Model
 {
-    protected $fillable = ['code','message','machine_type','group'];
+    protected $fillable = ['code', 'message', 'machine_type', 'group'];
 
     public function resource()
         {

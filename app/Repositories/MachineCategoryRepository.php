@@ -8,12 +8,7 @@ class MachineCategoryRepository
 {
     public function page()
     {
-        return  MachineCategory::select('id','machine_id', 'machine_name', 'type', 'auto', 'interface')->paginate(100);
-    }
-
-    public function destroy($id)
-    {
-        return MachineCategory::destroy($id);
+        return  MachineCategory::select('id', 'machine_id', 'machine_name', 'type', 'auto', 'interface')->paginate(100);
     }
 
     public function create($data)
@@ -21,28 +16,31 @@ class MachineCategoryRepository
         return MachineCategory::create($data);
     }
 
+    public function find($id)
+    {
+        return  MachineCategory::find($id);
+    }
+
     public function update($id , array $data)
     {
         $Machine = MachineCategory::find($id);
 
-        if ($Machine) {
-            return $Machine->update($data);
-        }
-        return false;
+        return $Machine ? $Machine->update($data) : false ;
     }
 
-    public function find($id)
+    public function destroy($id)
     {
-        return  MachineCategory::find($id);
+        return MachineCategory::destroy($id);
     }
 
     public function getAll()
     {
         return  MachineCategory::get();
     }
+
     public function identify($data){
   
-            $data['machine_id'] = $data['auto'];
+        $data['machine_id'] = $data['auto'];
         
         if(($data['auto_up'] && $data['auto_down'])==1)
         {

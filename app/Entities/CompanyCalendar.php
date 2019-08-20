@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class CompanyCalendar extends Model
 {
-    protected $fillable = ['date', 'work_type_id','status'];
+    protected $fillable = ['date', 'work_type_id', 'status'];
 
     public function setupShift()
     {

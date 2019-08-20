@@ -33,12 +33,14 @@ Route::group(['middleware' => ['auth']], function () {
     Route::resource('variable-formula', 'VariableFormulaController')->except('show');
     Route::resource('formula-setting', 'FormulaSettingController')->except('show');
     Route::resource('machineoee', 'MachineOeeController')->except('show');
+    Route::resource('aps-processcode', 'ApsProcessCodeController')->except('show');
 
     Route::get('/home', 'HomeController@index')->name('home');
     Route::post('/inform', 'ResourceController@inform')->name('inform');
         
+
         
-    Route::get('/aps-processcode', 'web\ApsProcessCodeController@index')->name('aps-processcode');
+    
     Route::get('/process-routing', 'web\ProcessRoutingController@index')->name('process-routing');
     Route::get('/exclusion-reason', 'web\ExclusionReasonController@index')->name('exclusion-reason');
     Route::get('/abnormal-reason', 'web\AbnormalReasonController@index')->name('abnormal-reason');
@@ -57,7 +59,6 @@ Route::group(['middleware' => ['auth']], function () {
 
     Route::group(['prefix' => 'edit'], function () {
         
-        Route::get('/aps-processcode', 'web\ApsProcessCodeController@edit')->name('edit-aps-processcode'); //前url 後表單
         Route::get('/process-routing', 'web\ProcessRoutingController@edit')->name('edit-process-routing');
         Route::get('/exclusion-reason', 'web\ExclusionReasonController@edit')->name('edit-exclusion-reason');
         Route::get('/abnormal-reason', 'web\AbnormalReasonController@edit')->name('edit-abnormal-reason');

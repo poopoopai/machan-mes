@@ -2,8 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use App\Entities\MachineCategory;
 use App\Repositories\MachineCategoryRepository;
 
 class MachineCategoryController extends Controller
@@ -27,42 +25,44 @@ class MachineCategoryController extends Controller
         return view('system/createmachinecategory');
     }
 
-    public function store(Request $request)
+    public function store()
     {
-        $data = $this->machineRepo->identify($request->all());
+        $data = $this->machineRepo->identify(request()->all());
 
         $result = $this->machineRepo->create($data);
       
-        return redirect('machine-category');
+        return redirect()->route('machine-category.index');
     }
 
     public function edit($id)
     {
-        
-       $data = $this->machineRepo->find($id);
+        $data = $this->machineRepo->find($id);
 
-         if (!$data) 
-         {
-             return back();
-         }
-        return view('system/editmachinecategory',[ 'data' => $data]);
+        if (!$data) {
+            return redirect()->route('machine-category.index');
+        }
+
+        return view('system/editmachinecategory', ['datas' => $data]);
     }
 
-    public function update(Request $request, $id)
+    public function update($id)
     {
-    
-        $find = $this->machineRepo->identify($request->all());
+        $find = $this->machineRepo->identify(request()->all());
        
-        $this->machineRepo->find($id)->update($find);
+        $this->machineRepo->update($id, $find);
 
-        return redirect('machine-category');
+        return redirect()->route('machine-category.index');
     }
 
     public function destroy($id)
     {
-        $this->machineRepo->destroy($id);
+        $machine = $this->machineRepo->destroy($id);
 
-        return redirect('machine-category');
+        if ($machine) {
+            return redirect()->route('machine-category.index');
+        }
+        
+        return back();
     }
 
     public function getMachineId()

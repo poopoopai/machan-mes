@@ -53,11 +53,13 @@
                 <div class="panel panel-default">
                     <div class="panel-heading">資料編輯</div>
                     <div class="panel-body">
-                        <form class="form-horizontal">
+                        <form class="form-horizontal" action="{{ route('aps-processcode.update' , $datas->id)}}" method="POST">
+                            @csrf
+                            @method('PUT')
                             <div class="form-group">
                                 <label class="col-md-2 control-label">APS製程碼</label>
                                 <div class="col-md-4">
-                                    <input class="clearable form-control" required>
+                                    <input name="aps_process_code"  value="{{$datas->aps_process_code}}" class="clearable form-control" onkeyup="value=value.replace(/[^\d]/g,'')"  maxlength="4"required>
                                 </div>
                                 <div class="col-md-6">
                                     <span>APS 製程碼編碼規則：製程別(2碼)+廠別(1碼)+轉廠別(1碼)，共四碼
@@ -69,7 +71,7 @@
                             <div class="form-group">
                                 <label class="col-md-2 control-label">製程碼名稱</label>
                                 <div class="col-md-10">
-                                    <input class="clearable form-control" required>
+                                    <input name="process_description" value="{{$datas->process_description}}" class="clearable form-control" required>
                                 </div>
                             </div>
                             <hr>

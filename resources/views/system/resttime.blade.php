@@ -102,7 +102,7 @@
                         <td>${rest.rest_name}</td>
                         <td style="width:20%">
                             <a class="btn btn-primary" href="rest-time/${rest.id}/edit">編輯</a>
-                            <form action="rest-time/${rest.id}" method="POST" style="display:inline-block">
+                            <form action="rest-time/${rest.id}"  onsubmit="return checkyn()" method="POST" style="display:inline-block">
                                 @method('DELETE')
                                 @csrf
                                 <div>
@@ -127,6 +127,15 @@
                 }
             });
         });
+    }
+
+    function checkyn(){
+        var check = confirm("是否要刪除該筆資料");
+        if (check) {
+            return true;
+        } else {
+            return false;
+        }
     }
     getRestTimeData();
 </script>

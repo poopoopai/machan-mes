@@ -10,7 +10,7 @@ use DB;
 class ResourceController extends Controller
 {
     public function test2(){
-         
+        
         $datas = DB::connection('mysql2')->table('db')->get();
        
             foreach ($datas as $key => $data) {

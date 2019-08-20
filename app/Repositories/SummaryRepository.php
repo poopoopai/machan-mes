@@ -599,7 +599,7 @@ class SummaryRepository
 
         $beforeID = Summary::where('resources_id', $status->resources_id - 1)->first();
         if($beforeID == NULL){
-            $beforeID = 0;
+            $beforeID->machine_completion_day = 0;
         }
         $completion = Summary::where('machine_completion_day', $status->machine_completion_day)->where('resources_id', '>', 0)->first(); //找前面一筆相同的 顯示完工時間
         
