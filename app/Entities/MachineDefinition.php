@@ -18,10 +18,13 @@ class MachineDefinition extends Model
         'api_integration_name',
         'group_setting',
         'oee_assign',
-        'device_id',
-        'machine_specification',
         'class_assign',
         'production_time',
         'change_line_time',
     ];
+
+    public function Rest()
+    {
+        return $this->hasOne('App\Entities\RestGroup', 'id', 'class_assign');
+    }
 }

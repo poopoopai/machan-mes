@@ -598,9 +598,9 @@ class SummaryRepository
     {
 
         $beforeID = Summary::where('resources_id', $status->resources_id - 1)->first();
-        if($beforeID == NULL){
-            $beforeID->machine_completion_day = 0;
-        }
+        
+           
+        
         $completion = Summary::where('machine_completion_day', $status->machine_completion_day)->where('resources_id', '>', 0)->first(); //找前面一筆相同的 顯示完工時間
         
         $sensro  = Summary::where('machine_inputs_day', $status->machine_completion_day-1)->where('resources_id', '>', 0)->first(); //Q4-1 = R
@@ -609,84 +609,93 @@ class SummaryRepository
         $sum = $status->machine_completion_day - $status->machine_inputs_day; //Q-R
         $sensros  = Summary::where('machine_inputs_day', $status->machine_completion_day - $sum-1)->where('resources_id', '>', 0)->first(); //Q4-(Q-R)-1 = R
         $sensros2 = Summary::where('machine_inputs_day', $status->machine_completion_day - $sum-2)->where('resources_id', '>', 0)->first();//Q4-(Q-R)-2 = R
-        
-        if($status->machine_completion_day > $beforeID->machine_completion_day   && $status->machine_completion_day != 1){
-            
-            if($status->machine_inputs_day - $status->machine_completion_day > 0){
+        if(isset($beforeID)){
 
-                if(isset($sensro)){
-                    if(strtotime($completion->processing_completion_time) - strtotime($sensro->processing_start_time) > 18) {
-                            $total = strtotime($completion->processing_completion_time) - strtotime($sensro->processing_start_time);
-                    } else{
-                        if(isset($sensro2)){
-                            $total = strtotime($completion->processing_completion_time) - strtotime($sensro2->processing_start_time);
+            if($status->machine_completion_day > $beforeID->machine_completion_day && $status->machine_completion_day != 1){
+                
+                if($status->machine_inputs_day - $status->machine_completion_day > 0){
+
+                    if(isset($sensro)){
+                        if(strtotime($completion->processing_completion_time) - strtotime($sensro->processing_start_time) > 18) {
+                                $total = strtotime($completion->processing_completion_time) - strtotime($sensro->processing_start_time);
                         } else{
-                            $total = strtotime($completion->processing_completion_time);
-                        }
-                    } 
-                } else{
-                    if(strtotime($completion->processing_completion_time) > 18) {
-                        $total = strtotime($completion->processing_completion_time);
+                            if(isset($sensro2)){
+                                $total = strtotime($completion->processing_completion_time) - strtotime($sensro2->processing_start_time);
+                            } else{
+                                $total = strtotime($completion->processing_completion_time);
+                            }
+                        } 
                     } else{
-                        if(isset($sensro2)){
-                            $total = strtotime($completion->processing_completion_time) - strtotime($sensro2->processing_start_time);
-                        } else{
+                        if(strtotime($completion->processing_completion_time) > 18) {
                             $total = strtotime($completion->processing_completion_time);
-                        }
-                    } 
-                }
-            } else{      
-                if(isset($sensros)){ //$sensros存在
-                    if(strtotime($completion->processing_completion_time) - strtotime($sensros->processing_start_time) > 18) {
-                            $total = strtotime($completion->processing_completion_time) - strtotime($sensros->processing_start_time);
-                    } else{
-                        if(isset($sensros2)){
-                            $total = strtotime($completion->processing_completion_time) - strtotime($sensros2->processing_start_time);
                         } else{
-                            $total = strtotime($completion->processing_completion_time);
-                        }
-                    }       
-                } else{  //$sensros不存在
-                    if(strtotime($completion->processing_completion_time > 18)){
-                        $total = strtotime($completion->processing_completion_time);
-                    } else{
-                        if(isset($sensros2)){
-                            $total = strtotime($completion->processing_completion_time) - strtotime($sensros2->processing_start_time);
+                            if(isset($sensro2)){
+                                $total = strtotime($completion->processing_completion_time) - strtotime($sensro2->processing_start_time);
+                            } else{
+                                $total = strtotime($completion->processing_completion_time);
+                            }
+                        } 
+                    }
+                } else{      
+                    if(isset($sensros)){ //$sensros存在
+                        if(strtotime($completion->processing_completion_time) - strtotime($sensros->processing_start_time) > 18) {
+                                $total = strtotime($completion->processing_completion_time) - strtotime($sensros->processing_start_time);
                         } else{
+                            if(isset($sensros2)){
+                                $total = strtotime($completion->processing_completion_time) - strtotime($sensros2->processing_start_time);
+                            } else{
+                                $total = strtotime($completion->processing_completion_time);
+                            }
+                        }       
+                    } else{  //$sensros不存在
+                        if(strtotime($completion->processing_completion_time > 18)){
                             $total = strtotime($completion->processing_completion_time);
+                        } else{
+                            if(isset($sensros2)){
+                                $total = strtotime($completion->processing_completion_time) - strtotime($sensros2->processing_start_time);
+                            } else{
+                                $total = strtotime($completion->processing_completion_time);
+                            }
                         }
                     }
                 }
+            } else{
+                $total = 0;
             }
         } else{
             $total = 0;
         }
-        $sensro3  = Summary::where('machine_inputs_day', $status->machine_completion_day-3)->where('resources_id', '>', 0)->first();//Q4-3 = R
-        $sensros3 = Summary::where('machine_inputs_day', $status->machine_completion_day - $sum-3)->where('resources_id', '>', 0)->first();//Q4-(Q-R)-3 = R
-                
-        if($status->machine_completion_day > $beforeID->machine_completion_day && $status->processing_completion_time != ""){
-        
-            if($total > 18 && $total < 28){
-                $CTtime = $total;
-            } else{
+            $sensro3  = Summary::where('machine_inputs_day', $status->machine_completion_day-3)->where('resources_id', '>', 0)->first();//Q4-3 = R
+            $sensros3 = Summary::where('machine_inputs_day', $status->machine_completion_day - $sum-3)->where('resources_id', '>', 0)->first();//Q4-(Q-R)-3 = R
+        if(isset($beforeID)){
+
+            if($status->machine_completion_day > $beforeID->machine_completion_day && $status->processing_completion_time != ""){
             
-                if($status->machine_inputs_day > $status->machine_completion_day){
-                        if(isset($sensro3)){//前面沒資料就不用相減了
-                            $CTtime = strtotime($completion->processing_completion_time) - strtotime($sensro3->processing_start_time);
-                        } else{
-                            $CTtime = strtotime($completion->processing_completion_time);
-                        } 
+                if($total > 18 && $total < 28){
+                    $CTtime = $total;
                 } else{
-                        if(isset($sensros3)){//前面沒資料就不用相減了
-                            $CTtime = strtotime($completion->processing_completion_time) - strtotime($sensros3->processing_start_time);
-                        } else{
-                            $CTtime = strtotime($completion->processing_completion_time);
-                        }         
+                
+                    if($status->machine_inputs_day > $status->machine_completion_day){
+                            if(isset($sensro3)){//前面沒資料就不用相減了
+                                $CTtime = strtotime($completion->processing_completion_time) - strtotime($sensro3->processing_start_time);
+                            } else{
+                                $CTtime = strtotime($completion->processing_completion_time);
+                            } 
+                    } else{
+                            if(isset($sensros3)){//前面沒資料就不用相減了
+                                $CTtime = strtotime($completion->processing_completion_time) - strtotime($sensros3->processing_start_time);
+                            } else{
+                                $CTtime = strtotime($completion->processing_completion_time);
+                            }         
+                    }
                 }
+            } else{
+                $CTtime = 0;
             }
         } else{
             $CTtime = 0;
         }
+        
         $status->total_processing_time = $total;
         $status->ct_processing_time = $CTtime;
         return $status;

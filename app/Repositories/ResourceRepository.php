@@ -12,11 +12,8 @@ class ResourceRepository
     public function abnormal($data,$status)
     {
        
-       $mutable = Carbon::now()->format('Y-m-d');
-       
         $Statusid = Resource::where('id','>',$data['id'])->wheredate('date',$data['date'])->first(); //判斷後面的id date要等於當日
-        $summary = '0';
-        //   dd($data['orderno']);
+            $summary = '0';
         
         if ($data['status_id'] =='9'||$data['status_id'] == '10'||$data['status_id'] =='3'||$data['status_id'] == '15'||$data['status_id'] == '16') {
             
@@ -34,12 +31,14 @@ class ResourceRepository
         } else{
             $summary = '0';
         }
+
+        return $summary;
        
-        if($summary == null){
-            return response()->json(['status' => 'error', 'data' => 'Data Not Found'], 403);
-        }else{
-            return $summary;
-        }
+        // if($summary == null){
+        //     return response()->json(['status' => 'error', 'data' => 'Data Not Found'], 403);
+        // }else{
+        //     return $summary;
+        // }
         
     }
     public function message($data,$status)

@@ -153,12 +153,6 @@
                                 <li>
                                     <a href="{{ route('processing-time') }}" style="color: white;">加工時間</a>
                                 </li>
-                                <li>
-                                    <a href="{{ route('abnormal-reason') }}" style="color: white;">異常原因</a>
-                                </li>
-                                <li>
-                                    <a href="{{ route('exclusion-reason') }}" style="color: white;">除外原因</a>
-                                </li>
                             </ul>
                         </li>
                         <li>

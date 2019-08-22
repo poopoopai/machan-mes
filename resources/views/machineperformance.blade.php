@@ -121,67 +121,58 @@
                         <th scope="col">標準UAT-H-36-3</th>
                     </tr>
                 </thead>
-                <tbody>
-                    <tr>
-                        
-                        <tr>     
-                            <th scope="row">      
-                            </th>
-                            @foreach ($datas as $key =>$data)
-                            
-                            @if($data->id>1)
-
-                            <td>{{ $key}}</td>
-                            <td>{{ $data->machine }}</td>
-                            <td>{{ $data->description }}</td>
-                            <td>{{ $data->type }}</td>
-                            <td>{{ $data->abnormal }}</td>
-                            <td>{{ $data->serial_number }}</td>
-                            <td>{{ $data->serial_number_day }}</td>
-                            <td>{{ $data->open }}</td>
-                            <td>{{ $data->turn_off }}</td>
-                            <td>{{ $data->time }}</td>
-                            <td>{{ $data->machine_completion }}</td>
-                            <td>{{ $data->machine_inputs }}</td>
-                            <td>{{ $data->machine_completion_day }}</td>
-                            <td>{{ $data->machine_inputs_day }}</td>
-                            <td>{{ $data->sensro_inputs }}</td>
-                            <td>{{ $data->break }}</td>
-                            <td>{{ $data->break_time }}</td>
-                            <td>{{ $data->message_status }}</td>
-                            <td>{{ $data->down_time }}</td>
-                            <td>{{ $data->completion_status }}</td>
-                            <td>{{ $data->total_processing_time }}</td>
-                            <td>{{ $data->second_completion }}</td>
-                            <td>{{ $data->manufacturing_status }}</td>
-                            <td>{{ $data->processing_start_time }}</td>
-                            <td>{{ $data->processing_completion_time }}</td>
-                            <td>{{ $data->working_time }}</td>
-                            <td>{{ $data->roll_t }}</td>
-                            <td>{{ $data->second_t }}</td>
-                            <td>{{ $data->ct_processing_time }}</td>
-                            <td>{{ $data->actual_processing }}</td>
-                            <td>{{ $data->restart_count }}</td>
-                            <td>{{ $data->restop_count }}</td>
-                            <td>{{ $data->start_count }}</td>
-                            <td>{{ $data->stop_count }}</td>
-                            <td>{{ $data->refueling_start }}</td>
-                            <td>{{ $data->refueling_end }}</td>
-                            <td>{{ $data->refueling_time }}</td>
-                            <td>{{ $data->refueler_time }}</td>
-                            <td>{{ $data->aggregate_start }}</td>
-                            <td>{{ $data->aggregate_end }}</td>
-                            <td>{{ $data->aggregate_time }}</td>
-                            <td>{{ $data->collector_time }}</td>
-                            <td>{{ $data->uat_h_26_2 }}</td>
-                            <td>{{ $data->uat_h_26_3 }}</td>
-                            <td>{{ $data->uat_h_36_3 }}</td>
-                            <td>{{ $data->standard_uat_h_26_2 }}</td>
-                            <td>{{ $data->standard_uat_h_26_3 }}</td>
-                            <td>{{ $data->standard_uat_h_36_3 }}</td>
-                            
-                            @endif
-                            
+                <tbody>  
+                        @foreach ($datas as $key =>$data)
+                    <tr>     
+                        <td>{{ ++$key + ($datas->currentPage() - 1) * 100 }}</td>
+                        <td>{{ $data->machine }}</td>
+                        <td>{{ $data->description }}</td>
+                        <td>{{ $data->type }}</td>
+                        <td>{{ $data->abnormal }}</td>
+                        <td>{{ $data->serial_number }}</td>
+                        <td>{{ $data->serial_number_day }}</td>
+                        <td>{{ $data->open }}</td>
+                        <td>{{ $data->turn_off }}</td>
+                        <td>{{ $data->time }}</td>
+                        <td>{{ $data->machine_completion }}</td>
+                        <td>{{ $data->machine_inputs }}</td>
+                        <td>{{ $data->machine_completion_day }}</td>
+                        <td>{{ $data->machine_inputs_day }}</td>
+                        <td>{{ $data->sensro_inputs }}</td>
+                        <td>{{ $data->break }}</td>
+                        <td>{{ $data->break_time }}</td>
+                        <td>{{ $data->message_status }}</td>
+                        <td>{{ $data->down_time }}</td>
+                        <td>{{ $data->completion_status }}</td>
+                        <td>{{ $data->total_processing_time }}</td>
+                        <td>{{ $data->second_completion }}</td>
+                        <td>{{ $data->manufacturing_status }}</td>
+                        <td>{{ $data->processing_start_time }}</td>
+                        <td>{{ $data->processing_completion_time }}</td>
+                        <td>{{ $data->working_time }}</td>
+                        <td>{{ $data->roll_t }}</td>
+                        <td>{{ $data->second_t }}</td>
+                        <td>{{ $data->ct_processing_time }}</td>
+                        <td>{{ $data->actual_processing }}</td>
+                        <td>{{ $data->restart_count }}</td>
+                        <td>{{ $data->restop_count }}</td>
+                        <td>{{ $data->start_count }}</td>
+                        <td>{{ $data->stop_count }}</td>
+                        <td>{{ $data->refueling_start }}</td>
+                        <td>{{ $data->refueling_end }}</td>
+                        <td>{{ $data->refueling_time }}</td>
+                        <td>{{ $data->refueler_time }}</td>
+                        <td>{{ $data->aggregate_start }}</td>
+                        <td>{{ $data->aggregate_end }}</td>
+                        <td>{{ $data->aggregate_time }}</td>
+                        <td>{{ $data->collector_time }}</td>
+                        <td>{{ $data->uat_h_26_2 }}</td>
+                        <td>{{ $data->uat_h_26_3 }}</td>
+                        <td>{{ $data->uat_h_36_3 }}</td>
+                        <td>{{ $data->standard_uat_h_26_2 }}</td>
+                        <td>{{ $data->standard_uat_h_26_3 }}</td>
+                        <td>{{ $data->standard_uat_h_36_3 }}</td>   
+                               
                     </tr>
                     @endforeach
 

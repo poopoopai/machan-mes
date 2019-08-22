@@ -10,7 +10,7 @@ class MainProgram extends Model
     protected $fillable = ['status', 'description', 'type', 'codeX', 'group'];
 
     public function resources()
-        {
-            return $this->hasMany('App\Entities\Resource', 'status_id', 'status');
-        }
+    {
+        return $this->hasMany('App\Entities\Resource', 'status_id', 'status');
+    }
 }

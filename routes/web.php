@@ -42,8 +42,7 @@ Route::group(['middleware' => ['auth']], function () {
         
     
     Route::get('/process-routing', 'web\ProcessRoutingController@index')->name('process-routing');
-    Route::get('/exclusion-reason', 'web\ExclusionReasonController@index')->name('exclusion-reason');
-    Route::get('/abnormal-reason', 'web\AbnormalReasonController@index')->name('abnormal-reason');
+
     Route::get('/processing-time', 'web\ProcessingTimeController@index')->name('processing-time');
     Route::get('/processing-time-result', 'web\ProcessingTimeController@result')->name('processing-time-result');
 
@@ -54,14 +53,9 @@ Route::group(['middleware' => ['auth']], function () {
     
     Route::get('/personnel-management', 'web\PersonnelManagementController@index')->name('personnel-management');
 
-        
-        
-
     Route::group(['prefix' => 'edit'], function () {
         
         Route::get('/process-routing', 'web\ProcessRoutingController@edit')->name('edit-process-routing');
-        Route::get('/exclusion-reason', 'web\ExclusionReasonController@edit')->name('edit-exclusion-reason');
-        Route::get('/abnormal-reason', 'web\AbnormalReasonController@edit')->name('edit-abnormal-reason');
         Route::get('/processing-time', 'web\ProcessingTimeController@edit')->name('edit-processing-time');
         Route::get('/personnel-management', 'web\PersonnelManagementController@edit')->name('edit-personnel-management');
     });

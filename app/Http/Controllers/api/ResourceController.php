@@ -23,7 +23,7 @@ class ResourceController extends Controller
         $this->SumRepo = $SummaryRepo;
     }
 
-    public function change_resources()
+    public function getmachinedatabase()
     {  
         #$parmas = request()->only('id','orderno','status','code','date','time');
         $parme = $this->ResRepo->data();

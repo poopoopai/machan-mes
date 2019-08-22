@@ -33,4 +33,9 @@ class ApsProcessCodeRepository
         return ApsProcessCode::destroy($id);
     }
 
+    public function getData()
+    {
+        return ApsProcessCode::get();
+    }
+
 }

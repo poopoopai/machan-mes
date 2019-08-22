@@ -53,12 +53,13 @@
                 <div class="panel panel-default">
                     <div class="panel-heading">資料編輯</div>
                     <div class="panel-body">
-                    <form class="form-horizontal" action="{{ route('machine-definition.store') }}" method="POST">
+                    <form class="form-horizontal" action="{{ route('machine-definition.update',$datas->id) }}" method="POST">
                         @csrf
+                        @method('PUT')
                             <div class="form-group">
                                 <label class="col-md-2 control-label">機台名稱</label>
                                 <div class="col-md-10">
-                                    <input name="machine_name" class="clearable form-control" required>
+                                    <input name="machine_name" class="clearable form-control" value="{{$datas->machine_name}}" required>
                                 </div>
                             </div>
                             <hr>
@@ -67,7 +68,7 @@
                                 <div class="col-md-10">
                                    
                                         <select name="machine_category" class="form-control" id="machine-name"   required>
-                                                <option disabled selected value="">--- 請選擇機台類型 ---</option>
+                                        <option disabled selected value="">--- 請選擇機台類型 ---</option>
                                         </select>
                                 </div>
                             </div>
@@ -80,11 +81,12 @@
                                     </select>
                                 </div>
                             </div>
+                            
                             <hr>
                             <div class="form-group">
                                 <label class="col-md-2 control-label">班別</label>
                                 <div class="col-md-10">
-                                    <select name="group_setting" class="form-control" id="work-type" onchange="getRestId()" required>
+                                    <select  class="form-control" id="work-type"  name="group_setting" onchange="getRestId()" required>
                                         <option disabled selected value="">--- 請選擇班別類型 ---</option>
                                         <option value="正常班">正常班</option>
                                         <option value="早班">早班</option>
@@ -99,15 +101,15 @@
                             <div class="form-group">
                                     <label class="col-md-2 control-label">標準換線(分)</label>
                                     <div class="col-md-10">
-                                        <input name="change_line_time" class="clearable form-control" required>
+                                        <input name="change_line_time" class="clearable form-control" value="{{$datas->change_line_time	}}" required>
                                     </div>
-                                </div>
+                            </div>
                             <hr>
                             <div class="form-group">
                                 <label class="col-md-2 control-label">休息類別</label>
                                 <div class="col-md-10">
                                     <select name="class_assign" class="form-control"  id="rest-id" required>
-                                        <option disabled selected value="">--- 請選擇 ---</option>
+                                    <option disabled selected >--- 請選擇 ---</option>
                                     </select>
                                 </div>
                             </div>
@@ -180,7 +182,7 @@
        
             data.forEach(data => {
                 $('#ApsProcessCode').append(`
-                    <option value="${data.aps_process_code}"> ${data.process_description}</option>
+                    <option value=""> ${data.process_description}</option>
                 `);
             })
         });  

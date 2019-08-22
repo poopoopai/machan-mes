@@ -69,4 +69,10 @@ class ApsProcessCodeController extends Controller
 
         return back();
     }
+    public function getApsData()
+    {
+        $data = $this->aps_process->getData();
+
+        return response()->json($data);
+    }
 }

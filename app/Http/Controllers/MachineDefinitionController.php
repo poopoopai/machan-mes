@@ -3,83 +3,72 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Repositories\MachineDefinitionRepository;
+
 
 class MachineDefinitionController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
+    protected $machineDef;
+
+    public function __construct(MachineDefinitionRepository $machineDefinition)
     {
-        return view("system/machinedefinition");
+        $this->machineDef = $machineDefinition;
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
+    public function index()
+    {
+        $data = $this->machineDef->page();
+       
+        return view("system/machinedefinition", ['datas' => $data]);
+    }
+
     public function create()
     {
         return view("system/createmachinedefinition");
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
+    public function store()
     {
-    
-        dd($request->all());
+        $getMachineId = $this->machineDef->getMachineCode(request()->all());
+        
+        $data = $this->machineDef->create($getMachineId);
+        
+        return redirect()->route('machine-definition.index');
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function show($id)
     {
         //
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function edit($id)
     {
-        //
+        $data = $this->machineDef->find($id);
+
+        $getRest = $this->machineDef->getRest();
+
+        if (!$data) {
+            return redirect()->route('machine-definition.index');
+        }
+
+        return view('system/editmachinedefinition', ['datas' => $data , 'getRest' => $getRest]);
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $id)
+    public function update($id)
     {
-        //
+        $this->machineDef->update($id, request()->all());
+
+        return redirect()->route('machine-definition.index');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function destroy($id)
     {
-        //
+        $machinedef = $this->machineDef->destroy($id);
+
+        if($machinedef){
+            return redirect()->route('machine-definition.index');
+        }
+
+        return back();
     }
 }

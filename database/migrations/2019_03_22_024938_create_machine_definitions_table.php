@@ -19,16 +19,14 @@ class CreateMachineDefinitionsTable extends Migration
             $table->string('machine_name');
             $table->string('machine_category');
             $table->string('machine_category_name');
-            $table->string('aps_process_code');//字串相加
+            $table->unsignedInteger('aps_process_code');
             $table->string('process_description');
             $table->string('api_integration')->nullable();
             $table->string('api_integration_name')->nullable();
-            $table->string('group_setting');
-            $table->string('oee_assign')->nullable();
-            $table->string('device_id')->nullable();
-            $table->string('machine_specification')->nullable();
-            $table->unsignedInteger('class_assign');
-            $table->unsignedInteger('production_time');
+            $table->string('group_setting')->nullable();
+            $table->string('oee_assign');
+            $table->unsignedInteger('class_assign')->nullable();
+            $table->unsignedInteger('production_time')->nullable();
             $table->unsignedInteger('change_line_time')->nullable();
             $table->timestamps();
         });

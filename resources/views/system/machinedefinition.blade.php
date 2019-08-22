@@ -83,7 +83,28 @@
                     </tr>
                 </thead>
                 <tbody>
-                   
+                    
+                        
+                    @foreach ($datas as $key => $data)
+                    
+                    <tr>
+                        <th scope="row">
+                            {{ ++$key + ($datas->currentPage() - 1) * 10 }}
+                        </th>
+                        <td>{{ $data->machine_id }}</td>
+                        <td>{{ $data->machine_name }}</td>
+                        <td>{{ $data->process_description }}</td>
+                        <td>
+                            <a href="{{ route("machine-definition.edit" , $data->id)}}" class="btn btn-primary">編輯</a>
+                                <form action="{{ route("machine-definition.destroy" , $data->id)}} "  style="display:inline-block" method ="POST"> 
+                                    @csrf
+                                    @method('delete')
+                                    <button class="btn btn-danger">刪除</button>
+                                </form>
+                        </td>
+                    </tr>
+                    @endforeach
+
                 </tbody>
             </table>
     </div>
