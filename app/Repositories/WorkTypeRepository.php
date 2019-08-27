@@ -23,9 +23,7 @@ class WorkTypeRepository
                     ->orwhere('end', '>', $data['work_time_end']);
             })->exists();
 
-        if ($checkExists) {
-            return false;
-        }
+        
         return SetupShift::create([
             'name' => $data['work_name'],
             'type' => $data['work_type'],

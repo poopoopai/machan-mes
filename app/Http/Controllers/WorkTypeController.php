@@ -27,6 +27,7 @@ class WorkTypeController extends Controller
     public function store(Request $request)
     {
         $result = $this->workRepo->create(request()->only('work_type', 'work_time_start', 'work_time_end', 'rest_id', 'work_name'));
+        
         if (!$result) {
             return back()->with('message', 'The time has repeated');
         }

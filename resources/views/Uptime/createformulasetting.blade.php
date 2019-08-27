@@ -181,7 +181,6 @@
             $('#formula').append(`      
                 <div>      
                     <label class="col-md-1 control-label">+</label>
-                    <label class="col-md-1 control-label">(</label>
                     <div class="col-md-2" style="padding-top:3px;">
                         <input type="hidden" name="sign${mulaId}" value="+" class="form-control" required >
                         <select name="add${mulaId}" id="sum${mulaId-1}" class="form-control adjustment"> 

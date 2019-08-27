@@ -52,7 +52,7 @@
                 <div class="panel panel-default">
                     <div class="panel-heading">新增資料</div>
                     <div class="panel-body">
-                        <form class="form-horizontal" action="{{ route('work-type.store') }}" method="POST" onsubmit="return judgeTime()">
+                        <form class="form-horizontal" action="{{ route('work-type.store') }}" method="POST" >
                             @csrf
                             <div class="form-group">
                                 <label class="col-md-2 control-label">班別名稱</label>
@@ -131,13 +131,13 @@
             })
         });
     }
-    const judgeTime = () => {
-            let firstCondition = $('#start').val() >= $('#end').val();
-            if ( firstCondition ) {
-                alert('時間錯誤');
-                return false;
-            }
-    }
+    // const judgeTime = () => {
+    //         let firstCondition = $('#start').val() >= $('#end').val();
+    //         if ( firstCondition ) {
+    //             alert('時間錯誤');
+    //             return false;
+    //         }
+    // }
     
 </script>
 @endsection

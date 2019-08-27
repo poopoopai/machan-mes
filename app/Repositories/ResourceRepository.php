@@ -33,13 +33,7 @@ class ResourceRepository
         }
 
         return $summary;
-       
-        // if($summary == null){
-        //     return response()->json(['status' => 'error', 'data' => 'Data Not Found'], 403);
-        // }else{
-        //     return $summary;
-        // }
-        
+           
     }
     public function message($data,$status)
     {

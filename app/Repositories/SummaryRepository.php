@@ -106,9 +106,9 @@ class SummaryRepository
                 }
                 $data['status_id'] == 10 ? $count->machine_inputs_day++ : $count->machine_inputs_day;
                 $data['status_id'] == 20 ? $count->refueling_start++ : $count->refueling_start =0;
-                $data['status_id'] == 21 ? $count->refueling_end++: $count->refueling_end = 0;
-                $data['status_id'] == 22 ? $count->aggregate_start++: $count->aggregate_start = 0;
-                $data['status_id'] == 23 ? $count->aggregate_end++: $count->aggregate_end = 0;
+                $data['status_id'] == 21 ? $count->refueling_end++ : $count->refueling_end = 0;
+                $data['status_id'] == 22 ? $count->aggregate_start++ : $count->aggregate_start = 0;
+                $data['status_id'] == 23 ? $count->aggregate_end++ : $count->aggregate_end = 0;
             }            
                 
             if ( ($data['orderno'] == '' && $data['date'] != $count->resource->date) || $count->resources_id == 0  ){ //最初$count->resources_id
@@ -118,13 +118,13 @@ class SummaryRepository
                     if($count){
                         $count->serial_number_day++;
                     } else{
-                        $count->serial_number_day++;//最開始的那筆沒有資料
+                        $count->serial_number_day = 1 ;//最開始的那筆沒有資料
                     }
-                } else{  //前面加總料號數量+1 且同料號同日期
+                } else{  //料號不為空同日期，前面加總料號數量+1 
                     if($count){
                         $count->serial_number_day++;
                     } else{
-                        $count->serial_number_day++ ;
+                        $count->serial_number_day = 1 ;
                     }       
                 }
             }
