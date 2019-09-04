@@ -60,7 +60,7 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('/personnel-management', 'web\PersonnelManagementController@edit')->name('edit-personnel-management');
     });
 
-        Route::get('/full-calendar', 'CalendarController@fullcalendar')->name('full-calendar');
+        Route::get('/full-calendar', 'CalendarController@fullCalendar')->name('full-calendar');
         Route::get('/year-calendar', 'CalendarController@yearcalendar')->name('year-calendar');
         Route::get('/process-calendar', 'ProcessCalendarController@processcalendar')->name('process-calendar');
         Route::get('/adjust-process-calendar', 'ProcessCalendarController@showProcessCalendar')->name('show-process-calendar');

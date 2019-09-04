@@ -106,20 +106,22 @@
                         </div>
                         <div class="panel-body">
                                 <label class="col-md-2 control-label">運算符號</label>
-                                    <button class="btn btn-default" onclick = "addFormula()" type="button">+</button>
-                                    <button class="btn btn-default" onclick = "subtractFormula()" type="button">-</button>
-                                    <button class="btn btn-default" onclick = "multiplyFormula()" type="button">x</button>
-                                    <button class="btn btn-default" onclick = "divisionFormula()" type="button">÷</button>
-                                    <button class="btn btn-default" >()</button>
+                                    <button id="a" class="btn btn-default" onclick = "addFormula()" type="button">+</button>
+                                    <button id="b" class="btn btn-default" onclick = "subtractFormula()" type="button">-</button>
+                                    <button id="c" class="btn btn-default" onclick = "multiplyFormula()" type="button">x</button>
+                                    <button id="d" class="btn btn-default" onclick = "divisionFormula()" type="button">÷</button>
+                                    <button id="e" class="btn btn-default" onclick = "leftFormula()" type="button" style="visibility: hidden;">(</button>
+                                    <button id="f" class="btn btn-default" onclick = "rightFormula()" type="button" style="visibility: hidden;">)</button>
                                     <button class="btn btn-default" >Σ</button>
-                                    <button class="btn btn-default" >變</button>
-                                    
+                                    <button id="g"class="btn btn-default"   onclick = "varFormula()" type="button" style="visibility: hidden;">變</button>
+                                    {{-- <button id="g"class="btn btn-default"   onclick = "clearFormula()" type="button">清</button> --}}
                                     <button class="btn btn-default" type="submit" style="float:right;margin-right:1em;">儲存</button>
                                     <button class="btn btn-default" onclick="" style="float:right;margin-right:1em;">+</button>
                                 <br><br>
                             <div class="col-md-12">
                                     <div class="col-md-2" style="padding-top:3px;">
-                                        <input type="text" name='variable' class="form-control adjustment" required >
+                                        <input type="text"   name='variable' class="form-control adjustment" required >
+                                        <input type="hidden" name='variable_type' value="2"  class="form-control adjustment" required >
                                     </div>
                                         <label class="col-md-1 control-label">=</label>
                                     <div class="col-md-2" style="padding-top:3px;">
@@ -146,7 +148,7 @@
 </div>
 <script>
    
-   let mulaId = 1;
+   let mulaId = 0;
    let rowId = 1;
 
    const Formula = () => {
@@ -172,18 +174,168 @@
     Formula();
 
     const addFormula = () => {
+
+        mulaId++; 
+        document.getElementById('a').style.visibility = 'hidden'
+        document.getElementById('b').style.visibility = 'hidden'
+        document.getElementById('c').style.visibility = 'hidden'
+        document.getElementById('d').style.visibility = 'hidden'
+        document.getElementById('e').style.visibility = ''
+        document.getElementById('f').style.visibility = 'hidden'
+        document.getElementById('g').style.visibility = ''
+            $('#formula').append(`      
+                <div>      
+                    <label class="col-md-1 control-label">+</label>
+                    <input id ="sign${mulaId}" type="hidden" name="sign${mulaId}" value="+" class="form-control" required >
+                </div>
+            `);  
+                  
+    }
+                
+    const subtractFormula = () => {  
+        mulaId++; 
+        document.getElementById('a').style.visibility = 'hidden'
+        document.getElementById('b').style.visibility = 'hidden'
+        document.getElementById('c').style.visibility = 'hidden'
+        document.getElementById('d').style.visibility = 'hidden'
+        document.getElementById('e').style.visibility = ''
+        document.getElementById('f').style.visibility = 'hidden'
+        document.getElementById('g').style.visibility = ''
+            $('#formula').append(`      
+                <div>      
+                    <label class="col-md-1 control-label">-</label>
+                    <input id ="sign${mulaId}" type="hidden"  name="sign${mulaId}" value="-" class="form-control" required >
+                </div>
+            `);   
+    }
+    const multiplyFormula = () => {      
+        mulaId++;
+        document.getElementById('a').style.visibility = 'hidden'
+        document.getElementById('b').style.visibility = 'hidden'
+        document.getElementById('c').style.visibility = 'hidden'
+        document.getElementById('d').style.visibility = 'hidden'
+        document.getElementById('e').style.visibility = ''
+        document.getElementById('f').style.visibility = 'hidden'
+        document.getElementById('g').style.visibility = ''
+            $('#formula').append(`      
+                <div>      
+                    <label class="col-md-1 control-label">x</label>
+                    <input id ="sign${mulaId}" type="hidden"  name="sign${mulaId}" value="*" class="form-control" required >
+                </div>
+            `);    
+    }
+    const divisionFormula = () => {
+        mulaId++;
+        document.getElementById('a').style.visibility = 'hidden'
+        document.getElementById('b').style.visibility = 'hidden'
+        document.getElementById('c').style.visibility = 'hidden'
+        document.getElementById('d').style.visibility = 'hidden'
+        document.getElementById('e').style.visibility = ''
+        document.getElementById('f').style.visibility = 'hidden'
+        document.getElementById('g').style.visibility = ''
+            $('#formula').append(`      
+                <div>      
+                    <label class="col-md-1 control-label">÷</label>
+                    <input id ="sign${mulaId}" type="hidden"  name="sign${mulaId}" value="/" class="form-control" required >
+                </div>
+            `);   
+    }
+
+    const leftFormula = () => {
+        mulaId++;
+        document.getElementById('a').style.visibility = 'hidden'
+        document.getElementById('b').style.visibility = 'hidden'
+        document.getElementById('c').style.visibility = 'hidden'
+        document.getElementById('d').style.visibility = 'hidden'
+        document.getElementById('e').style.visibility = 'hidden'
+        document.getElementById('f').style.visibility = 'hidden'
+        document.getElementById('g').style.visibility = ''
+        $('#formula').append(`      
+            <div>      
+                <label class="col-md-1 control-label">(</label>
+                <input id ="sign${mulaId}" type="hidden"  name="sign${mulaId}" value="(" class="form-control" required >
+            </div>
+        `);   
+    }
+
+    const rightFormula = () => {
+        mulaId++;
+        document.getElementById('a').style.visibility = ''
+        document.getElementById('b').style.visibility = ''
+        document.getElementById('c').style.visibility = ''
+        document.getElementById('d').style.visibility = ''
+        document.getElementById('e').style.visibility = 'hidden'
+        
+        document.getElementById('g').style.visibility = 'hidden'
+        $('#formula').append(`      
+            <div >      
+                <label class="col-md-1 control-label">)</label>
+                <input id ="sign${mulaId}" type="hidden"  name="sign${mulaId}" value=")" class="form-control" required >
+            </div>
+        `);   
+
+
+        let count = 0;
+        var countArrary = [];
+        
+        for(bbb = mulaId ; bbb > 0 ; bbb--){
+
+            let aaa = $(`#sign${bbb}`).val();
+
+            if(aaa != null){
+                countArrary.unshift(aaa);
+            }
+        }
+        // console.log(countArrary,mulaId);
+        for(i = 0 ; i < countArrary.length ; i++ ){
+            
+            if(countArrary[i] == '('){
+                count++;
+            }else if (countArrary[i] == ')'){
+                count--;
+            }else{
+                count;
+            }
+
+        }
+        
+        if(count>0){
+
+        document.getElementById('f').style.visibility = ''
+        }else{
+        document.getElementById('f').style.visibility = 'hidden'
+        }
+    }
+
+    const clearFormula = () => {
+        
+        mulaId--;
+        $(`#sign${mulaId}`).remove();   
+        document.getElementById('a').style.visibility = ''
+        document.getElementById('b').style.visibility = ''
+        document.getElementById('c').style.visibility = ''
+        document.getElementById('d').style.visibility = ''
+        document.getElementById('e').style.visibility = ''
+        document.getElementById('f').style.visibility = ''
+    }
+    
+    const varFormula = () => {
         axios.get('{{ route('getdatabase') }}', {
 
         })
         .then(function ({ data }) {     
-            console.log(data.data);
-              
+            mulaId++; 
+            document.getElementById('a').style.visibility = ''
+            document.getElementById('b').style.visibility = ''
+            document.getElementById('c').style.visibility = ''
+            document.getElementById('d').style.visibility = ''
+            document.getElementById('e').style.visibility = 'hidden'
+            
+            document.getElementById('g').style.visibility = 'hidden'
             $('#formula').append(`      
                 <div>      
-                    <label class="col-md-1 control-label">+</label>
                     <div class="col-md-2" style="padding-top:3px;">
-                        <input type="hidden" name="sign${mulaId}" value="+" class="form-control" required >
-                        <select name="add${mulaId}" id="sum${mulaId-1}" class="form-control adjustment"> 
+                        <select name="var${mulaId}" id="sum${mulaId}" class="form-control adjustment"> 
                                 <option value="${data.data.machine_completion}">機台累積完工數</option>
                                 <option value="${data.data.machine_inputs}">機台累計投入數</option>
                                 <option value="${data.data.machine_completion_day}">當天完工數</option>
@@ -195,104 +347,50 @@
                     </div>
                 </div>
             `);   
-        })
-        .catch(function ({ data }) {
-            alert('今天的資料沒有抓到');
-        });
-        mulaId++;   
-    }
+
+                 
+            let count = 0;
+            var countArrary = [];
+            
+            for(bbb = mulaId ; bbb > 0 ; bbb--){
+
+                let aaa = $(`#sign${bbb}`).val();
+
+                if(aaa != null){
+                    countArrary.unshift(aaa);
+                }
+            }
+            // console.log(countArrary,mulaId);
+            for(i = 0 ; i < countArrary.length ; i++ ){
                 
-             
-    
-    const subtractFormula = () => {
-        axios.get('{{ route('getdatabase') }}', {
+                if(countArrary[i] == '('){
+                    count++;
+                }else if (countArrary[i] == ')'){
+                    count--;
+                }else{
+                    count;
+                }
 
-        })
-        .then(function ({ data }) {        
-            $('#formula').append(`      
-                <div>      
-                    <label class="col-md-1 control-label">-</label>
-                    <div class="col-md-2" style="padding-top:3px;">
-                        <input type="hidden" name="sign${mulaId}" value="-" class="form-control" required >
-                        <select name="subtract${mulaId}" id="sum${mulaId-1}" class="form-control adjustment"> 
-                                <option value="${data.data.machine_completion}">機台累積完工數</option>
-                                <option value="${data.data.machine_inputs}">機台累計投入數</option>
-                                <option value="${data.data.machine_completion_day}">當天完工數</option>
-                                <option value="${data.data.machine_inputs_day}">當天投入數</option>
-                                <option value="${data.data.sensro_inputs}">Sensor投入</option>
-                                <option value="28800">28800</option>
-                                <option value="10">10</option>
-                        </select>
-                    </div>
-                </div>
-            `);   
+            }
+            console.log(countArrary,count);
+            
+            if(count>0 && ($(`#sign${mulaId-1}`).val() != '(')){
+
+                document.getElementById('f').style.visibility = ''
+            }else{
+                document.getElementById('f').style.visibility = 'hidden'
+            }
         })
         .catch(function (error) {
             console.log(error);
         });
-        mulaId++;   
-    }
-    const multiplyFormula = () => {
-        axios.get('{{ route('getdatabase') }}', {
-
-        })
-        .then(function ({ data }) {      
-                
-            $('#formula').append(`      
-                <div>      
-                    <label class="col-md-1 control-label">x</label>
-                    <div class="col-md-2" style="padding-top:3px;">
-                        <input type="hidden" name="sign${mulaId}" value="*" class="form-control" required >
-                        <select name="multiply${mulaId}" id="sum${mulaId-1}" class="form-control adjustment"> 
-                                <option value="${data.data.machine_completion}">機台累積完工數</option>
-                                <option value="${data.data.machine_inputs}">機台累計投入數</option>
-                                <option value="${data.data.machine_completion_day}">當天完工數</option>
-                                <option value="${data.data.machine_inputs_day}">當天投入數</option>
-                                <option value="${data.data.sensro_inputs}">Sensor投入</option>
-                                <option value="28800">28800</option>
-                                <option value="10">10</option>
-                        </select>
-                    </div>
-                </div>
-            `);   
-        })
-        .catch(function (error) {
-            console.log(error);
-        });
-        mulaId++;   
-    }
-    const divisionFormula = () => {
-        axios.get('{{ route('getdatabase') }}', {
-
-        })
-        .then(function ({ data }) {   
-               
-            $('#formula').append(`      
-                <div>      
-                    <label class="col-md-1 control-label">÷</label>
-                    <div class="col-md-2" style="padding-top:3px;">
-                        <input type="hidden" name="sign${mulaId}" value="/" class="form-control" required >
-                        <select name="division${mulaId}" id="sum${mulaId-1}" class="form-control adjustment"> 
-                                <option value="${data.data.machine_completion}">機台累積完工數</option>
-                                <option value="${data.data.machine_inputs}">機台累計投入數</option>
-                                <option value="${data.data.machine_completion_day}">當天完工數</option>
-                                <option value="${data.data.machine_inputs_day}">當天投入數</option>
-                                <option value="${data.data.sensro_inputs}">Sensor投入</option>
-                                <option value="28800">28800</option>
-                                <option value="10">10</option>
-                        </select>
-                    </div>
-                </div>
-            `);   
-        })
-        .catch(function (error) {
-            console.log(error);
-        });
-        mulaId++;   
+          
+        
     }
  
 
     const addFormularow = () => {
+       
                 $('#formula').removeAttr('id');
                 
                 $('#formularow').append(`   

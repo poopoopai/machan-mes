@@ -93,7 +93,7 @@
             </div>
         </div>
     </div>
-</div>    
+</div>
 @endsection
 
 @section('js')
@@ -214,7 +214,7 @@
                     <div class="row modal-title-pos">
                         <div class="col-md-4 modal-pos">調整班別</div>
                         <div class="col-md-6 modal-pos">
-                            <select class="form-control" id="sel1">
+                            <select class="form-control" id="sel1"  ">
                                 <option disabled selected>--- 請選擇班別 ---</option>
                                 <option value="1">調整班別時間</option>
                                 <option value="2">休假不上班</option>
@@ -226,11 +226,6 @@
                         <div class="col-md-4"></div>
                         <div class="col-md-6 modal-pos">
                             <select class="form-control" id="sel2" disabled>
-                                <option disabled selected value="0">--- 請選擇班別時間 ---</option>
-                                <option value="1">08:00 ~ 12:00</option>
-                                <option value="2">08:00 ~ 17:20</option>
-                                <option value="3">08:00 ~ 20:50</option>
-                                <option value="4">08:00 ~ 21:20</option>
                             </select>
                         </div>
                     </div>
@@ -264,12 +259,10 @@
             const date = $('#date').text().split(" ", 2)[0];
             const workType = $('#sel1')[0].value;
             const workTime = $('#sel2')[0].value;
-            const timeperiod = ['12:00', '17:20', '20:50', '21:20'];
 
             axios.post('{{ route('calendar-data') }}', {
                 date,
-                start: workType == '1' ? '08:00' : '',
-                end: timeperiod[workTime - 1],
+                workId: workTime,
                 status: workType,
             })
             .then(function ({ data }) {
@@ -285,9 +278,9 @@
             const element = $(`#${date} .btn`);
             switch (~~data.status) {
                 case 1:
-                    let { start, end } = data;
-                    start = start.split(':').slice(0, 2).join(':');
-                    end = end.split(':').slice(0, 2).join(':');
+                    let { setup_shift } = data;
+                    start = setup_shift.work_on.split(':').slice(0, 2).join(':');
+                    end = setup_shift.work_off.split(':').slice(0, 2).join(':');
                     element.attr('class', 'btn btn-danger btn-xs');
                     element.text('調整班別');
                     element.next().html(`${start} ~ ${end}`);
@@ -305,5 +298,7 @@
                     break;
             }
         }
+
+        
     </script>
 @endsection

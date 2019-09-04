@@ -3,10 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Repositories\CompanyCalendarRepository;
-use App\Http\Controllers\Controller;
 
 class CalendarController extends Controller
-{   
+{
     protected $comRepo;
 
     public function __construct(CompanyCalendarRepository $comRepo)
@@ -16,18 +15,15 @@ class CalendarController extends Controller
 
     public function getCalnedar()
     {
-        $data = request()->all();
+        $data = request(['year', 'month']);
         $result = $this->comRepo->show($data);
         return response()->json($result);
     }
 
     public function calendar()
     {
-        $data = request()->all();
-        if ($data['status'] == '2' || $data['status'] == '3') {
-            $data['start'] = $data['end'] = NULL;
-            $result = $this->comRepo->create($data);
-        } elseif ($data['status'] == '1') {
+        $data = request(['date', 'workId', 'status']);
+        if ($data['status'] == '1' || $data['status'] == '2' || $data['status'] == '3') {
             $result = $this->comRepo->create($data);
         } else {
             return response()->json(['status' => 'error'], 422);

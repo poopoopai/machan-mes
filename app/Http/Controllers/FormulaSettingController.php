@@ -34,7 +34,18 @@ class FormulaSettingController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $data = collect(request()->all())->except('_token')->values();
+    
+        $sum = "" ;
+       
+        for( $i = 2 ; $i < sizeof($data) ; $i++){          
+            $sum = $sum.$data[$i];
+        }
+    
+        $result = eval("return $sum;");
+
+        
+        dd( $sum.' ='.$result);
     }
 
     /**

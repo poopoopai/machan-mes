@@ -52,17 +52,11 @@ class ResourceController extends Controller
     public function inform()
     {
           
-        $data = collect(request()->all())->except('_token')->values();
-    
-        $sum = "" ;
-        for( $i = 1 ; $i < sizeof($data) ; $i++){          
-            $sum = $sum.$data[$i];
-        }
-        $sum = "23*((72/2)+231/11)";
-        $result = eval("return $sum;");
+        
 
-        echo $sum.'='.$result;
-            
+
+
+
     }    
     
 }
