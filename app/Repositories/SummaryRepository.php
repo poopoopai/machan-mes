@@ -598,9 +598,6 @@ class SummaryRepository
     {
 
         $beforeID = Summary::where('resources_id', $status->resources_id - 1)->first();
-        
-           
-        
         $completion = Summary::where('machine_completion_day', $status->machine_completion_day)->where('resources_id', '>', 0)->first(); //找前面一筆相同的 顯示完工時間
         
         $sensro  = Summary::where('machine_inputs_day', $status->machine_completion_day-1)->where('resources_id', '>', 0)->first(); //Q4-1 = R
@@ -712,8 +709,7 @@ class SummaryRepository
     }
 
     public function actual($data, $status, $machine)
-    {
-       
+    { 
         $actual = 0;
         if($machine == '捲料機1'){
             if($data['status_id'] == 9 ){

@@ -6,18 +6,18 @@ use App\Entities\Resource;
 use App\Entities\ErrorCode;
 use App\Entities\StandardCt;
 use App\Entities\Summary;
-use Carbon\Carbon;
+
 class ResourceRepository
 {
-    public function abnormal($data,$status)
+    public function abnormal($data, $status)
     {
        
-        $Statusid = Resource::where('id','>',$data['id'])->wheredate('date',$data['date'])->first(); //判斷後面的id date要等於當日
+        $Statusid = Resource::where('id', '>', $data['id'])->wheredate('date', $data['date'])->first(); //判斷後面的id date要等於當日
             $summary = '0';
         
-        if ($data['status_id'] =='9'||$data['status_id'] == '10'||$data['status_id'] =='3'||$data['status_id'] == '15'||$data['status_id'] == '16') {
+        if ($data['status_id'] == '9' || $data['status_id'] == '10'||$data['status_id'] == '3' || $data['status_id'] == '15' || $data['status_id'] == '16') {
             
-                if($data['orderno']!=$Statusid['orderno']&&$Statusid['id']!=null) {
+                if($data['orderno'] != $Statusid['orderno'] && $Statusid['id'] != null) {
                     $summary = "換線";
                 }
                 else{
@@ -26,7 +26,7 @@ class ResourceRepository
         } elseif($data['code'] == 0) {
             $summary = $status->description;         
         } elseif($data['code'] != 0){
-            $summary = ErrorCode::with('resource')->where('machine_type',$status->type)->where('code',$data['code'])->first();
+            $summary = ErrorCode::where('machine_type', $status->type)->where('code', $data['code'])->first();
              return $summary->message;
         } else{
             $summary = '0';
@@ -35,34 +35,33 @@ class ResourceRepository
         return $summary;
            
     }
-    public function message($data,$status)
+    public function message($data, $status)
     {
-        //  dd($status);
+        
         $message = '0';
-        // dd($status);
+    
         $status->abnormal == '0' ? $message = $status->description : $message = $status->abnormal;
         
-        if($data['status_id'] =='3'){
+        if($data['status_id'] == '3'){
             $message = '開機';
-        }elseif($data['status_id'] =='4'){
+        } elseif($data['status_id'] == '4'){
             $message = '關機';
-        }elseif($data['status_id'] =='20'|| $data['status_id'] =='21'){
+        } elseif($data['status_id'] == '20' || $data['status_id'] == '21'){
             $message = '換料';
         }
          
        return  $message;
     }
-    public function completion($data,$message,$machine)
+    public function completion($data, $message, $machine)
     {
    
-        $Statusid = Resource::where('id','>',$data['id'])->first();
-    
+        $Statusid = Resource::where('id', '>', $data['id'])->first();
         $comletion = 0;
+        
         if($Statusid){
-        if ($machine == '捲料機1'){
-                if ($data['status_id'] == 9 ||$data['status_id'] == 10 ||$data['status_id'] == 15 ||$data['status_id'] == 16) {
+            if ($machine == '捲料機1'){
+                if ($data['status_id'] == 9 || $data['status_id'] == 10 || $data['status_id'] == 15 || $data['status_id'] == 16) {
                     
-                   
                     if($data['status_id'] == 9){
                         $Statusid->status_id - $data['status_id'] == 1 ? $comletion = '正常生產' : $comletion = '不正常';
                     } else{
@@ -85,23 +84,20 @@ class ResourceRepository
                         }        
                     }           
                 } else{
-                        $comletion = '異常';
+                    $comletion = '異常';
                 }
-        } else{
-            if($data['status_id'] == 10){
-                $comletion = '正常生產';
-            }else{
-                $comletion = '異常';
+            } else{
+                if($data['status_id'] == 10){
+                    $comletion = '正常生產';
+                }else{
+                    $comletion = '異常';
+                }
             }
+        } else{// 最後一筆
+            $comletion = '異常';
+        }  
+            return $comletion ;    
         }
-
-    }else{// 最後一筆
-        $comletion = '異常';
-    }
-
-       
-        return $comletion ;    
-    }
     
     public function data()
     {
@@ -110,26 +106,25 @@ class ResourceRepository
 
     public function updateflag($data)
     { 
-        return Resource::where('id',$data->id)->update(['flag'=>1]); 
+        return Resource::where('id', $data->id)->update(['flag'=>1]); 
     }
 
     public function machine($data)
     {
-        
         $machine = '';
 
         if ($data->orderno === null) {
-            $machineid = Summary::where('open','1')->first();
+            $machineid = Summary::where('open', '1')->first();
             if($machineid){
-                $find = Resource::where('id',$machineid->resources_id)->first();
-                $order = StandardCt::where('orderno',$find->orderno)->first();
+                $find = Resource::where('id', $machineid->resources_id)->first();
+                $order = StandardCt::where('orderno', $find->orderno)->first();
                 $machine = $order->machine;
             }
-        } else {
-            $order = StandardCt::where('orderno',$data->orderno)->first();
+        } else{
+            $order = StandardCt::where('orderno', $data->orderno)->first();
             if($order){
                 $machine = $order->machine;
-            }else{
+            } else{
                 $machine = null; // 如果沒有找到料號
             }
             

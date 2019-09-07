@@ -51,10 +51,7 @@ class ResourceController extends Controller
     
     public function inform()
     {
-          
         
-
-
 
 
     }    
