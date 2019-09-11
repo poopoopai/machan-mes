@@ -29,4 +29,4 @@ Route::get('/getdatabase', 'ResourceController@getdatabase')->name('getdatabase'
 Route::get('/getmachinedatabase', 'api\ResourceController@getmachinedatabase')->name('getmachinedatabase');
 Route::get('/test', 'ResourceController@test');
 Route::get('/test2', 'ResourceController@test2');
-Route::get('/inform', 'ResourceController@inform');
+

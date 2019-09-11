@@ -39,9 +39,6 @@ Route::group(['middleware' => ['auth']], function () {
     Route::post('/inform', 'ResourceController@inform')->name('inform');
         
 
-        
-    
-    Route::get('/process-routing', 'web\ProcessRoutingController@index')->name('process-routing');
 
     Route::get('/processing-time', 'web\ProcessingTimeController@index')->name('processing-time');
     Route::get('/processing-time-result', 'web\ProcessingTimeController@result')->name('processing-time-result');
@@ -53,9 +50,16 @@ Route::group(['middleware' => ['auth']], function () {
     
     Route::get('/personnel-management', 'web\PersonnelManagementController@index')->name('personnel-management');
 
+
+    Route::group(['prefix' => 'process-routing'], function () {
+        Route::get('/', 'ProcessRoutingController@index')->name('process-routing.index');
+        Route::put('/{id}', 'ProcessRoutingController@update')->name('process-routing.update');
+        Route::get('/sync', 'ProcessRoutingController@syncProcessRouting')->name('syncProcessRouting');
+        Route::get('/index', 'ProcessRoutingController@processRoutingIndex')->name('ProcessRoutingIndex');
+    });
+
     Route::group(['prefix' => 'edit'], function () {
         
-        Route::get('/process-routing', 'web\ProcessRoutingController@edit')->name('edit-process-routing');
         Route::get('/processing-time', 'web\ProcessingTimeController@edit')->name('edit-processing-time');
         Route::get('/personnel-management', 'web\PersonnelManagementController@edit')->name('edit-personnel-management');
     });
