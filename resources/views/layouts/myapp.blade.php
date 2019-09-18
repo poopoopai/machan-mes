@@ -146,9 +146,6 @@
                                     <a href="{{ route('machine-definition.index') }}" style="color: white;">機台定義</a>
                                 </li>
                                 <li>
-                                    <a href="{{ route('aps-processcode.index') }}" style="color: white;">APS製程碼</a>
-                                </li>
-                                <li>
                                     <a href="{{ route('process-routing.index') }}" style="color: white;">工藝路線</a>
                                 </li>
                                 <li>

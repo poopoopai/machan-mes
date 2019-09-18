@@ -24,9 +24,11 @@ Route::get('/work-type-data', 'WorkTypeController@getWorkTypeData')->name('work-
 Route::get('/rest-group', 'WorkTypeController@getRestGroup')->name('rest-group');
 Route::get('/machine-data', 'MachineCategoryController@getMachineId')->name('getMachineData');
 
-Route::get('/getapsprocesscode', 'ApsProcessCodeController@getApsData')->name('getApsProcessCode');
+Route::get('/getapsdata', 'ProcessRoutingController@getApsData')->name('getApsData');
 Route::get('/getdatabase', 'ResourceController@getdatabase')->name('getdatabase');
 Route::get('/getmachinedatabase', 'api\ResourceController@getmachinedatabase')->name('getmachinedatabase');
 Route::get('/test', 'ResourceController@test');
 Route::get('/test2', 'ResourceController@test2');
+
+Route::get('/Machine-Definition', 'MachineDefinitionController@machineDefinitionIndex')->name('MachineDefinitionIndex');
 

@@ -61,4 +61,9 @@ class ProcessRoutingRepository
         return ProcessRouting::paginate($amount);
     }
 
+    public function getData()
+    {
+        return ProcessRouting::get();
+    }
+
 }

@@ -33,4 +33,10 @@ class ProcessRoutingController extends Controller
     {
         return $this->processRepo->processRoutingIndex(request()->amount);
     }
+    public function getApsData()
+    {
+        $data = $this->processRepo->getData();
+        
+        return response()->json($data);
+    }
 }

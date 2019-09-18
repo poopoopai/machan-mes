@@ -17,9 +17,7 @@ class MachineDefinitionController extends Controller
 
     public function index()
     {
-        $data = $this->machineDef->page();
-       
-        return view("system/machinedefinition", ['datas' => $data]);
+        return view("system/machinedefinition");
     }
 
     public function create()
@@ -31,7 +29,7 @@ class MachineDefinitionController extends Controller
     {
         $getMachineId = $this->machineDef->getMachineCode(request()->all());
         
-        $data = $this->machineDef->create($getMachineId);
+        $this->machineDef->create($getMachineId);
         
         return redirect()->route('machine-definition.index');
     }
@@ -45,17 +43,14 @@ class MachineDefinitionController extends Controller
     {
         $data = $this->machineDef->find($id);
 
-        $getRest = $this->machineDef->getRest();
-
         if (!$data) {
             return redirect()->route('machine-definition.index');
         }
-
-        return view('system/editmachinedefinition', ['datas' => $data , 'getRest' => $getRest]);
+        return view('system/editmachinedefinition', ['datas' => $data]);
     }
 
     public function update($id)
-    {
+    { 
         $this->machineDef->update($id, request()->all());
 
         return redirect()->route('machine-definition.index');
@@ -70,5 +65,10 @@ class MachineDefinitionController extends Controller
         }
 
         return back();
+    }
+
+    public function machineDefinitionIndex()
+    {
+        return $this->machineDef->machineDefinitionIndex(request()->amount);
     }
 }

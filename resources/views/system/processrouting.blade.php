@@ -100,14 +100,6 @@
 </div>
 <script>
 
-function checkdelete(){
-        var check = confirm("是否要刪除該筆資料");
-        if (check) {
-            return true;
-        } else {
-            return false;
-        }
-    }
     let lastPage;
     const getTechRoutingIndex = (page = 1) => {
         const amount = $('#amount').val();
@@ -120,7 +112,6 @@ function checkdelete(){
             lastPage = data.last_page;
 
             const orders = data.data;
-        
             $('#data-num').text(`共 ${data.total} 筆`);
             $('#tech-routing-table tbody').empty();
             orders.forEach((order, key) => {
