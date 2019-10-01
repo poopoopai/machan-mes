@@ -64,4 +64,10 @@ class WorkTypeController extends Controller
         $result = $this->workRepo->getRestGroup($data);
         return response()->json($result);
     }
+
+    public function getWokrTime()
+    {
+        $result = $this->workRepo->getWokrTime();
+        return response()->json($result);
+    }
 }

@@ -11,14 +11,15 @@
     <title>MES</title>
 
     <!-- Scripts -->
-    <script src="{{ asset('vendor/jquery/jquery.min.js') }}" defer></script>
+    {{-- <script src="{{ asset('vendor/jquery/jquery.min.js') }}" defer></script> --}}
     <script src="{{ asset('vendor/bootstrap/js/bootstrap.min.js') }}" defer></script>
     <script src="{{ asset('vendor/metisMenu/metisMenu.min.js') }}" defer></script>
     <script src="{{ asset('dist/js/sb-admin-2.js') }}" defer></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.10/lodash.min.js"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+    {{-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script> --}}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twbs-pagination/1.4.2/jquery.twbsPagination.js"></script>
     <!-- Styles -->
     <link href="{{ asset('vendor/bootstrap/css/bootstrap.min.css') }}" rel="stylesheet">
     <link href="{{ asset('vendor/metisMenu/metisMenu.min.css') }}" rel="stylesheet">
@@ -145,10 +146,7 @@
                                     <a href="{{ route('machine-definition.index') }}" style="color: white;">機台定義</a>
                                 </li>
                                 <li>
-                                    <a href="{{ route('aps-processcode.index') }}" style="color: white;">APS製程碼</a>
-                                </li>
-                                <li>
-                                    <a href="{{ route('process-routing') }}" style="color: white;">工藝路線</a>
+                                    <a href="{{ route('process-routing.index') }}" style="color: white;">工藝路線</a>
                                 </li>
                                 <li>
                                     <a href="{{ route('processing-time') }}" style="color: white;">加工時間</a>

@@ -69,56 +69,92 @@
             </a>
             </div> 
         </div>
-        <div class="total-data">載入筆數 | 共 5 筆</div>
+        <div class="total-data">
+                載入筆數 |
+                <span id="data-num"></span>
+        </div>
         <div style="margin-top:15px;">
-            <table class="table table-striped table-pos">
-                <thead class="thead-color">
-                    <tr>
-                        <th scope="col">序</th>
-                        <th scope="co1">機台代碼</th>
-                        <th scope="col">機台名稱</th>
-                        <th scope="col">製程化</th>
-                        <th scope="col" >操作</th>
-
-                    </tr>
-                </thead>
-                <tbody>
-                    
-                        
-                    @foreach ($datas as $key => $data)
-                    
-                    <tr>
-                        <th scope="row">
-                            {{ ++$key + ($datas->currentPage() - 1) * 10 }}
-                        </th>
-                        <td>{{ $data->machine_id }}</td>
-                        <td>{{ $data->machine_name }}</td>
-                        <td>{{ $data->process_description }}</td>
-                        <td>
-                            <a href="{{ route("machine-definition.edit" , $data->id)}}" class="btn btn-primary">編輯</a>
-                                <form action="{{ route("machine-definition.destroy" , $data->id)}} "  style="display:inline-block" method ="POST"> 
-                                    @csrf
-                                    @method('delete')
-                                    <button class="btn btn-danger">刪除</button>
-                                </form>
-                        </td>
-                    </tr>
-                    @endforeach
-
-                </tbody>
-            </table>
-    </div>
-    <form action="">
-            <div class="total-page a">每頁顯示筆數
-                <select class ="slectbtn" name="" id="">
-                        <option value="">10 </option>
-                        <option value="">25</option>
-                        <option value="">50</option>
-                </select>
-            </div>
-    </form>
+        <table class="table table-striped table-pos" id="machine-definition-table">
+            <thead class="thead-color">
+                <tr>
+                    <th scope="col">序</th>
+                    <th scope="co1">機台代碼</th>
+                    <th scope="col">機台名稱</th>
+                    <th scope="col">製程化</th>
+                    <th scope="col" >操作</th>
+                </tr>
+            </thead>
+            <tbody>                
+            </tbody>
+        </table>
+        <div style="text-align:right">
+                <span style="display: inline-block; margin-top: 27px;">
+                        <span>每頁顯示筆數</span>
+                        <select id="amount" onchange="MachineDefinitionIndex(); $('#pagination-demo').twbsPagination('destroy');">
+                            <option value="10" selected>10</option>
+                            <option value="25">25</option>
+                            <option value="50">50</option>
+                        </select>
+                </span>
+                <ul id="pagination-demo" class="pagination-sm" style="vertical-align: top;"></ul>
+        </div>
+    </div>  
 </div>
 <script>
+    let lastPage;
+    function checkyn(){
+            var check = confirm("是否要刪除該筆資料");
+            if (check) {
+                return true;
+            } else {
+                return false;
+            }
+    }
 
+    const MachineDefinitionIndex = (page = 1) => {
+        const amount = $('#amount').val();
+        axios.get('{{ route('MachineDefinitionIndex') }}',{
+            params: {
+                amount,
+                page,
+            }
+        }).then(({ data }) => {
+            lastPage = data.last_page;       
+            const datas = data.data; 
+            $('#data-num').text(`共 ${data.total} 筆`);
+            $('#machine-definition-table tbody').empty();
+            datas.forEach((data, key) => {
+                $('#machine-definition-table tbody').append(`
+                    <tr>
+                        <th scope="row">${key + 1 + (page - 1) * amount}</th>
+                        <td>${data.machine_id}</td>
+                        <td>${data.machine_name}</td>
+                        <td>${data.process_description}</td>
+                        <td>
+                        <a href="machine-definition/${data.id}/edit" class="btn btn-primary">編輯</a>
+                            <form action="machine-definition/${data.id}" onsubmit="return checkyn()"  style="display:inline-block" method ="POST"> 
+                                @csrf
+                                @method('delete')
+                                <button class="btn btn-danger">刪除</button>
+                            </form>
+                        </td>     
+                    </tr>
+                `)
+            });
+            $('#pagination-demo').twbsPagination({
+                totalPages: lastPage,
+                visiblePages: 5,
+                first:'頁首',
+                last:'頁尾',
+                prev:'<',
+                next:'>',
+                initiateStartPageClick: false,
+                onPageClick: function (event, page) {
+                    getTechRoutingIndex(page)
+                }
+            });
+        });
+    }
+    MachineDefinitionIndex();
 </script>
 @endsection

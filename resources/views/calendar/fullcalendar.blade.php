@@ -214,7 +214,7 @@
                     <div class="row modal-title-pos">
                         <div class="col-md-4 modal-pos">調整班別</div>
                         <div class="col-md-6 modal-pos">
-                            <select class="form-control" id="sel1"  ">
+                            <select class="form-control" id="sel1" onchange="$('#sel1').val() == 1 ? getWorkTime() : '' ">
                                 <option disabled selected>--- 請選擇班別 ---</option>
                                 <option value="1">調整班別時間</option>
                                 <option value="2">休假不上班</option>
@@ -299,6 +299,19 @@
             }
         }
 
-        
+        const getWorkTime = () => {
+            axios.get('{{ route('get-work-time') }}')
+                .then(({ data }) => {
+                    $('#sel2').empty();
+                    $('#sel2').append(`
+                        <option disabled selected value="">--- 請選擇 ---</option>
+                    `)
+                    data.forEach(data => {
+                        $('#sel2').append(`
+                            <option value="${data.id}">${data.work_on} ~ ${data.work_off}</option>
+                        `);
+                    });
+                });
+        }
     </script>
 @endsection

@@ -89,7 +89,7 @@
                 <a href="{{ route('process-calendar') }}">製程行事曆</a>
             <span>
             <span class="space-item">></span>
-            <span class="space-item">調整製程行事曆</span>    
+            <span class="space-item">調整製程行事曆</span>
         </ol>
         <div class="row">
             <div class="col-md-12">
@@ -110,15 +110,15 @@
                         </form>
                         <div style="text-align:center;">
                             <span class="space-item item-attr">|</span>
-                            <span class="space-item item-attr">當月上班 26 天</span>
+                            <span class="space-item item-attr">當月上班</span> <span class="item-attr" id="work_days"></span> <span class="item-attr">天</span>
                             <span class="space-item item-attr">|</span>
-                            <span class="space-item item-attr">當月加班 3 天</span>
+                            <span class="space-item item-attr">當月加班</span> <span class="item-attr" id="work_over_days"></span> <span class="item-attr">天</span>
                             <span class="space-item item-attr">|</span>
-                            <span class="space-item item-attr">調休天數 1 天</span>
+                            <span class="space-item item-attr">調休天數</span> <span class="item-attr" id="adjust_week_days"></span> <span class="item-attr">天</span>
                             <span class="space-item item-attr">|</span>
-                            <span class="space-item item-attr">累計上班時數 217 小時</span>
+                            <span class="space-item item-attr">累計上班時數</span> <span class="item-attr" id="work_times"></span> <span class="item-attr">小時</span>
                             <span class="space-item item-attr">|</span>
-                            <span class="space-item item-attr">累計加班時數 25 小時</span>
+                            <span class="space-item item-attr">累計加班時數</span> <span class="item-attr" id="work_over_times"></span> <span class="item-attr">小時</span>
                             <span class="space-item item-attr">|</span>
                         </div>
                         <hr>
@@ -208,35 +208,18 @@
         }
         makeYearCalendar('{{ $year }}', '{{ $month -1}}');
 
-        const getCalendarData = (year, month, resourceId) => {
-            const textMonth = ~~month + 1;
-            axios.get('{{ route('getprocesscalendar') }}', {
-                params: {
-                    year,
-                    month: textMonth,
-                    resourceId
-                }
-            })
-            .then(({ data }) => {
-                data.forEach((date) => {
-                    renderCalendarDate(date);
-                });
-                $('#calendar').removeAttr('hidden');
-            });
-        }
-        getCalendarData('{{ $year }}', '{{ $month -1 }}', '{{ $resourceId }}');
-
         const getResourceData = () => {
             axios.get('{{ route('adjust-process-calendar') }}' + location.search)
                 .then(({ data }) => {
                     data.forEach(data => {
                         $('#sel-org').append(`
-                            <option value="${data.id}">${data.resource_name}</option>
+                            <option value="${data.id}">${data.machine_name}</option>
                         `);
                     });
                     $('#sel-org').val('{{ $resourceId }}');
-                    const { resource_name }  = _.find(data, ['id', ~~'{{ $resourceId }}']);
-                    $('#panel-title').text(resource_name);
+                    const { machine_name }  = _.find(data, ['id', ~~'{{ $resourceId }}']);
+                    
+                    $('#panel-title').text(machine_name);
                 });
         }
         getResourceData();
@@ -256,7 +239,7 @@
                     <div class="row modal-title-pos">
                         <div class="col-md-4 modal-pos">調整班別</div>
                         <div class="col-md-6 modal-pos">
-                            <select class="form-control" id="sel1">
+                            <select class="form-control" id="sel1" onchange="$('#sel1').val() == 1 ? getWorkTime() : '' ">
                                 <option disabled selected>--- 請選擇班別 ---</option>
                                 <option value="1">調整班別時間</option>
                                 <option value="2">休假不上班</option>
@@ -268,11 +251,6 @@
                         <div class="col-md-4"></div>
                         <div class="col-md-6 modal-pos">
                             <select class="form-control" id="sel2" disabled>
-                                <option disabled selected value="0">--- 請選擇班別時間 ---</option>
-                                <option value="1">08:00 ~ 12:00</option>
-                                <option value="2">08:00 ~ 17:20</option>
-                                <option value="3">08:00 ~ 20:50</option>
-                                <option value="4">08:00 ~ 21:20</option>
                             </select>
                         </div>
                     </div>
@@ -306,18 +284,17 @@
             const date = $('#date').text().split(" ", 2)[0];
             const workType = $('#sel1')[0].value;
             const workTime = $('#sel2')[0].value;
-            const timeperiod = ['12:00', '17:20', '20:50', '21:20'];
-            const orgId = $('#sel-org').val();
+            const resource_id = $('#sel-org').val();
 
             axios.post('{{ route('process-calendar-data') }}', {
-                resource_id: orgId,
                 date,
-                start: workType == '1' ? '08:00' : '',
-                end: timeperiod[workTime - 1],
+                resource_id,
                 status: workType,
+                workId: workTime,
             })
-            .then(function ({ data }) {
+            .then(function ({ data }) {                         
                 renderCalendarDate(data.data);
+                getCalendarTotal();
             })
             .catch(function (error) {
                 console.log(error);
@@ -325,13 +302,15 @@
         }
 
         const renderCalendarDate = (data) => {
+            
             const date = data.date.split('-').map((val) => ~~val).join('-');
             const element = $(`#${date} .btn`);
             switch (~~data.status) {
                 case 1:
-                    let { start, end } = data;
-                    start = start.split(':').slice(0, 2).join(':');
-                    end = end.split(':').slice(0, 2).join(':');
+                let { setup_shift } = data;
+                
+                    start = setup_shift.work_on.split(':').slice(0, 2).join(':');
+                    end = setup_shift.work_off.split(':').slice(0, 2).join(':');
                     element.attr('class', 'btn btn-danger btn-xs');
                     element.text('調整班別');
                     element.next().html(`${start} ~ ${end}`);
@@ -349,24 +328,89 @@
                     break;
             }
         }
-        const changeResourceData = () => {
-            axios.get('{{ route('getprocesscalendar') }}', {
+
+        const getCompanyData = (year, month) => {
+            const textMonth = ~~month + 1;
+            return axios.get('{{ route('getcalendar') }}', {
+                params: {
+                    year,
+                    month: textMonth
+                }
+            });
+        }
+
+        const getProcessData = (year, month, resourceId) => {
+            const textMonth = ~~month + 1;
+            return axios.get('{{ route('getprocesscalendar') }}', {
                 params: {
                     year: '{{ $year }}',
                     month: '{{ $month }}',
-                    resourceId: $('#sel-org').val(),
+                    resourceId: $('#sel-org').val() || resourceId,
+                }
+            });
+        }
+
+        const initCalendar = async () => {
+            const company = await getCompanyData('{{ $year }}', '{{ $month -1 }}');
+            const process = await getProcessData('{{ $year }}', '{{ $month -1 }}', '{{ $resourceId }}');
+            makeYearCalendar('{{ $year }}', '{{ $month -1}}');
+            company.data.forEach((date) => {
+                renderCalendarDate(date);
+            });
+            process.data.forEach((date) => {
+                renderCalendarDate(date);
+            });
+            $('#calendar').removeAttr('hidden');
+        }
+        initCalendar();
+
+        const changeResourceData = async () => {
+            const company = await getCompanyData('{{ $year }}', '{{ $month -1 }}');
+            const process = await getProcessData('{{ $year }}', '{{ $month -1 }}', '{{ $resourceId }}');
+
+            makeYearCalendar('{{ $year }}', '{{ $month -1}}');
+            company.data.forEach((date) => {
+                renderCalendarDate(date);
+            });
+            process.data.forEach((date) => {
+                renderCalendarDate(date);
+            });
+            getCalendarTotal();
+            const machine_name = $("#sel-org option:selected").text();
+            $('#panel-title').text(machine_name);
+        }
+
+        const getCalendarTotal = () => {
+            axios.get('{{ route('work-data') }}', {
+                params: {
+                    year: '{{ $year }}',
+                    month: '{{ $month }}',
+                    resourceId: $('#sel-org').val() || '{{ $resourceId }}',
                 }
             })
             .then(({ data }) => {
-                makeYearCalendar('{{ $year }}', '{{ $month -1}}');
-                data.forEach((date) => {
-                    renderCalendarDate(date);
-                });
-                const resource_name = $("#sel-org option:selected").text();
-                $('#panel-title').text(resource_name);
+                $('#work_days').text(data.workDays);
+                $('#work_over_days').text(data.workOverDays);
+                $('#adjust_week_days').text(data.adjustWeek);
+                $('#work_times').text(data.workTime);
+                $('#work_over_times').text(data.workOverTime);
             });
         }
-        console.log($('.default-num').length);
-        console.log($('.holiday-num').length);
+        getCalendarTotal();
+
+        const getWorkTime = () => {
+            axios.get('{{ route('get-work-time') }}')
+                .then(({ data }) => {
+                    $('#sel2').empty();
+                    $('#sel2').append(`
+                        <option disabled selected value="">--- 請選擇 ---</option>
+                    `)
+                    data.forEach(data => {
+                        $('#sel2').append(`
+                            <option value="${data.id}">${data.work_on} ~ ${data.work_off}</option>
+                        `);
+                    });
+                });
+        }
     </script>
 @endsection

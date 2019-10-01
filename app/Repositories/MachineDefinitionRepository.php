@@ -3,48 +3,24 @@
 namespace App\Repositories;
 
 use App\Entities\MachineDefinition;
-use App\Entities\ApsProcessCode;
+use App\Entities\ProcessRouting;
+use App\Entities\MachineCategory;
 
 class MachineDefinitionRepository
 {
-    public function page()
-    {
-        return MachineDefinition::select(
-            'id',
-            'machine_id',
-            'machine_name',
-            'machine_category',
-            'machine_category_name',
-            'aps_process_code',
-            'process_description',
-            'api_integration',
-            'api_integration_name',
-            'group_setting',
-            'oee_assign',
-            'class_assign',
-            'production_time',
-            'change_line_time'
-        )->paginate(100);
-    }
-
+    
     public function getMachineCode($data)
     {
         
-        $code = str_split($data['aps_process_code'], 2);
+        $machine_data = MachineCategory::where('id', $data['machine_category'])->first();
+        $aps_code = ProcessRouting::where('aps_id', $data['aps_process_code'])->first();
         
-        $machine_id = $code[1].$code[0];
-
-        $type = explode('+', $data['machine_category']);
-
-        $machine_id = $machine_id.$type[1];
-
-        $aps_code = ApsProcessCode::where('aps_process_code', $data['aps_process_code'])->first();
-       
+        $machine_id = $data['aps_process_code'].$machine_data['machine_type'];
+        $data['machine_category_name'] = $machine_data->machine_name;
+        $data['machine_category'] = $machine_data->machine_id;
         $data['machine_id'] = $machine_id;
-        $data['machine_category'] = $type[0];
-        $data['machine_category_name'] = $type[2];
-        $data['process_description'] = $aps_code->process_description;
-
+        $data['process_description'] = $aps_code->process_routing_name;
+        
         return $data ;
     }
 
@@ -59,20 +35,30 @@ class MachineDefinitionRepository
     }
     public function find($id)
     {
-        return MachineDefinition::find($id);
-    }
-    public function getRest()
-    {
-        return MachineDefinition::with('Rest')->first();
+        return MachineDefinition::with('Rest')->find($id);
     }
     public function update($id , array $data)
     {
-        $machine_definition = ApsProcessCode::find($id);
+        $machine_definition = MachineDefinition::find($id);
 
+        if(isset($data['machine_category'])){    
+            $machine_data = MachineCategory::where('id', $data['machine_category'])->first();
+            $data['machine_id'] = $machine_definition['aps_process_code'].$machine_data['machine_type'];
+            $data['machine_category_name'] = $machine_data->machine_name;
+            $data['machine_category'] = $machine_data->machine_id;
+        }
+        if(isset($data['aps_process_code'])){
+            $aps_code = ProcessRouting::where('aps_id', $data['aps_process_code'])->first();
+            $lastsign = str_split($machine_definition['machine_id']);
+            $data['machine_id'] = $data['aps_process_code'].$lastsign[sizeof($lastsign)-1];
+            $data['process_description'] = $aps_code->process_routing_name;
+            $data['aps_process_code'] = $aps_code->aps_id;
+        }  
+    
         return $machine_definition ? $machine_definition->update($data) : false ;
     }
-
-
-
-
+    public function machineDefinitionIndex($amount)
+    {
+        return MachineDefinition::paginate($amount);
+    }
 }

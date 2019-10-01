@@ -110,22 +110,25 @@ class SummaryRepository
                 $data['status_id'] == 21 ? $count->refueling_end++ : $count->refueling_end = 0;
                 $data['status_id'] == 22 ? $count->aggregate_start++ : $count->aggregate_start = 0;
                 $data['status_id'] == 23 ? $count->aggregate_end++ : $count->aggregate_end = 0;
+
             }       
 
             //同日期的資料序列    
+
             if($count->resource){
                 if ( ($data['orderno'] == '' && $data['date'] != $count->resource->date) || $count->resources_id == 0  ){ //最初$count->resources_id
                     $count->serial_number_day = 1 ;
                 } else {
                     if($data['orderno'] == '' && $data['date'] == $count->resource->date){
                         if($count){
-                            $count->serial_number_day++ ;    
+
+                            $count->serial_number_day++;
                         } else{
-                            $count->serial_number_day = 1;   //最開始的那筆沒有資料
+                            $count->serial_number_day = 1 ;//最開始的那筆沒有資料
                         }
-                    } else{  //前面加總料號數量+1 且同料號同日期
+                    } else{  //料號不為空同日期，前面加總料號數量+1 
                         if($count){
-                            $count->serial_number_day++ ;
+                            $count->serial_number_day++;
                         } else{
                             $count->serial_number_day = 1 ;
                         }       
@@ -454,66 +457,55 @@ class SummaryRepository
     }
     public function downtime($data, $status)
     {
-        $worktime = strtotime($status->working_time) - strtotime(Carbon::today());  //轉秒數
-        $beforeturn =  Summary::where('turn_off', $status->open)->first();     // 上一次關機資料
-        $beforeopen =  Summary::where('open', '<', $status->open)->orderby('open', 'desc')->first();    //前一筆開機次數
-        $countRestop = Summary::where('resources_id', '<', $data['id'])->sum('restop_count');
-      
-        $first = Summary::whereDate('created_at', '>=', Carbon::today())    //今天的第一筆資料
-        ->whereDate('created_at', '<', Carbon::tomorrow())
-        ->orderby('time')
-        ->first();
-
-        $nowtime = Summary::whereDate('created_at', '>=', Carbon::today())
-                    ->whereDate('created_at', '<', Carbon::tomorrow())
-                    ->where('turn_off', $status['start_count'] + $countRestop)
-                    ->first();
-      
+        
+        $worktime = strtotime($status->working_time) - strtotime(Carbon::today());//轉秒數
+        
+        $status->restop_count ? $status->restop_count : $status['restop_count'] == 0;
+       
         if($status->open == ''){
             if( $worktime > 180 && $data['status'] == 5){
                 $down_time = $status->working_time;
             } else{
-                $down_time = '';
+                $down_time = '00:00:00';
             }
         } else{
+
+            $beforeturn =  Summary::where('turn_off', $status->open)->first();
+            $beforeopen =  Summary::where('open', $status->open-1)->first();//前一筆開機次數 因為沒有0
+
             if($status->open == 1){
-                $down_time = strtotime($status->time) - strtotime($first->time);
-                $down_time = date("H:i:s", $down_time-8*60*60);      //校正時間8小時 "H:i:s""時分秒
+                $down_time = '00:00:00';
+
             } else{
-                if(isset($beforeturn)){
-                    if($beforeturn->turn_off > $status->open && $status->stop_count != '' ){//判斷前面關機數量有沒有大於當前開機數量
-                        if(isset($beforeopen)){
-                            $down_time = strtotime($status->time) - strtotime($beforeopen->time);
-                            $down_time = date("H:i:s", $down_time-8*60*60);
-                        } else{
-                            $down_time = strtotime($status->time) - strtotime(Carbon::today());
+                if($beforeturn->turn_off ? $beforeturn->turn_off : $beforeturn['turn_off'] == 0){
+                    if($beforeturn['turn_off'] > $status->open && $status->stop_count != '' ){//判斷前面關機數量有沒有大於當前開機數量
+                        if($beforeopen->time ?  $beforeopen->time : $beforeopen['time'] == "00:00:00"){
+                            $down_time = strtotime($status->time) - strtotime($beforeopen['time']);
                             $down_time = date("H:i:s", $down_time-8*60*60);
                         }
                     } else{
-                        if(isset($beforeopen)){
-                            if($beforeopen->open > $status->open && $status->restart_count == ''){
+                        if($beforeopen->time ?  $beforeopen->time : $beforeopen['time'] == "00:00:00"){
+                            if($beforeopen['open'] > $beforeturn->turn_off && $status->restart_count == ''){
         
-                                $beforetime = Summary::whereDate('created_at', '>=', Carbon::today())
-                                ->whereDate('created_at', '<', Carbon::tomorrow())
-                                ->where('trun_off', $beforeopen['start_count'] + $countRestop)
+                                $beforetime = Resource::where('date', Carbon::today())->summary()
+                                ->where('trun_off', $beforeopen['start_count'] + $status->restop_count)
                                 ->first();
 
-                                if($beforetime->summary != NULL){
-                                    $down_time = strtotime($status->time) - strtotime($beforetime->summary->time);
+                                if($beforetime->time ? $beforetime->time : $beforetime['time'] == '00:00:00'){
+                                    $down_time = strtotime($status->time) - strtotime($beforetime['time']);
                                     $down_time = date("H:i:s", $down_time-8*60*60);
-                                } else{
-                                    $down_time = strtotime($status->time) - strtotime(Carbon::today());
-                                    $down_time = date("H:i:s", $down_time-8*60*60);
-                                }
+                                } 
+
                             } else{
                                 if($status->restart_count != ''){
                                     $down_time = '00:00:00';
                                 } else{
-                                    if($nowtime->summary != NULL){
-                                        $down_time = strtotime($status->time) - strtotime($nowtime->summary->time);
-                                        $down_time = date("H:i:s", $down_time-8*60*60);
-                                    } else{
-                                        $down_time = strtotime($status->time) - strtotime(Carbon::today());
+                                    $nowtime = Resource::where('date', Carbon::today())->summary()
+                                    ->where('trun_off', $beforeopen['start_count'])
+                                    ->first();
+
+                                    if($nowtime->time ? $nowtime->time : $nowtime['time'] == '00:00:00'){
+                                        $down_time = strtotime($status->time) - strtotime($nowtime['time']);
                                         $down_time = date("H:i:s", $down_time-8*60*60);
                                     }
                                 }

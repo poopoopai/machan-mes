@@ -10,22 +10,27 @@ use DB;
 class ResourceController extends Controller
 {
     public function test2(){
+        $last = Resource::where('date', Carbon::today())->orderby('time','desc')->first();
         
-        $datas = DB::connection('mysql2')->table('db')->get();
+        if ( is_null($last) ) {
+            $last['time'] = "00:00:00";
+        }
+    
+        $datas = DB::connection('mysql2')->table('db')->where('Date', Carbon::today())->where('time', '>', $last['time'])->orderby('time')->get();
        
-            foreach ($datas as $key => $data) {
-                
-                Resource::create([
-                    'machine_id' => $data->Id,
-                    'orderno' => trim($data->OrderNo),
-                    'status_id' => $data->Status,
-                    'code' => $data->Code,
-                    'date' => $data->Date,
-                    'time' => $data->Time,
-                 ]);
-            }
-        
-            dd("資料抓完了");
+        foreach ($datas as $key => $data) {
+            
+            Resource::create([
+                'machine_id' => $data->Id,
+                'orderno' => trim($data->OrderNo),
+                'status_id' => $data->Status,
+                'code' => $data->Code,
+                'date' => $data->Date,
+                'time' => $data->Time,
+                ]);
+        }
+    
+        dd("資料抓完了");
        
     }
     public function show()
@@ -48,12 +53,4 @@ class ResourceController extends Controller
         }
        
     }
-    
-    public function inform()
-    {
-        
-
-
-    }    
-    
 }

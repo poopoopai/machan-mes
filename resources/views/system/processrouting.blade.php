@@ -64,89 +64,80 @@
         <div class="breadcrumb-custom">
             <span>資料列表</span>
             <div style="float:right; margin-top:-7px">
-                <button class="btn btn-success">新增</button>
+                <a href="{{ route('syncProcessRouting') }}" class="btn btn-success">同步更新</a>
             </div> 
         </div>
-        <div class="total-data">載入筆數 | 共 5 筆</div>
+        <div class="total-data">
+            載入筆數 |
+            <span id="data-num"></span>
+        </div>
         <div style="margin-top:15px;">
-            <table class="table table-striped table-pos">
+            <table class="table table-striped table-pos" id="tech-routing-table">
                 <thead class="thead-color">
                     <tr>
                         <th scope="col">序</th>
-                        <th scope="co1">代碼</th>
-                        <th scope="col">製程碼名稱</th>
-                        <th scope="col" >操作</th>
+                        <th scope="col">製程名稱</th>
+                        <th scope="col">代碼</th>
+                        <th scope="col">APS 製程碼</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        <th scope="row">1</th>
-                        <td>1011L01</td>
-                        <td>@mdo</td>
-                        <td>
-                            <a  href="{{ route('edit-process-routing') }}">
-                                <button class="btn btn-primary" >
-                                 編輯
-                                </button>
-                            </a>
-                            &nbsp
-                            <button class="btn btn-danger">刪除</button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <th scope="row">2</th>
-                        <td>1011L01</td>
-                        <td>@fat</td>
-                        <td>
-                            <button class="btn btn-primary">編輯</button>
-                            &nbsp
-                            <button class="btn btn-danger">刪除</button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <th scope="row">3</th>
-                        <td>1011L01</td>
-                        <td>@twitter</td>
-                        <td>
-                            <button class="btn btn-primary">編輯</button>
-                            &nbsp
-                            <button class="btn btn-danger">刪除</button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <th scope="row">4</th>
-                        <td>1011L01</td>
-                        <td>@twitter</td>
-                        <td>
-                            <button class="btn btn-primary" >編輯</button>
-                            &nbsp
-                            <button class="btn btn-danger">刪除</button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <th scope="row">5</th>
-                        <td>1011L01</td>
-                        <td>@twitter</td>
-                        <td>
-                            <button class="btn btn-primary">編輯</button>
-                            &nbsp
-                            <button class="btn btn-danger">刪除</button>
-                        </td>
-                    </tr>
                 </tbody>
             </table>
-    </div>
-    <form action="">
-            <div class="total-page a">每頁顯示筆數
-                <select class ="slectbtn" name="" id="">
-                        <option value="">10 </option>
-                        <option value="">25</option>
-                        <option value="">50</option>
-                </select>
+            <div style="text-align:right">
+                <span style="display: inline-block; margin-top: 27px;">
+                        <span>每頁顯示筆數</span>
+                        <select id="amount" onchange="getTechRoutingIndex();$('#pagination-demo').twbsPagination('destroy');">
+                            <option value="10" selected>10</option>
+                            <option value="25">25</option>
+                            <option value="50">50</option>
+                        </select>
+                </span>
+                <ul id="pagination-demo" class="pagination-sm" style="vertical-align: top;"></ul>
             </div>
-    </form>
+        </div>
+    </div>
 </div>
 <script>
 
+    let lastPage;
+    const getTechRoutingIndex = (page = 1) => {
+        const amount = $('#amount').val();
+        axios.get('{{ route('ProcessRoutingIndex') }}',{
+            params: {
+                amount,
+                page,
+            }
+        }).then(({ data }) => {
+            lastPage = data.last_page;
+
+            const orders = data.data;
+            $('#data-num').text(`共 ${data.total} 筆`);
+            $('#tech-routing-table tbody').empty();
+            orders.forEach((order, key) => {
+                $('#tech-routing-table tbody').append(`
+                    <tr>
+                        <th scope="row">${key + 1 + (page - 1) * amount}</th>
+                        <td>${order.process_routing_name}</td>
+                        <td>${order.process_routing_id}</td>
+                        <td>${order.aps_id}</td>
+                    </tr>
+                `)
+            });
+            $('#pagination-demo').twbsPagination({
+                totalPages: lastPage,
+                visiblePages: 5,
+                first:'頁首',
+                last:'頁尾',
+                prev:'<',
+                next:'>',
+                initiateStartPageClick: false,
+                onPageClick: function (event, page) {
+                    getTechRoutingIndex(page)
+                }
+            });
+        });
+    }
+    getTechRoutingIndex();
 </script>
 @endsection

@@ -19,7 +19,7 @@ class CreateMachineDefinitionsTable extends Migration
             $table->string('machine_name');
             $table->string('machine_category');
             $table->string('machine_category_name');
-            $table->unsignedInteger('aps_process_code');
+            $table->string('aps_process_code');
             $table->string('process_description');
             $table->string('api_integration')->nullable();
             $table->string('api_integration_name')->nullable();

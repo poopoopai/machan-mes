@@ -64,8 +64,7 @@
                             <hr>
                             <div class="form-group">
                                 <label class="col-md-2 control-label">機台類別</label>
-                                <div class="col-md-10">
-                                   
+                                <div class="col-md-10" >
                                         <select name="machine_category" class="form-control" id="machine-name"   required>
                                                 <option disabled selected value="">--- 請選擇機台類型 ---</option>
                                         </select>
@@ -101,7 +100,7 @@
                                     <div class="col-md-10">
                                         <input name="change_line_time" class="clearable form-control" required>
                                     </div>
-                                </div>
+                            </div>
                             <hr>
                             <div class="form-group">
                                 <label class="col-md-2 control-label">休息類別</label>
@@ -122,7 +121,7 @@
                                 </select>
                                 </div>
                             </div>
-                            <hr>
+                            <hr> 
                             <div style="text-align:center">
                                 <button type="submit" id="sendBtn" class="btn btn-success btn-lg" style="width:45%">確認</button>
                                 <button type="reset" onclick="" class="btn btn-secondary btn-lg" style="width:45%">清除資料</button>
@@ -136,9 +135,6 @@
 </div>
 
 <script>
-    if ('{{ session('message') }}') {
-        alert('{{ session('message') }}');
-    }
     const getRestId = () => {
         axios.get('{{ route('rest-group') }}', {
             params: {
@@ -159,32 +155,29 @@
     }
    
     const getMachineId = () => {
-        
-            axios.get('{{ route('getMachineData') }}', {
+        axios.get('{{ route('getMachineData') }}', {
+        })
+        .then(({ data }) => {
+            data.forEach(data => {
+                $('#machine-name').append(`
+                    <option value="${data.id}"> ${data.machine_name}</option>
+                `);  
             })
-            .then(({ data }) => {
-           
-                data.forEach(data => {
-                    $('#machine-name').append(`
-                        <option value="${data.machine_id}+${data.machine_type}+${data.machine_name}"> ${data.machine_name}</option>
-                    `);
-                })
-            });  
+        });  
     }
 
     const getApsProcessCode = () => {
-        
-        axios.get('{{ route('getApsProcessCode') }}', {
+        axios.get('{{ route('getApsData') }}', {
         })
         .then(({ data }) => {
-       
             data.forEach(data => {
                 $('#ApsProcessCode').append(`
-                    <option value="${data.aps_process_code}"> ${data.process_description}</option>
+                    <option value="${data.aps_id}"> ${data.process_routing_name}</option>
                 `);
             })
         });  
-}
+    }
+    
     getMachineId();
     getApsProcessCode();
 </script>

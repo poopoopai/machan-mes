@@ -53,7 +53,7 @@
                 <div class="panel panel-default">
                     <div class="panel-heading">資料編輯</div>
                     <div class="panel-body">
-                    <form class="form-horizontal" action="{{ route('machine-definition.update',$datas->id) }}" method="POST">
+                    <form class="form-horizontal" action="{{ route('machine-definition.update', $datas->id) }}" method="POST">
                         @csrf
                         @method('PUT')
                             <div class="form-group">
@@ -66,9 +66,7 @@
                             <div class="form-group">
                                 <label class="col-md-2 control-label">機台類別</label>
                                 <div class="col-md-10">
-                                   
-                                        <select name="machine_category" class="form-control" id="machine-name"   required>
-                                        <option disabled selected value="">--- 請選擇機台類型 ---</option>
+                                        <select id="machine-name"  name = "machine_category" class="form-control"  required>
                                         </select>
                                 </div>
                             </div>
@@ -76,8 +74,7 @@
                             <div class="form-group">
                                 <label class="col-md-2 control-label">製程別</label>
                                 <div class="col-md-10">
-                                    <select id="ApsProcessCode"  name = "aps_process_code"  class="form-control" required>
-                                        <option disabled selected value="">--- 請選擇製程別 ---</option>
+                                    <select id="ApsProcessCode"  name = "aps_process_code"  class="form-control" required> 
                                     </select>
                                 </div>
                             </div>
@@ -87,13 +84,12 @@
                                 <label class="col-md-2 control-label">班別</label>
                                 <div class="col-md-10">
                                     <select  class="form-control" id="work-type"  name="group_setting" onchange="getRestId()" required>
-                                        <option disabled selected value="">--- 請選擇班別類型 ---</option>
-                                        <option value="正常班">正常班</option>
-                                        <option value="早班">早班</option>
-                                        <option value="中班">中班</option>
-                                        <option value="晚班">晚班</option>
-                                        <option value="大夜班">大夜班</option>
-                                        <option value="混合型">混合型</option>
+                                        <option value="正常班" {{ $datas->group_setting === '正常班' ? 'selected' : '' }}>正常班</option>
+                                        <option value="早班" {{ $datas->group_setting === '早班' ? 'selected' : '' }}>早班</option>
+                                        <option value="中班" {{ $datas->group_setting === '中班' ? 'selected' : '' }}>中班</option>
+                                        <option value="晚班" {{ $datas->group_setting === '晚班' ? 'selected' : '' }}>晚班</option>
+                                        <option value="大夜班" {{ $datas->group_setting === '大夜班' ? 'selected' : '' }}>大夜班</option>
+                                        <option value="混合型" {{ $datas->group_setting === '混合型' ? 'selected' : '' }}>混合型</option>
                                     </select>
                                 </div>
                             </div>
@@ -109,7 +105,6 @@
                                 <label class="col-md-2 control-label">休息類別</label>
                                 <div class="col-md-10">
                                     <select name="class_assign" class="form-control"  id="rest-id" required>
-                                    <option disabled selected >--- 請選擇 ---</option>
                                     </select>
                                 </div>
                             </div>
@@ -118,10 +113,9 @@
                                 <label class="col-md-2 control-label">適用OEE</label>
                                 <div class="col-md-10">
                                     <select name="oee_assign" class="form-control" required>
-                                        <option disabled selected value="">--- 請選擇OEE類型 ---</option>
-                                        <option value="雷射專用">雷射專用</option>
-                                        <option value="P1&NCT專用">P1&NCT專用</option>   
-                                </select>
+                                        <option value ="雷射專用" {{ $datas->oee_assign === '雷射專用' ? 'selected' : '' }}>雷射專用</option>
+                                        <option value ="P1&NCT專用" {{ $datas->oee_assign === 'P1&NCT專用' ? 'selected' : '' }}>P1&NCT專用</option>   
+                                    </select>
                                 </div>
                             </div>
                             <hr>
@@ -138,9 +132,9 @@
 </div>
 
 <script>
-    if ('{{ session('message') }}') {
-        alert('{{ session('message') }}');
-    }
+    let a = true;
+    let b = true;
+    let c = true;
     const getRestId = () => {
         axios.get('{{ route('rest-group') }}', {
             params: {
@@ -148,10 +142,14 @@
             }
         })
         .then(({ data }) => {
-            $('#rest-id').empty();
-            $('#rest-id').append(`
-                <option disabled selected value="">--- 請選擇 ---</option>
-            `)
+
+            $("#rest-id").empty();
+            if (a) {
+                $("#rest-id").append(`
+                    <option disabled selected ">{{$datas->Rest->rest_name}}</option>
+                `)
+                a = !a
+            }
             data.forEach(data => {
                 $('#rest-id').append(`
                     <option value="${data.id}">${data.rest_name}</option>
@@ -159,35 +157,50 @@
             })
         });
     }
+    getRestId();
    
     const getMachineId = () => {
         
-            axios.get('{{ route('getMachineData') }}', {
-            })
-            .then(({ data }) => {
-           
-                data.forEach(data => {
-                    $('#machine-name').append(`
-                        <option value="${data.machine_id}+${data.machine_type}+${data.machine_name}"> ${data.machine_name}</option>
-                    `);
-                })
-            });  
-    }
-
-    const getApsProcessCode = () => {
-        
-        axios.get('{{ route('getApsProcessCode') }}', {
+        axios.get('{{ route('getMachineData') }}', {
         })
         .then(({ data }) => {
-       
+
+            $("#machine-name").empty();
+            if (b) {
+                $("#machine-name").append(`
+                    <option disabled selected >{{ $datas->machine_category_name }}</option>
+                `)
+                b = !b
+            }
             data.forEach(data => {
-                $('#ApsProcessCode').append(`
-                    <option value=""> ${data.process_description}</option>
+                $('#machine-name').append(`
+                    <option value="${data.id}"> ${data.machine_name}</option>
                 `);
             })
         });  
-}
+    }
     getMachineId();
+
+    const getApsProcessCode = () => {
+        
+        axios.get('{{ route('getApsData') }}', {
+        })
+        .then(({ data }) => {
+
+            $("#ApsProcessCode").empty();
+            if (c) {
+                $("#ApsProcessCode").append(`
+                    <option disabled selected >{{$datas->process_description}}</option>
+                `)
+                c = !c
+            }
+            data.forEach(data => {
+                $('#ApsProcessCode').append(`
+                    <option value="${data.aps_id}"> ${data.process_routing_name}</option>
+                `);
+            })
+        });  
+    }
     getApsProcessCode();
 </script>
 @endsection
