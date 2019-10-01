@@ -30,3 +30,6 @@ Route::get('/getmachinedatabase', 'api\ResourceController@getmachinedatabase')->
 Route::get('/test', 'ResourceController@test');
 Route::get('/test2', 'ResourceController@test2');
 Route::get('/inform', 'ResourceController@inform');
+
+Route::resource('dayPerformanceStatistics', 'DayPerformanceStatisticsController');
+Route::get('/day', 'DayPerformanceStatisticsController@getmachineperformance');
