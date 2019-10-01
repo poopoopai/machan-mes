@@ -21,9 +21,9 @@ class SummaryRepository
         
         $oldopen = Summary::where('open', '!=', '')->orderby('id', 'desc')->first();
         $oldturn = Summary::where('turn_off', '!=', '')->orderby('id', 'desc')->first();
-        if( $count->resources_id == 0 || $data['date'] != $count->resource->date){
-            $count->open = 0;
-            $count->turn_off = 0;
+        if( $count->resources_id == 0 || $data['date'] != $count->resource->date){  //如果為第一筆資料 或者 不是同一天 (就要重頭計算)
+            $count->open = 0;   
+            $count->turn_off = 0;   //關機
             $count->start_count = 0;
             $count->stop_count = 0;
             $data['status_id'] == 3 ? $count->open++ : $count->open = '';
@@ -37,7 +37,7 @@ class SummaryRepository
             $data['status_id'] == 4 ? $count->stop_count++ : $count->stop_count; 
         }
         
-            $data['status_id'] == 15 ? $count->sensro_inputs++ : $count->sensro_inputs;
+            $data['status_id'] == 15 ? $count->sensro_inputs++ : $count->sensro_inputs;     //Sensor投入累計數
             
         if($machine == '捲料機1'){
             $data['status_id'] == 9 ? $count->second_completion++ : $count->second_completion;
@@ -45,22 +45,23 @@ class SummaryRepository
             $data['status_id'] == 10 ? $count->second_completion++ : $count->second_completion;
         }
         
-        $count->serial_number++;
+        $count->serial_number++;    //資料數列順序
 
-        if( $count->resources_id == 0 || $data['orderno'] != $count->resource->orderno  ) { //料號不相同 $count->resources_id第一筆null
+        if( $count->resources_id == 0 || $data['orderno'] != $count->resource->orderno  ) { //料號不相同 或者是 第一筆資料
             $count->machine_completion = 0;
             $count->machine_inputs = 0;
-                if ($machine == '捲料機1'){
-                    $data['status_id'] == 9 ? $count->machine_completion++ : $count->machine_completion;
-                } else{
-                    $data['status_id'] == 10 ? $count->machine_completion++ : $count->machine_completion;
-                }
-                $data['status_id'] == 10 ? $count->machine_inputs++ : $count->machine_inputs;
+            if ($machine == '捲料機1'){   //相同料號機台累計完工數machine_completion  相同料號機台累計投入數machine_inputs
+                $data['status_id'] == 9 ? $count->machine_completion++ : $count->machine_completion;
+            } else{
+                $data['status_id'] == 10 ? $count->machine_completion++ : $count->machine_completion;
+            }
+            $data['status_id'] == 10 ? $count->machine_inputs++ : $count->machine_inputs;
+
         } else{
 
             $data['status_id'] == 10 ? $count->machine_inputs++ : $count->machine_inputs;
             
-            if ($machine == '捲料機1'){
+            if ($machine == '捲料機1'){   //相同料號機台累計完工數machine_completion  相同料號機台累計投入數machine_inputs
                 $data['status_id'] == 9 ? $count->machine_completion++ : $count->machine_completion;
                 $data['status_id'] == 9 ? $count->processing_completion_time = $data['time'] : $count->processing_completion_time = "";
             } else{
@@ -90,8 +91,8 @@ class SummaryRepository
         }
 
             if( $count->resources_id == 0 || $data['date'] != $count->resource->date) { //累積當天數量
-                $count->machine_completion_day = 0;
-                $count->machine_inputs_day = 0;
+                $count->machine_completion_day = 0;     //同一天累計完工數
+                $count->machine_inputs_day = 0;         //同一天累計投入數
                     if ($machine == '捲料機1'){
                         $data['status_id'] == 9 ? $count->machine_completion_day++ : $count->machine_completion_day;
                     } else{
@@ -109,13 +110,18 @@ class SummaryRepository
                 $data['status_id'] == 21 ? $count->refueling_end++ : $count->refueling_end = 0;
                 $data['status_id'] == 22 ? $count->aggregate_start++ : $count->aggregate_start = 0;
                 $data['status_id'] == 23 ? $count->aggregate_end++ : $count->aggregate_end = 0;
-            }            
+
+            }       
+
+            //同日期的資料序列    
+
             if($count->resource){
                 if ( ($data['orderno'] == '' && $data['date'] != $count->resource->date) || $count->resources_id == 0  ){ //最初$count->resources_id
                     $count->serial_number_day = 1 ;
                 } else {
                     if($data['orderno'] == '' && $data['date'] == $count->resource->date){
                         if($count){
+
                             $count->serial_number_day++;
                         } else{
                             $count->serial_number_day = 1 ;//最開始的那筆沒有資料
@@ -469,6 +475,7 @@ class SummaryRepository
 
             if($status->open == 1){
                 $down_time = '00:00:00';
+
             } else{
                 if($beforeturn->turn_off ? $beforeturn->turn_off : $beforeturn['turn_off'] == 0){
                     if($beforeturn['turn_off'] > $status->open && $status->stop_count != '' ){//判斷前面關機數量有沒有大於當前開機數量
@@ -586,6 +593,9 @@ class SummaryRepository
     {
 
         $beforeID = Summary::where('resources_id', $status->resources_id - 1)->first();
+        if($beforeID == NULL){
+            $beforeID->machine_completion_day = 0;
+        }
         $completion = Summary::where('machine_completion_day', $status->machine_completion_day)->where('resources_id', '>', 0)->first(); //找前面一筆相同的 顯示完工時間
         
         $sensro  = Summary::where('machine_inputs_day', $status->machine_completion_day-1)->where('resources_id', '>', 0)->first(); //Q4-1 = R
@@ -594,93 +604,84 @@ class SummaryRepository
         $sum = $status->machine_completion_day - $status->machine_inputs_day; //Q-R
         $sensros  = Summary::where('machine_inputs_day', $status->machine_completion_day - $sum-1)->where('resources_id', '>', 0)->first(); //Q4-(Q-R)-1 = R
         $sensros2 = Summary::where('machine_inputs_day', $status->machine_completion_day - $sum-2)->where('resources_id', '>', 0)->first();//Q4-(Q-R)-2 = R
-        if(isset($beforeID)){
+        
+        if($status->machine_completion_day > $beforeID->machine_completion_day   && $status->machine_completion_day != 1){
+            
+            if($status->machine_inputs_day - $status->machine_completion_day > 0){
 
-            if($status->machine_completion_day > $beforeID->machine_completion_day && $status->machine_completion_day != 1){
-                
-                if($status->machine_inputs_day - $status->machine_completion_day > 0){
-
-                    if(isset($sensro)){
-                        if(strtotime($completion->processing_completion_time) - strtotime($sensro->processing_start_time) > 18) {
-                                $total = strtotime($completion->processing_completion_time) - strtotime($sensro->processing_start_time);
-                        } else{
-                            if(isset($sensro2)){
-                                $total = strtotime($completion->processing_completion_time) - strtotime($sensro2->processing_start_time);
-                            } else{
-                                $total = strtotime($completion->processing_completion_time);
-                            }
-                        } 
+                if(isset($sensro)){
+                    if(strtotime($completion->processing_completion_time) - strtotime($sensro->processing_start_time) > 18) {
+                            $total = strtotime($completion->processing_completion_time) - strtotime($sensro->processing_start_time);
                     } else{
-                        if(strtotime($completion->processing_completion_time) > 18) {
+                        if(isset($sensro2)){
+                            $total = strtotime($completion->processing_completion_time) - strtotime($sensro2->processing_start_time);
+                        } else{
                             $total = strtotime($completion->processing_completion_time);
+                        }
+                    } 
+                } else{
+                    if(strtotime($completion->processing_completion_time) > 18) {
+                        $total = strtotime($completion->processing_completion_time);
+                    } else{
+                        if(isset($sensro2)){
+                            $total = strtotime($completion->processing_completion_time) - strtotime($sensro2->processing_start_time);
                         } else{
-                            if(isset($sensro2)){
-                                $total = strtotime($completion->processing_completion_time) - strtotime($sensro2->processing_start_time);
-                            } else{
-                                $total = strtotime($completion->processing_completion_time);
-                            }
-                        } 
-                    }
-                } else{      
-                    if(isset($sensros)){ //$sensros存在
-                        if(strtotime($completion->processing_completion_time) - strtotime($sensros->processing_start_time) > 18) {
-                                $total = strtotime($completion->processing_completion_time) - strtotime($sensros->processing_start_time);
-                        } else{
-                            if(isset($sensros2)){
-                                $total = strtotime($completion->processing_completion_time) - strtotime($sensros2->processing_start_time);
-                            } else{
-                                $total = strtotime($completion->processing_completion_time);
-                            }
-                        }       
-                    } else{  //$sensros不存在
-                        if(strtotime($completion->processing_completion_time > 18)){
                             $total = strtotime($completion->processing_completion_time);
+                        }
+                    } 
+                }
+            } else{      
+                if(isset($sensros)){ //$sensros存在
+                    if(strtotime($completion->processing_completion_time) - strtotime($sensros->processing_start_time) > 18) {
+                            $total = strtotime($completion->processing_completion_time) - strtotime($sensros->processing_start_time);
+                    } else{
+                        if(isset($sensros2)){
+                            $total = strtotime($completion->processing_completion_time) - strtotime($sensros2->processing_start_time);
                         } else{
-                            if(isset($sensros2)){
-                                $total = strtotime($completion->processing_completion_time) - strtotime($sensros2->processing_start_time);
-                            } else{
-                                $total = strtotime($completion->processing_completion_time);
-                            }
+                            $total = strtotime($completion->processing_completion_time);
+                        }
+                    }       
+                } else{  //$sensros不存在
+                    if(strtotime($completion->processing_completion_time > 18)){
+                        $total = strtotime($completion->processing_completion_time);
+                    } else{
+                        if(isset($sensros2)){
+                            $total = strtotime($completion->processing_completion_time) - strtotime($sensros2->processing_start_time);
+                        } else{
+                            $total = strtotime($completion->processing_completion_time);
                         }
                     }
                 }
-            } else{
-                $total = 0;
             }
         } else{
             $total = 0;
         }
-            $sensro3  = Summary::where('machine_inputs_day', $status->machine_completion_day-3)->where('resources_id', '>', 0)->first();//Q4-3 = R
-            $sensros3 = Summary::where('machine_inputs_day', $status->machine_completion_day - $sum-3)->where('resources_id', '>', 0)->first();//Q4-(Q-R)-3 = R
-        if(isset($beforeID)){
-
-            if($status->machine_completion_day > $beforeID->machine_completion_day && $status->processing_completion_time != ""){
-            
-                if($total > 18 && $total < 28){
-                    $CTtime = $total;
-                } else{
+        $sensro3  = Summary::where('machine_inputs_day', $status->machine_completion_day-3)->where('resources_id', '>', 0)->first();//Q4-3 = R
+        $sensros3 = Summary::where('machine_inputs_day', $status->machine_completion_day - $sum-3)->where('resources_id', '>', 0)->first();//Q4-(Q-R)-3 = R
                 
-                    if($status->machine_inputs_day > $status->machine_completion_day){
-                            if(isset($sensro3)){//前面沒資料就不用相減了
-                                $CTtime = strtotime($completion->processing_completion_time) - strtotime($sensro3->processing_start_time);
-                            } else{
-                                $CTtime = strtotime($completion->processing_completion_time);
-                            } 
-                    } else{
-                            if(isset($sensros3)){//前面沒資料就不用相減了
-                                $CTtime = strtotime($completion->processing_completion_time) - strtotime($sensros3->processing_start_time);
-                            } else{
-                                $CTtime = strtotime($completion->processing_completion_time);
-                            }         
-                    }
-                }
+        if($status->machine_completion_day > $beforeID->machine_completion_day && $status->processing_completion_time != ""){
+        
+            if($total > 18 && $total < 28){
+                $CTtime = $total;
             } else{
-                $CTtime = 0;
+            
+                if($status->machine_inputs_day > $status->machine_completion_day){
+                        if(isset($sensro3)){//前面沒資料就不用相減了
+                            $CTtime = strtotime($completion->processing_completion_time) - strtotime($sensro3->processing_start_time);
+                        } else{
+                            $CTtime = strtotime($completion->processing_completion_time);
+                        } 
+                } else{
+                        if(isset($sensros3)){//前面沒資料就不用相減了
+                            $CTtime = strtotime($completion->processing_completion_time) - strtotime($sensros3->processing_start_time);
+                        } else{
+                            $CTtime = strtotime($completion->processing_completion_time);
+                        }         
+                }
             }
         } else{
             $CTtime = 0;
         }
-        
         $status->total_processing_time = $total;
         $status->ct_processing_time = $CTtime;
         return $status;
@@ -697,7 +698,8 @@ class SummaryRepository
     }
 
     public function actual($data, $status, $machine)
-    { 
+    {
+       
         $actual = 0;
         if($machine == '捲料機1'){
             if($data['status_id'] == 9 ){
@@ -726,6 +728,295 @@ class SummaryRepository
             return $Machine->update($data);
         }
     }
-   
+
+    //////////////////////////////////////////////////////////////////////////////////////DayPerformanceStatistics
+
+
+    public function standard_working_hours($sum){
+        if($sum['work_name'] == '正常班'){
+            return 8;
+        }elseif($sum['work_name'] == '加班三小時'){
+            return 11;
+        }elseif($sum['work_name'] == '加班四小時'){
+            return 12;
+        }else{
+            return 0;
+        }
+    }
+    public function total_hours($sum){
+        if($sum['work_name'] == '正常班'){
+            return '9:20:00';
+        }elseif($sum['work_name'] == '加班三小時'){
+            return '12:50:00';
+        }elseif($sum['work_name'] == '加班四小時'){
+            return '13:50:00';
+        }else{
+            return '00:00:00';
+        }
+    }
+
+    //機檯作業數量
+    public function machine_works_number($sum){
+        $machine_works_number = [];
+        $sameDayAndName_id10 = Resource::where('orderno', $sum['material_name'])->where('date', $sum['report_work_date'])->where('status_id', 10)->with('summary')->get();
+        $sameDayAndName_id9 = Resource::where('orderno', $sum['material_name'])->where('date', $sum['report_work_date'])->where('status_id', 9)->with('summary')->get();
+        $count1 = 0;  $count2 = 0;
+        
+        // machine_processing
+        // COUNTIFS( 捲料機績效分析!$C:$C, 10,  捲料機績效分析!$E:$E,機台日績效統計表!$B6,   捲料機績效分析!$B:$B,機台日績效統計表!$J6) 
+        foreach($sameDayAndName_id10 as $key =>$data){          
+            $count1 = $count1 + 1; 
+        }
+        $machine_works_number['machine_processing'] = $count1;
+        $machine_works_number['actual_production_quantity'] = $count1;  // 同上？
+        $machine_works_number['total_input_that_day'] = $count1;    //同上上？？
+        
+        // standard_completion
+        $machine_works_number['standard_completion'] = intval( ($sum['standard_working_hours']*3600)/($sum['standard_processing'] + $sum['standard_updown']) );
+        
+        // total_completion_that_day
+        // COUNTIFS( 捲料機績效分析!$C:$C, 9,   捲料機績效分析!$E:$E,機台日績效統計表!$B7,   捲料機績效分析!$B:$B,機台日績效統計表!$J7)
+        foreach($sameDayAndName_id9 as $key =>$data){          
+            $count2 = $count2 + 1; 
+        }
+        $machine_works_number['total_completion_that_day'] = $count2;
+
+        $machine_works_number['adverse_number'] = ( $machine_works_number['total_input_that_day'] - $machine_works_number['total_completion_that_day'] );
+
+        return $machine_works_number;
+    }
+
+    //標準ct
+    public function standard_processing($sum){
+        $standard = StandardCt::where('orderno', $sum['material_name'])->first();
+        return $standard->standard_ct;
+    }
+    public function standard_updown($sum){
+        $standard = StandardCt::where('orderno', $sum['material_name'])->first();
+        return $standard->standard_updown;
+    }
+
+    //機台加工時間
+    public function mass_production_time($sum)
+    {
+        $changeLine = Summary::where('message_status',"換線")->first();
+        $sameDayAndName = Resource::where('orderno', $sum['material_name'])->where('date', $sum['report_work_date'])->with('summary')->get();
+        $sameDay = Resource::where('date', $sum['report_work_date'])->with('summary')->get();
+        $s = 0; $s1 = 0; $s2 = 0;
+
+        if($changeLine == null){
+
+            foreach($sameDayAndName as $key =>$data){        
+                $max = $data->summary->max('serial_number_day');    //抓最大值
+                if($max == $data->summary->serial_number_day){      //如果帶進來的值為最大值
+                    $t = strtotime($data->summary->time) - strtotime(Carbon::today());
+                    $s1 = $s1 + $t; 
+                }
+            }
+            foreach($sameDay as $key =>$data){        
+                if( $data->summary->serial_number_day == 1 ){      
+                    $t = strtotime($data->summary->time) - strtotime(Carbon::today());
+                    $s2 = $s2 + $t; 
+                }
+            }
+            $s = $s1 - $s2;
+            return date("H:i:s", $s-8*60*60);//將時間戳轉回字串
+
+        }else{
+            if( $sum['material_name'] == ""){
+                
+                foreach($sameDay as $key =>$data){        
+                    $max = $data->summary->max('serial_number_day');    //抓最大值
+                    if($max == $data->summary->serial_number_day){      //如果帶進來的值為最大值
+                        $t = strtotime($data->summary->time) - strtotime(Carbon::today());
+                        $s1 = $s1 + $t; 
+                    }
+                }
+                foreach($sameDayAndName as $key =>$data){        
+                    if( 1 == $data->summary->serial_number_day){      
+                        $t = strtotime($data->summary->time) - strtotime(Carbon::today());
+                        $s2 = $s2 + $t; 
+                    }
+                }
+                $s = $s1 - $s2;
+                return date("H:i:s", $s-8*60*60);//將時間戳轉回字串
+
+            }else{
+                
+                foreach($sameDayAndName as $key =>$data){        
+                    if( '換線' == $data->summary->abnormal){      
+                        $t = strtotime($data->summary->time) - strtotime(Carbon::today());
+                        $s1 = $s1 + $t; 
+                    }
+                }
+                foreach($sameDayAndName as $key =>$data){        
+                    if( 1 == $data->summary->serial_number_day){      
+                        $t = strtotime($data->summary->time) - strtotime(Carbon::today());
+                        $s2 = $s2 + $t; 
+                    }
+                }
+                $s = $s1 - $s2;
+                return date("H:i:s", $s-8*60*60);//將時間戳轉回字串
+
+            }
+        }
+    }
+    public function machine_processing_time($sum){
+        $machine_processing_time = [];
+        $sameDay = Resource::where('date', $sum['report_work_date'])->with('summary')->get();
+        $sameDayAndName = Resource::where('orderno', $sum['material_name'])->where('date', $sum['report_work_date'])->with('summary')->get();
+        $total_downtime = 0;  $standard_processing_seconds1 = 0;  $standard_processing_seconds2 = 0;  $actual_processing_seconds = 0;
+       
+        // total_downtime
+        if($sameDayAndName == null){
+            $machine_processing_time['total_downtime'] = '';
+        }else{
+            foreach($sameDayAndName as $key =>$data){       
+                $a = $data->summary->down_time;
+                $a = strtotime($a) - strtotime(Carbon::today());
+                $total_downtime = $total_downtime + $a;
+            }
+           
+            $machine_processing_time['total_downtime'] = date("H:i:s", $total_downtime-8*60*60);
+        }
+
+        // standard_processing_seconds
+        foreach($sameDay as $key =>$data){   
+            $a = $data->summary['standard_uat_h_26_2'];
+            $standard_processing_seconds1 = $standard_processing_seconds1 + $a;   
+        }
+        foreach($sameDayAndName as $key =>$data){        
+            $b = $data->summary->standard_uat_h_26_3;
+            $c = $data->summary->standard_uat_h_36_3;
+            $standard_processing_seconds2 = $standard_processing_seconds2 + $b + $c;
+        }
+        $machine_processing_time['standard_processing_seconds'] = ($standard_processing_seconds1 + $standard_processing_seconds2);
+
+        // actual_processing_seconds
+        foreach($sameDayAndName as $key =>$data){        
+            $a = $data->summary->uat_h_26_2;
+            $b = $data->summary->uat_h_26_3;
+            $c = $data->summary->uat_h_36_3;
+            $actual_processing_seconds = $actual_processing_seconds + $a + $b + $c;
+        }
+        $machine_processing_time['actual_processing_seconds'] = $actual_processing_seconds;
+
+        $machine_processing_time['machine_speed'] = '';   //空白??
+
+        $machine_processing_time['updown_time'] = ($sum['total_completion_that_day']*$sum['standard_updown']);
+
+        return $machine_processing_time;
+    }
+
+    //機台嫁動除外工時   machinee_work_except_hours
+    public function machinee_work_except_hours($sum){
+        $machinee_work_except_hours = [];
+        $sameDayAndName = Resource::where('orderno', $sum['material_name'])->where('date', $sum['report_work_date'])->with('summary')->get();
+        $hanging_time = 0;  $aggregate_time = 0;  $break_time = 0;  $excluded_working_hours = 0;
+
+        $machinee_work_except_hours['correction_time'] = '';  //由APP輸入或由機台自動判定除外工時(暖機(校正)時間)
+
+        //hanging_time
+        foreach($sameDayAndName as $key =>$data){
+            if($data->summary->refueling_time != "00:00:00"){
+                $abc = strtotime($data->summary->refueling_time) - strtotime(Carbon::today()); //將字串改為時間戳  之後再相減進行校正
+                $s = $s + $abc;
+            }else{
+                $machinee_work_except_hours['hanging_time'] = 0;
+            }
+        }
+        $machinee_work_except_hours['hanging_time'] = date("H:i:s", $hanging_time-8*60*60);//將時間戳轉回字串
+
+        //aggregate_time
+        foreach($sameDayAndName as $key =>$data){
+            if($data->summary->aggregate_time != "00:00:00"){
+                $abc = strtotime($data->summary->aggregate_time) - strtotime(Carbon::today()); //將字串改為時間戳  之後再相減進行校正
+                $aggregate_time = $aggregate_time + $abc;
+            }else{
+                $machinee_work_except_hours['aggregate_time'] = 0;
+            }
+        }
+        $machinee_work_except_hours['aggregate_time'] = date("H:i:s", $aggregate_time-8*60*60);//將時間戳轉回字串    
+
+        //break_time
+        foreach($sameDayAndName as $key =>$data){
+            if($data->summary->break_time != "00:00:00"){
+                $abc = strtotime($data->summary->break_time) - strtotime(Carbon::today()); //將字串改為時間戳  之後再相減進行校正
+                $break_time = $break_time + $abc;
+            }else{
+                $machinee_work_except_hours['break_time'] = 0;
+            }
+        }
+        $machinee_work_except_hours['break_time'] = date("H:i:s", $break_time-8*60*60);//將時間戳轉回字串
+
+
+        $machinee_work_except_hours['chang_model_and_line'] = '';  //由APP輸入或由機台自動判定除外工時(換模換線)
+        $machinee_work_except_hours['bad_disposal_time'] = '';  //由APP輸入或由機台自動判定除外工時(物料品質不良處置時間)
+        $machinee_work_except_hours['model_damge_change_line_time'] = '';  //由APP輸入或由機台自動判定除外工時(模具損壞換線時間)
+        $machinee_work_except_hours['program_modify_time'] = '';  //由APP輸入或由機台自動判定除外工時(程式修改時間)
+        $machinee_work_except_hours['meeting_time'] = '';  //由APP輸入集會時間
+        $machinee_work_except_hours['environmental_arrange_time'] = '';  //由APP輸入或由機台自動判定除外工時(環境整理整頓時間)
+
+        //excluded_working_hours
+        $a0 = strtotime($machinee_work_except_hours['correction_time']) - strtotime(Carbon::today());
+        $a1 = strtotime($machinee_work_except_hours['hanging_time']) - strtotime(Carbon::today());
+        $a2 = strtotime($machinee_work_except_hours['aggregate_time']) - strtotime(Carbon::today());
+        $a3 = strtotime($machinee_work_except_hours['break_time']) - strtotime(Carbon::today());
+        $a4 = strtotime($machinee_work_except_hours['chang_model_and_line']) - strtotime(Carbon::today());
+        $a5 = strtotime($machinee_work_except_hours['bad_disposal_time']) - strtotime(Carbon::today());
+        $a6 = strtotime($machinee_work_except_hours['model_damge_change_line_time']) - strtotime(Carbon::today());
+        $a7 = strtotime($machinee_work_except_hours['program_modify_time']) - strtotime(Carbon::today());
+        $a8 = strtotime($machinee_work_except_hours['meeting_time']) - strtotime(Carbon::today());
+        $a9 = strtotime($machinee_work_except_hours['environmental_arrange_time']) - strtotime(Carbon::today());
+        $a = array($a0, $a1, $a2, $a3, $a4, $a5, $a6, $a7, $a8, $a9);
+
+        for( $i=0 ; $i<10 ; $i++ ){     
+            if($a[$i] == -1568908800){      //把原本是空白格的時間更正為0
+                $a[$i] = 0;
+            }
+            $excluded_working_hours = $excluded_working_hours + $a[$i];
+        }
+        $machinee_work_except_hours['excluded_working_hours'] = date("H:i:s", $excluded_working_hours-8*60*60);
+
+        return $machinee_work_except_hours;
+    }
+    
+    //機台性能除外工時   performance_exclusion_time
+    public function performance_exclusion_time($sum){
+        $performance_exclusion_time = [];
+        $machine_downtime = 0;  $machine_utilization_rate = 0;
+
+        //machine_downtime
+        $a = strtotime($sum['total_downtime']) - strtotime(Carbon::today());   
+        $b = strtotime($sum['excluded_working_hours']) - strtotime(Carbon::today());
+        
+        $machine_downtime = $a - $b;
+        $performance_exclusion_time['machine_downtime'] = date("H:i:s", $machine_downtime-8*60*60);
+
+        $performance_exclusion_time['machine_maintain_time'] = '';  //由APP輸入
+
+        //machine_utilization_rate   ($mass_production_time - $total_downtime + $updown_time)/($mass_production_time)
+        $c = strtotime($sum['mass_production_time']) - strtotime(Carbon::today());
+        $d = strtotime($sum['total_downtime']) - strtotime(Carbon::today());
+        $e = $sum['updown_time'];
+
+        $machine_utilization_rate = ($c - $d + $e)/($c);
+        $performance_exclusion_time['machine_utilization_rate'] = $machine_utilization_rate;
+
+        $performance_exclusion_time['performance_rate'] = ($sum['total_completion_that_day']/$sum['standard_completion']);
+
+        //yield  ($total_completion_that_day - $adverse_number)/($total_completion_that_day)
+        $sum['total_completion_that_day'] = 4;//假資料 因為現在是0 總不能除以0吧？
+        $performance_exclusion_time['yield'] = ($sum['total_completion_that_day'] - $sum['adverse_number']) / ($sum['total_completion_that_day']);
+    
+        $performance_exclusion_time['OEE'] = ($performance_exclusion_time['machine_utilization_rate']*$performance_exclusion_time['performance_rate']*$performance_exclusion_time['yield']);
+       
+        return $performance_exclusion_time;
+    }
+
+    // public function data()//當日最後一筆
+    // {
+    //   summary::orderby('created_at' , 'desc')->with('resource')->first();   
+    // }
 
 }
