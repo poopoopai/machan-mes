@@ -157,6 +157,7 @@
             })
         });
     }
+    getRestId();
    
     const getMachineId = () => {
         
@@ -178,6 +179,7 @@
             })
         });  
     }
+    getMachineId();
 
     const getApsProcessCode = () => {
         
@@ -199,9 +201,6 @@
             })
         });  
     }
-    
-    getRestId();
-    getMachineId();
     getApsProcessCode();
 </script>
 @endsection

@@ -53,5 +53,4 @@ class ResourceController extends Controller
         }
        
     }
-    
 }

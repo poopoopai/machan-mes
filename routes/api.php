@@ -31,4 +31,10 @@ Route::get('/test', 'ResourceController@test');
 Route::get('/test2', 'ResourceController@test2');
 
 Route::get('/Machine-Definition', 'MachineDefinitionController@machineDefinitionIndex')->name('MachineDefinitionIndex');
+Route::get('/get-work-time', 'WorkTypeController@getWokrTime')->name('get-work-time');
+Route::get('/Organization', 'ProcessRoutingController@getOrganization')->name('getOrganization');
 
+Route::get('/process-data', 'ProcessCalendarController@processCalendarData')->name('getprocesscalendar');
+Route::get('/process-calendar-data', 'ProcessCalendarController@adjustProcessCalendar')->name('adjust-process-calendar');
+Route::post('/process-calendar-data', 'ProcessCalendarController@workCalendar')->name('process-calendar-data');
+Route::get('/work-data', 'ProcessCalendarController@workData')->name('work-data');

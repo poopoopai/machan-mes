@@ -52,10 +52,15 @@
                     <div class="panel-body">
                         <form class="form-horizontal" action="{{ route('show-process-calendar') }}" method="GET">
                             <div class="form-group">
-                                <label class="col-md-2 control-label">事業別</label>
+                                <label class="col-md-2 control-label">廠別</label>
                                 <div class="col-md-10">
-                                    <select class="form-control" id="sel1" name="org-id" onchange="getResource()" required>
-                                        <option selected>--- 請選擇廠別 ---</option>
+                                    <select class="form-control" id="sel1" name="org_id"  onchange="getOrganization()"  required>
+                                        <option selected disabled>--- 請選擇廠別 ---</option>
+                                        <option value="10">一群</option>
+                                        <option value="20">二群</option>
+                                        <option value="30">三群</option>
+                                        <option value="50">五群</option>
+                                        <option value="60">六群</option>
                                     </select>
                                 </div>
                             </div>
@@ -63,7 +68,7 @@
                             <div class="form-group">
                                 <label class="col-md-2 control-label">機台</label>
                                 <div class="col-md-10">
-                                    <select class="form-control" id="sel2" name="id" required>  
+                                    <select class="form-control" id="sel2" name="id"  required>  
                                     </select>
                                 </div>
                             </div>
@@ -87,9 +92,26 @@
     </div>
 </div>
 <script>
+    
+   const getOrganization = () => {
+        axios.get('{{ route('getOrganization') }}' , {
+            params: {
+                org_id: $('#sel1').val(),
+            }
+        })
+        .then(({ data }) => {
+            $('#sel2').empty();
+            $('#sel2').append(`
+                <option disabled selected value="">--- 請選擇 ---</option>
+            `)
+            data.forEach(data => {
+                $('#sel2').append(`
+                    <option value="${data.id}">${data.process_routing_name}</option>
+                `);
+            })
+        });
+    }
    
 
-    
-  
 </script>
 @endsection

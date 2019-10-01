@@ -61,5 +61,4 @@ class MachineDefinitionRepository
     {
         return MachineDefinition::paginate($amount);
     }
-
 }

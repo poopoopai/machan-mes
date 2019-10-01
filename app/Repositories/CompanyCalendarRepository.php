@@ -10,14 +10,18 @@ class CompanyCalendarRepository
     {
         return CompanyCalendar::updateOrCreate(
             ['date' => $data['date']],
-            $data
-        );
+            [
+                'work_type_id' => $data['workId'],
+                'status' => $data['status']
+            ]
+        )->load('setupShift');
     }
 
     public function show(array $data)
     {
         return CompanyCalendar::whereYear('date', $data['year'])
             ->whereMonth('date', $data['month'])
+            ->with('setupShift')
             ->get();
     }
 }
