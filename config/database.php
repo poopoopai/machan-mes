@@ -58,7 +58,7 @@ return [
             'driver' => 'mysql',
             'url' => env('DATABASE_URL'),
             'host' => '10.1.12.11',
-            'port' => env('DB_PORT', '3306'),
+            'port' => env('DB_PORT', '3306'), //原本是env('DB_PORT', '3306') 要抓的時候請直接改成'port' => '3306',
             'database' => 'sd',
             'username' => 'sd',
             'password' => '1111',
