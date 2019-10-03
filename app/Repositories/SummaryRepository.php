@@ -459,8 +459,9 @@ class SummaryRepository
     {
         
         $worktime = strtotime($status->working_time) - strtotime(Carbon::today());//轉秒數
-        
         $status->restop_count ? $status->restop_count : $status['restop_count'] == 0;
+        $beforeTime = 0;
+        $sumTime = 0;
        
         if($status->open == ''){
             if( $worktime > 180 && $data['status'] == 5){
@@ -486,26 +487,38 @@ class SummaryRepository
                     } else{
                         if($beforeopen->time ?  $beforeopen->time : $beforeopen['time'] == "00:00:00"){
                             if($beforeopen['open'] > $beforeturn->turn_off && $status->restart_count == ''){
-        
-                                $beforetime = Resource::where('date', Carbon::today())->summary()
-                                ->where('trun_off', $beforeopen['start_count'] + $status->restop_count)
-                                ->first();
 
-                                if($beforetime->time ? $beforetime->time : $beforetime['time'] == '00:00:00'){
-                                    $down_time = strtotime($status->time) - strtotime($beforetime['time']);
-                                    $down_time = date("H:i:s", $down_time-8*60*60);
-                                } 
+                                $restop = Summary::where('restop_count', '!=' , 0)->desc('time', 'desc')->first();
+                                $nowtime = Summary::where('turn_off', $beforeopen['stop_count'] + $restop)->whereHas(
+                                    'resource' , function ($query) {
+                                        $query->where('date' , Carbon::today()->format("Y-m-d"));       
+                                    }
+                                )->get();
+
+                                    foreach ($nowtime as $key => $data) {
+                                        $beforeTime += strtotime($data->time)-strtotime(Carbon::today());
+                                    }
+
+                                    if($beforeTime > 0 ? $beforeTime = date("H:i:s", $beforeTime-8*60*60): $beforeTime == '00:00:00'){
+                                        $down_time = strtotime($status->time) - strtotime($beforeTime);
+                                        $down_time = date("H:i:s", $down_time-8*60*60);
+                                    }
 
                             } else{
                                 if($status->restart_count != ''){
                                     $down_time = '00:00:00';
                                 } else{
-                                    $nowtime = Resource::where('date', Carbon::today())->summary()
-                                    ->where('trun_off', $beforeopen['start_count'])
-                                    ->first();
-
-                                    if($nowtime->time ? $nowtime->time : $nowtime['time'] == '00:00:00'){
-                                        $down_time = strtotime($status->time) - strtotime($nowtime['time']);
+                                    $nowtime = Summary::where('turn_off', $status['stop_count'])->whereHas(
+                                        'resource' , function ($query) {
+                                            $query->where('date' , Carbon::today()->format("Y-m-d"));       
+                                        }
+                                    )->get();
+                                    foreach ($nowtime as $key => $data) {
+                                        $sumTime += strtotime($data->time)-strtotime(Carbon::today());
+                                    }
+                                                
+                                    if($sumTime > 0 ? $sumTime = date("H:i:s", $sumTime-8*60*60): $sumTime == '00:00:00'){
+                                        $down_time = strtotime($status->time) - strtotime($sumTime);
                                         $down_time = date("H:i:s", $down_time-8*60*60);
                                     }
                                 }
@@ -804,8 +817,8 @@ class SummaryRepository
         $sameDay = Resource::where('date', $sum['report_work_date'])->with('summary')->get();
         $s = 0; $s1 = 0; $s2 = 0;
 
-        if($changeLine == null){
-
+        if($changeLine == null){    //沒有換線
+        
             foreach($sameDayAndName as $key =>$data){        
                 $max = $data->summary->max('serial_number_day');    //抓最大值
                 if($max == $data->summary->serial_number_day){      //如果帶進來的值為最大值
@@ -822,9 +835,9 @@ class SummaryRepository
             $s = $s1 - $s2;
             return date("H:i:s", $s-8*60*60);//將時間戳轉回字串
 
-        }else{
+        }else{      //有換線
             if( $sum['material_name'] == ""){
-                
+
                 foreach($sameDay as $key =>$data){        
                     $max = $data->summary->max('serial_number_day');    //抓最大值
                     if($max == $data->summary->serial_number_day){      //如果帶進來的值為最大值
@@ -843,7 +856,7 @@ class SummaryRepository
 
             }else{
                 
-                foreach($sameDayAndName as $key =>$data){        
+                foreach($sameDayAndName as $key =>$data){       
                     if( '換線' == $data->summary->abnormal){      
                         $t = strtotime($data->summary->time) - strtotime(Carbon::today());
                         $s1 = $s1 + $t; 
@@ -999,7 +1012,7 @@ class SummaryRepository
         $c = strtotime($sum['mass_production_time']) - strtotime(Carbon::today());
         $d = strtotime($sum['total_downtime']) - strtotime(Carbon::today());
         $e = $sum['updown_time'];
-
+        // dd($sum['mass_production_time'],123);
         $machine_utilization_rate = ($c - $d + $e)/($c);
         $performance_exclusion_time['machine_utilization_rate'] = $machine_utilization_rate;
 
