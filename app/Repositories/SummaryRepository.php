@@ -1012,14 +1012,13 @@ class SummaryRepository
         $c = strtotime($sum['mass_production_time']) - strtotime(Carbon::today());
         $d = strtotime($sum['total_downtime']) - strtotime(Carbon::today());
         $e = $sum['updown_time'];
-        // dd($sum['mass_production_time'],123);
+
         $machine_utilization_rate = ($c - $d + $e)/($c);
         $performance_exclusion_time['machine_utilization_rate'] = $machine_utilization_rate;
 
         $performance_exclusion_time['performance_rate'] = ($sum['total_completion_that_day']/$sum['standard_completion']);
 
         //yield  ($total_completion_that_day - $adverse_number)/($total_completion_that_day)
-        $sum['total_completion_that_day'] = 4;//假資料 因為現在是0 總不能除以0吧？
         $performance_exclusion_time['yield'] = ($sum['total_completion_that_day'] - $sum['adverse_number']) / ($sum['total_completion_that_day']);
     
         $performance_exclusion_time['OEE'] = ($performance_exclusion_time['machine_utilization_rate']*$performance_exclusion_time['performance_rate']*$performance_exclusion_time['yield']);

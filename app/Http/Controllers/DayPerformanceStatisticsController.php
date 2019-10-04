@@ -60,7 +60,7 @@ class DayPerformanceStatisticsController extends Controller
             //機台性能除外工時      performance_exclusion_time
             $performance_exclusion_time = $this->SumRepo->performance_exclusion_time($sum);
             $sum = array_merge($sum, $performance_exclusion_time);
-            
+            dd($sum);
             DayPerformanceStatistics::create($sum);
     }
 
