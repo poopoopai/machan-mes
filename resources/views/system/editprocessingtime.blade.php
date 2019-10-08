@@ -55,35 +55,40 @@
                 <div class="panel panel-default">
                     <div class="panel-heading">資料編輯</div>
                     <div class="panel-body">
-                        <form class="form-horizontal">
+                        <form class="form-horizontal" action="{{ route('processing-time.update', $datas->id)}}"  method="POST">
+                            @csrf
+                            @method('PUT');
                                 <div class="form-group">
                                         <label class="col-md-2 control-label">物料代碼</label>
                                             <div class="col-md-10">
-                                                <input class="clearable form-control" required>
+                                                <input name="orderno" class="clearable form-control" value ="{{$datas->orderno}}" required >
                                             </div>
                                 </div>
                                 <hr>
                                 <div class="form-group">
-                                    <label class="col-md-2 control-label">加工秒速</label>
+                                    <label class="col-md-2 control-label">適用機台</label>
+                                    <div class="col-md-10">
+                                        <select name="machinedefinition_id" class="form-control"  id="machine-definition" >
+                                            
+                                        </select>
+                                    </div>
+                                </div>
+                                <hr>
+                                <div class="form-group">
+                                    <label class="col-md-2 control-label">標準加工秒速</label>
                                         <div class="col-md-10">
-                                            <input class="clearable form-control" required>
+                                            <input name="standard_ct" class="clearable form-control" value ="{{$datas->standard_ct}}" required>
                                         </div>
                                 </div>
                                 <hr>
-                            <div class="form-group">
-                                <label class="col-md-2 control-label">適用機台</label>
-                                <div class="col-md-10">
-                                    <select class="form-control" required>
-                                        <option disabled selected value="" >>--- 請選擇機台類型 ---</option>
-                                        <option value="">一群雷射機</option>
-                                        <option value="">一群CNC轉塔沖孔機</option>
-                                        <option value="">一群自動拆床機</option>
-                                        <option value="">五群CNC轉塔沖孔機</option>
-                                        <option value="">五群自動拆床機</option> 
-                                    </select>
+                                <div class="form-group">
+                                    <label class="col-md-2 control-label">標準上下料時間</label>
+                                        <div class="col-md-10">
+                                            <input name="standard_updown" class="clearable form-control" value ="{{$datas->standard_updown}}" required>
+                                        </div>
                                 </div>
-                            </div>
-                            <hr>
+                                <hr>
+                            
                             <div style="text-align:center">
                                 <button type="submit" onclick="" id="sendBtn" class="btn btn-success btn-lg" style="width:45%">確認</button>
                                 <button type="reset" onclick="" class="btn btn-secondary btn-lg" style="width:45%">清除資料</button>
@@ -95,4 +100,24 @@
         </div>
     </div>
 </div>
+
+<script>
+    const getMachineDefinition = () => {
+        axios.get('{{ route('getMachineDefinition') }}', {
+        })
+        .then(({ data }) => {
+            $('#machine-definition').empty();
+            $('#machine-definition').append(`
+                <option disabled selected value="">{{$datas->MachineDefinition->machine_name}}</option>
+            `)
+            data.forEach(data => {
+                $('#machine-definition').append(`
+                    <option value="${data.id}">${data.machine_name}</option>
+                `);
+            })
+        });
+    }
+    getMachineDefinition();
+
+</script>
 @endsection

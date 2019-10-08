@@ -23,6 +23,7 @@ Route::get('/rest-data', 'RestTimeController@getRestTime')->name('rest-data');
 Route::get('/work-type-data', 'WorkTypeController@getWorkTypeData')->name('work-type-data');
 Route::get('/rest-group', 'WorkTypeController@getRestGroup')->name('rest-group');
 Route::get('/machine-data', 'MachineCategoryController@getMachineId')->name('getMachineData');
+Route::get('/getMachineDefinition', 'MachineDefinitionController@getMachineDefinition')->name('getMachineDefinition');
 
 Route::get('/getapsdata', 'ProcessRoutingController@getApsData')->name('getApsData');
 Route::get('/getdatabase', 'ResourceController@getdatabase')->name('getdatabase');
@@ -35,7 +36,7 @@ Route::get('/inform', 'ResourceController@inform');
 Route::resource('dayPerformanceStatistics', 'DayPerformanceStatisticsController');
 Route::get('/day', 'DayPerformanceStatisticsController@getmachineperformance');
 
-
+Route::get('/Processing-Time', 'ProcessingTimeController@ProcessingTimeIndex')->name('ProcessingTimeIndex');
 Route::get('/Machine-Definition', 'MachineDefinitionController@machineDefinitionIndex')->name('MachineDefinitionIndex');
 Route::get('/get-work-time', 'WorkTypeController@getWokrTime')->name('get-work-time');
 Route::get('/Organization', 'ProcessRoutingController@getOrganization')->name('getOrganization');

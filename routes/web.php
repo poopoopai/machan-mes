@@ -28,7 +28,8 @@ Route::group(['middleware' => ['auth']], function () {
     Route::put('/rest-time/{id}/setup/{setup_id}', 'RestTimeController@updateData')->name('update-data');
     Route::delete('/rest-time/{id}/setup/{setup_id}', 'RestTimeController@deleteData')->name('delete-data');
     Route::resource('work-type', 'WorkTypeController')->except('show');
-    Route::resource('machine-definition', 'MachineDefinitionController');
+    Route::resource('machine-definition', 'MachineDefinitionController')->except('show');;
+    Route::resource('processing-time', 'ProcessingTimeController')->except('show');;
 
     Route::resource('variable-formula', 'VariableFormulaController')->except('show');
     Route::resource('formula-setting', 'FormulaSettingController')->except('show');
@@ -38,11 +39,6 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('/home', 'HomeController@index')->name('home');
     Route::post('/inform', 'ResourceController@inform')->name('inform');
         
-
-
-    Route::get('/processing-time', 'web\ProcessingTimeController@index')->name('processing-time');
-    Route::get('/processing-time-result', 'web\ProcessingTimeController@result')->name('processing-time-result');
-
     Route::get('/machine-performance', 'web\MachinePerformanceController@index')->name('machine-performance');
     Route::get('/order-load', 'web\OrderLoadController@index')->name('order-load');
     Route::get('/order-demand', 'web\OrderDemandController@index')->name('order-demand');
@@ -60,7 +56,6 @@ Route::group(['middleware' => ['auth']], function () {
 
     Route::group(['prefix' => 'edit'], function () {
         
-        Route::get('/processing-time', 'web\ProcessingTimeController@edit')->name('edit-processing-time');
         Route::get('/personnel-management', 'web\PersonnelManagementController@edit')->name('edit-personnel-management');
     });
 

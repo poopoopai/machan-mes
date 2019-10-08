@@ -27,4 +27,8 @@ class MachineDefinition extends Model
     {
         return $this->hasOne('App\Entities\RestGroup', 'id', 'class_assign');
     }
+    public function StandardCts()
+    {
+        return $this->hasmany('App\Entities\StandardCt', 'id' , 'machinedefinition_id');
+    }
 }

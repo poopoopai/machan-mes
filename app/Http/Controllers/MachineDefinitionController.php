@@ -8,11 +8,11 @@ use App\Repositories\MachineDefinitionRepository;
 
 class MachineDefinitionController extends Controller
 {
-    protected $machineDef;
+    protected $machineRepo;
 
     public function __construct(MachineDefinitionRepository $machineDefinition)
     {
-        $this->machineDef = $machineDefinition;
+        $this->machineRepo = $machineDefinition;
     }
 
     public function index()
@@ -27,9 +27,9 @@ class MachineDefinitionController extends Controller
 
     public function store()
     {
-        $getMachineId = $this->machineDef->getMachineCode(request()->all());
+        $getMachineId = $this->machineRepo->getMachineCode(request()->all());
         
-        $this->machineDef->create($getMachineId);
+        $this->machineRepo->create($getMachineId);
         
         return redirect()->route('machine-definition.index');
     }
@@ -41,7 +41,7 @@ class MachineDefinitionController extends Controller
 
     public function edit($id)
     {
-        $data = $this->machineDef->find($id);
+        $data = $this->machineRepo->find($id);
 
         if (!$data) {
             return redirect()->route('machine-definition.index');
@@ -51,14 +51,14 @@ class MachineDefinitionController extends Controller
 
     public function update($id)
     { 
-        $this->machineDef->update($id, request()->all());
+        $this->machineRepo->update($id, request()->all());
 
         return redirect()->route('machine-definition.index');
     }
 
     public function destroy($id)
     {
-        $machinedef = $this->machineDef->destroy($id);
+        $machinedef = $this->machineRepo->destroy($id);
 
         if($machinedef){
             return redirect()->route('machine-definition.index');
@@ -69,6 +69,10 @@ class MachineDefinitionController extends Controller
 
     public function machineDefinitionIndex()
     {
-        return $this->machineDef->machineDefinitionIndex(request()->amount);
+        return $this->machineRepo->machineDefinitionIndex(request()->amount);
+    }
+    public function getMachineDefinition()
+    {
+        return $this->machineRepo->getMachineDefinition();
     }
 }

@@ -35,7 +35,7 @@ class ResourceController extends Controller
     }
     public function show()
     {
-        $data = Summary::paginate (100);
+        $data = Summary::paginate(100);
         
         return view('machineperformance', ['datas' => $data]);
     }

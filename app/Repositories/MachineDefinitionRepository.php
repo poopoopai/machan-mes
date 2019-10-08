@@ -61,4 +61,8 @@ class MachineDefinitionRepository
     {
         return MachineDefinition::paginate($amount);
     }
+    public function getMachineDefinition()
+    {
+        return machineDefinition::get();
+    }
 }

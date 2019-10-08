@@ -149,7 +149,7 @@
                                     <a href="{{ route('process-routing.index') }}" style="color: white;">工藝路線</a>
                                 </li>
                                 <li>
-                                    <a href="{{ route('processing-time') }}" style="color: white;">加工時間</a>
+                                    <a href="{{ route('processing-time.index') }}" style="color: white;">加工時間</a>
                                 </li>
                             </ul>
                         </li>
