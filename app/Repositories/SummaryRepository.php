@@ -1000,20 +1000,19 @@ class SummaryRepository
         $machine_downtime = 0;  $machine_utilization_rate = 0;
 
         //machine_downtime
-        $a = strtotime($sum['total_downtime']) - strtotime(Carbon::today());   
-        $b = strtotime($sum['excluded_working_hours']) - strtotime(Carbon::today());
+        $total_downtime = strtotime($sum['total_downtime']) - strtotime(Carbon::today());   
+        $excluded_working_hours = strtotime($sum['excluded_working_hours']) - strtotime(Carbon::today());
         
-        $machine_downtime = $a - $b;
+        $machine_downtime = $total_downtime - $excluded_working_hours;
         $performance_exclusion_time['machine_downtime'] = date("H:i:s", $machine_downtime-8*60*60);
 
         $performance_exclusion_time['machine_maintain_time'] = '';  //由APP輸入
 
         //machine_utilization_rate   ($mass_production_time - $total_downtime + $updown_time)/($mass_production_time)
-        $c = strtotime($sum['mass_production_time']) - strtotime(Carbon::today());
-        $d = strtotime($sum['total_downtime']) - strtotime(Carbon::today());
-        $e = $sum['updown_time'];
+        $mass_production_time = strtotime($sum['mass_production_time']) - strtotime(Carbon::today());
+        $updown_time = $sum['updown_time'];
 
-        $machine_utilization_rate = ($c - $d + $e)/($c);
+        $machine_utilization_rate = ($mass_production_time - $total_downtime + $updown_time)/($mass_production_time);
         $performance_exclusion_time['machine_utilization_rate'] = $machine_utilization_rate;
 
         $performance_exclusion_time['performance_rate'] = ($sum['total_completion_that_day']/$sum['standard_completion']);

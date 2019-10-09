@@ -38,7 +38,9 @@ Route::group(['middleware' => ['auth']], function () {
 
     Route::get('/home', 'HomeController@index')->name('home');
     Route::post('/inform', 'ResourceController@inform')->name('inform');
-        
+    
+    Route::get('dayperformance', 'DayPerformanceStatisticsController@show')->name('show_dayperformance');
+    
     Route::get('/machine-performance', 'web\MachinePerformanceController@index')->name('machine-performance');
     Route::get('/order-load', 'web\OrderLoadController@index')->name('order-load');
     Route::get('/order-demand', 'web\OrderDemandController@index')->name('order-demand');
