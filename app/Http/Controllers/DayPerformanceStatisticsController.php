@@ -18,6 +18,11 @@ class DayPerformanceStatisticsController extends Controller
         $this->SumRepo = $SummaryRepo;
     }
 
+    public function show(){
+        $datas = DayPerformanceStatistics::paginate(100);
+        return view('dayperformance', ['datas' => $datas]);
+    }
+
     public function getmachineperformance()
     {
         // $parme = $this->SumRepo->data();
@@ -60,7 +65,7 @@ class DayPerformanceStatisticsController extends Controller
             //機台性能除外工時      performance_exclusion_time
             $performance_exclusion_time = $this->SumRepo->performance_exclusion_time($sum);
             $sum = array_merge($sum, $performance_exclusion_time);
-            dd($sum);
+
             DayPerformanceStatistics::create($sum);
     }
 
