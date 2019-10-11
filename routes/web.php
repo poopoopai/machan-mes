@@ -41,8 +41,10 @@ Route::group(['middleware' => ['auth']], function () {
     
     Route::get('dayperformance', 'DayPerformanceStatisticsController@show')->name('show_dayperformance');
     
-    Route::get('/machine-performance', 'web\MachinePerformanceController@index')->name('machine-performance');
-    Route::get('/order-load', 'web\OrderLoadController@index')->name('order-load');
+    Route::get('/sale-order', 'SaleOrderController@index')->name('sale-order');
+    Route::get('/sale-order-result-form', 'SaleOrderController@synchroizedForm')->name('sale-order-result-form');
+    Route::get('/sale-order-result', 'SaleOrderController@orderResult')->name('sale-order-result');
+
     Route::get('/order-demand', 'web\OrderDemandController@index')->name('order-demand');
     Route::get('/order-inbound', 'web\OrderInboundController@index')->name('order-inbound');
     
