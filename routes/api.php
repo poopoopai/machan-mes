@@ -33,6 +33,11 @@ Route::get('/test2', 'ResourceController@test2');
 Route::get('/inform', 'ResourceController@inform');
 Route::get('/show', 'ResourceController@show');
 
+Route::get('/organization', 'OrganizationController@getOrganization')->name('getorganization');
+Route::get('/sale-order-data', 'SaleOrderController@getSaleOrderData')->name('save-sale-order');
+Route::get('/current-load-data', 'SaleOrderController@getCurrentLoadedData')->name('current-data');
+Route::get('/sync-order-result-form', 'SaleOrderController@getSynchroizedResult')->name('sync-order-result-form');
+
 Route::resource('dayPerformanceStatistics', 'DayPerformanceStatisticsController');
 Route::get('/day', 'DayPerformanceStatisticsController@getmachineperformance');
 
