@@ -15,7 +15,6 @@ class ResourceController extends Controller
         if ( is_null($last) ) {
             $last['time'] = "00:00:00";
         }
-        
         $datas = DB::connection('mysql2')->table('db')->where('Date', Carbon::today()->format("Y-m-d"))->where('Time', '>', $last['time'])->orderby('Time')->get();
         
         foreach ($datas as $key => $data) {

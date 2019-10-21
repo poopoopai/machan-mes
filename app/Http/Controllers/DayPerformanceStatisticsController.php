@@ -42,7 +42,7 @@ class DayPerformanceStatisticsController extends Controller
             
             //製令資訊
             $sum['order_number'] = '';  //空白??
-            $sum['material_name'] = 'UAT-H-26-161';   //無運算??
+            $sum['material_name'] = 'UAT-H-26-89';   //無運算??
             $sum['production_quantity'] = 1;   //空白??
             
             //標準ct
@@ -65,6 +65,7 @@ class DayPerformanceStatisticsController extends Controller
             //機台性能除外工時      performance_exclusion_time
             $performance_exclusion_time = $this->SumRepo->performance_exclusion_time($sum);
             $sum = array_merge($sum, $performance_exclusion_time);
+            dd($sum);
 
             DayPerformanceStatistics::create($sum);
     }

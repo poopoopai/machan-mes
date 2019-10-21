@@ -473,19 +473,19 @@ class SummaryRepository
 
             $beforeturn =  Summary::where('turn_off', $status->open)->first();
             $beforeopen =  Summary::where('open', $status->open-1)->first();//前一筆開機次數 因為沒有0
-
+            
             if($status->open == 1){
                 $down_time = '00:00:00';
 
             } else{
-                if($beforeturn->turn_off ? $beforeturn->turn_off : $beforeturn['turn_off'] == 0){
+                if((isset($beforeturn) && $beforeturn->turn_off) ? $beforeturn->turn_off : $beforeturn['turn_off'] == 0){
                     if($beforeturn['turn_off'] > $status->open && $status->stop_count != '' ){//判斷前面關機數量有沒有大於當前開機數量
                         if($beforeopen->time ?  $beforeopen->time : $beforeopen['time'] == "00:00:00"){
                             $down_time = strtotime($status->time) - strtotime($beforeopen['time']);
                             $down_time = date("H:i:s", $down_time-8*60*60);
                         }
                     } else{
-                        if($beforeopen->time ?  $beforeopen->time : $beforeopen['time'] == "00:00:00"){
+                        if((isset($beforeturn) && $beforeopen->time) ?  $beforeopen->time : $beforeopen['time'] == "00:00:00"){
                             if($beforeopen['open'] > $beforeturn->turn_off && $status->restart_count == ''){
 
                                 $restop = Summary::where('restop_count', '!=' , 0)->desc('time', 'desc')->first();
@@ -933,7 +933,7 @@ class SummaryRepository
         foreach($sameDayAndName as $key =>$data){
             if($data->summary->refueling_time != "00:00:00"){
                 $abc = strtotime($data->summary->refueling_time) - strtotime(Carbon::today()); //將字串改為時間戳  之後再相減進行校正
-                $s = $s + $abc;
+                $hanging_time = $hanging_time + $abc;
             }else{
                 $machinee_work_except_hours['hanging_time'] = 0;
             }
