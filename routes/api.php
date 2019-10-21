@@ -40,6 +40,7 @@ Route::get('/sync-order-result-form', 'SaleOrderController@getSynchroizedResult'
 
 Route::resource('dayPerformanceStatistics', 'DayPerformanceStatisticsController');
 Route::get('/day', 'DayPerformanceStatisticsController@getmachineperformance');
+Route::get('/OEE', 'OEEperformanceController@getOEEperformance');
 
 Route::get('/Processing-Time', 'ProcessingTimeController@ProcessingTimeIndex')->name('ProcessingTimeIndex');
 Route::get('/Machine-Definition', 'MachineDefinitionController@machineDefinitionIndex')->name('MachineDefinitionIndex');
