@@ -3,7 +3,7 @@
 namespace App\Repositories;
 
 use App\Entities\SaleOrder;
-
+use App\Entities\Manufacture;
 class SaleOrderRepository
 {
     public function synchronize(array $data)
@@ -35,20 +35,16 @@ class SaleOrderRepository
 
     public function currentLoadedData(array $data)
     {
-        return SaleOrder::where('org_id', $data['org_id'])
-            ->whereBetween('bill_date', [$data['bill_date_start'], $data['bill_date_end']])
-            ->when($data['container_date_start'], function ($query, $conStartDate) {
-                $query->where('container_date', '>=', $conStartDate);
-            })
-            ->when($data['container_date_end'], function ($query, $conEndDate) {
-                $query->where('container_date', '<=', $conEndDate);
-            })
-            ->when($data['customer_name'], function ($query, $customerName) {
-                $query->where('customer_name', $customerName);
-            })
-            ->when($data['so_id'], function ($query, $soId) {
-                $query->whereIn('so_id', explode(',', $soId));
-            });
+        // return SaleOrder::where('org_id', $data['org_id'])
+        //     ->whereBetween('bill_date', [$data['bill_date_start'], $data['bill_date_end']])
+        //     ->when($data['customer_name'], function ($query, $customerName) {
+        //         $query->where('customer_name', $customerName);
+        //     })
+        //     ->when($data['so_id'], function ($query, $soId) {
+        //         $query->whereIn('so_id', explode(',', $soId));
+        //     });
+
+           dd(Manufacture::whereIn('mo_id', explode(',', $data['mo_id']))->get());
     }
 
     public function getSynchroizedDate()

@@ -31,10 +31,9 @@ class SaleOrderController extends Controller
 
     public function getSaleOrderData(SearchSaleOrder $request)
     {
-        
+        // dd($request->all());
         $data = request([
-            'org_id', 'container_date_start',
-            'container_date_end', 'bill_date_start',
+            'org_id','bill_date_start',
             'bill_date_end', 'so_id', 'customer_name',
             'amount', 'page',
         ]);
@@ -46,8 +45,6 @@ class SaleOrderController extends Controller
             $data['org_id'],
             $billStratDate,
             $billEndDate,
-            $data['container_date_start'],
-            $data['container_date_end'],
             $data['so_id'],
             $data['customer_name']
         );
@@ -55,8 +52,6 @@ class SaleOrderController extends Controller
             'org_id' => $data['org_id'],
             'bill_date_start' => $billStratDate,
             'bill_date_end' => $billEndDate,
-            'container_date_start' => $data['container_date_start'],
-            'container_date_end' => $data['container_date_end'],
             'so_id' => $data['so_id'],
             'customer_name' => $data['customer_name'],
         ]);
@@ -68,19 +63,9 @@ class SaleOrderController extends Controller
     }
 
     public function getCurrentLoadedData()
-    {
-        $data = request()->all(
-            'bill_date_start',
-            'bill_date_end',
-            'org_id',
-            'container_date_start',
-            'container_date_end',
-            'customer_name',
-            'so_id'
-        );
-
+    {      
         return response()
-            ->json($this->saleRepo->currentLoadedData($data)
+            ->json($this->saleRepo->currentLoadedData(request()->all())
             ->paginate(request()->amount));
     }
 

@@ -34,12 +34,12 @@
 @section('content')
 <div id="page-wrapper">
     <div class="container-fluid">
-        <h2>載入 T9 銷售訂單</h2>
+        <h2>載入製令訂單</h2>
         <ol class="breadcrumb">
             <img src="{{ asset('img/u12.png') }}">
             <span class="space-item">資料載入</span>
             <span class="space-item">></span>
-            <span class="space-item">載入T9訂單<span>
+            <span class="space-item">載入製令訂單<span>
         </ol>
         <div class="breadcrumb-custom">
             <span>資料列表</span>

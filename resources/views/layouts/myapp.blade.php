@@ -183,7 +183,7 @@
                                 <a href="{{route('sale-order')}}" style="color: white;">製令單載入</a>
                                 </li>
                                 <li>
-                                <a href="{{route('order-demand')}}" style="color: white;">製令單查詢</a>
+                                <a href="{{route('search-manufacture')}}" style="color: white;">製令單查詢</a>
                                 </li>
                                 <li>
                                     <a href="{{route('order-inbound')}}" style="color: white;">入庫單查詢</a>
