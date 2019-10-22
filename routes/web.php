@@ -43,9 +43,10 @@ Route::group(['middleware' => ['auth']], function () {
     
     Route::get('/sale-order', 'SaleOrderController@index')->name('sale-order');
     Route::get('/sale-order-result-form', 'SaleOrderController@synchroizedForm')->name('sale-order-result-form');
-    Route::get('/sale-order-result', 'SaleOrderController@orderResult')->name('sale-order-result');
+    Route::get('/manufacture-result', 'ManufactureController@manufactureResult')->name('manufacture-result');
+    Route::get('/search-manufacture', 'ManufactureController@index')->name('search-manufacture');
+    Route::get('/get-manufacture', 'ManufactureController@getManufactureData')->name('get-manufacture');
 
-    Route::get('/order-demand', 'web\OrderDemandController@index')->name('order-demand');
     Route::get('/order-inbound', 'web\OrderInboundController@index')->name('order-inbound');
     
     Route::get('/personnel-management', 'web\PersonnelManagementController@index')->name('personnel-management');

@@ -11,7 +11,6 @@ class ResourceController extends Controller
 {
     public function test2(){
         $last = Resource::where('date', Carbon::today())->orderby('time','desc')->first();
-        
         if ( is_null($last) ) {
             $last['time'] = "00:00:00";
         }

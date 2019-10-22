@@ -29,8 +29,4 @@ class SaleOrder extends Model
 
     protected $keyType = 'string';
 
-    public function parentParts()
-    {
-        return $this->hasMany('App\Entities\ParentPart', 'material_id', 'item');
-    }
 }

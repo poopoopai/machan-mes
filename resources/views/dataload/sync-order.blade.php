@@ -38,12 +38,12 @@
 @section('content')
 <div id="page-wrapper">
     <div class="container-fluid">
-        <h2>載入 T9 銷售訂單</h2>
+        <h2>載入製令訂單</h2>
         <ol class="breadcrumb">
             <img src="{{ asset('img/u12.png') }}">
             <span class="space-item">資料載入</span>
             <span class="space-item">></span>
-            <span class="space-item">載入 T9 銷售訂單<span>
+            <span class="space-item">載入製令訂單<span>
         </ol>
         <div class="row">
             <div class="col-md-12">
@@ -57,19 +57,6 @@
                                     <select class="form-control" id="sel1" name="org_id" required>
                                         <option disabled selected value="">--- 請選擇廠別 ---</option>
                                     </select>
-                                </div>
-                            </div>
-                            <hr>
-                            <div class="form-group">
-                                <label class="col-md-2 control-label">結關日期</label>
-                                <div class="col-md-4">
-                                    <input class="form-control" type="date" id="con_date_start" name="container_date_start">
-                                </div>
-                                <div class="col-md-2" style="text-align:center;">
-                                    <label style="margin:7px;"> ~ </label>
-                                </div>
-                                <div class="col-md-4">
-                                    <input class="form-control" type="date" id="con_date_end" name="container_date_end">
                                 </div>
                             </div>
                             <hr>
