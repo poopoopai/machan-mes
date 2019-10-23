@@ -117,13 +117,13 @@ class ResourceRepository
             $machineid = Summary::where('open', '1')->first();
             if($machineid){
                 $find = Resource::where('id', $machineid->resources_id)->first();
-                $order = StandardCt::where('orderno', $find->orderno)->first();
-                $machine = $order->machine;
+                $order = StandardCt::where('orderno', $find->orderno)->with('MachineDefinition')->first();
+                $machine = $order->MachineDefinition->machine_name;
             }
         } else{
-            $order = StandardCt::where('orderno', $data->orderno)->first();
+            $order = StandardCt::where('orderno', $data->orderno)->with('MachineDefinition')->first();
             if($order){
-                $machine = $order->machine;
+                $machine = $order->MachineDefinition->machine_name;
             } else{
                 $machine = null; // 如果沒有找到料號
             }

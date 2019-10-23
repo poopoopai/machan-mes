@@ -19,7 +19,6 @@ class CreateStandardCtsTable extends Migration
             $table->float('standard_ct')->nullable();
             $table->float('standard_updown')->nullable();
             $table->float('standard_processing')->nullable();
-            $table->string('machine');
             $table->timestamps();
         });
     }

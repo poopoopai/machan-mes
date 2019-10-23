@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class StandardCt extends Model
 {
-    protected $fillable = ['orderno', 'machinedefinition_id', 'standard_ct', 'standard_updown', 'standard_processing' , 'machine'];
+    protected $fillable = ['orderno', 'machinedefinition_id', 'standard_ct', 'standard_updown', 'standard_processing'];
 
     public function resources()
     {
