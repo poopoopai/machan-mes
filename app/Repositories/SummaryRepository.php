@@ -36,17 +36,13 @@ class SummaryRepository
             $data['status_id'] == 3 ? $count->start_count++ : $count->start_count;
             $data['status_id'] == 4 ? $count->stop_count++ : $count->stop_count; 
         }
-        
             $data['status_id'] == 15 ? $count->sensro_inputs++ : $count->sensro_inputs;     //Sensor投入累計數
-            
         if($machine == '捲料機1'){
             $data['status_id'] == 9 ? $count->second_completion++ : $count->second_completion;
         } else{
             $data['status_id'] == 10 ? $count->second_completion++ : $count->second_completion;
         }
-        
         $count->serial_number++;    //資料數列順序
-
         if( $count->resources_id == 0 || $data['orderno'] != $count->resource->orderno  ) { //料號不相同 或者是 第一筆資料
             $count->machine_completion = 0;
             $count->machine_inputs = 0;
@@ -56,11 +52,8 @@ class SummaryRepository
                 $data['status_id'] == 10 ? $count->machine_completion++ : $count->machine_completion;
             }
             $data['status_id'] == 10 ? $count->machine_inputs++ : $count->machine_inputs;
-
         } else{
-
             $data['status_id'] == 10 ? $count->machine_inputs++ : $count->machine_inputs;
-            
             if ($machine == '捲料機1'){   //相同料號機台累計完工數machine_completion  相同料號機台累計投入數machine_inputs
                 $data['status_id'] == 9 ? $count->machine_completion++ : $count->machine_completion;
                 $data['status_id'] == 9 ? $count->processing_completion_time = $data['time'] : $count->processing_completion_time = "";
@@ -68,7 +61,6 @@ class SummaryRepository
                 $data['status_id'] == 10 ? $count->machine_completion++ : $count->machine_completion;
                 $data['status_id'] == 10 ? $count->processing_completion_time = $data['time'] : $count->processing_completion_time = "";
             } 
-
             if($machine == '捲料機1'){
                 $data['status_id'] == 10 ? $count->processing_start_time = $data['time'] : $count->processing_start_time = "00:00:00";
             } else{
@@ -89,16 +81,15 @@ class SummaryRepository
                 }             
             }                
         }
-
             if( $count->resources_id == 0 || $data['date'] != $count->resource->date) { //累積當天數量
                 $count->machine_completion_day = 0;     //同一天累計完工數
                 $count->machine_inputs_day = 0;         //同一天累計投入數
-                    if ($machine == '捲料機1'){
-                        $data['status_id'] == 9 ? $count->machine_completion_day++ : $count->machine_completion_day;
-                    } else{
-                        $data['status_id'] == 10 ? $count->machine_completion_day++ : $count->machine_completion_day;
-                    }
-                        $data['status_id'] == 10 ? $count->machine_inputs_day++ : $count->machine_inputs_day;
+                if ($machine == '捲料機1'){
+                    $data['status_id'] == 9 ? $count->machine_completion_day++ : $count->machine_completion_day;
+                } else{
+                    $data['status_id'] == 10 ? $count->machine_completion_day++ : $count->machine_completion_day;
+                }
+                    $data['status_id'] == 10 ? $count->machine_inputs_day++ : $count->machine_inputs_day;
             } else{
                 if ($machine == '捲料機1'){
                     $data['status_id'] == 9 ? $count->machine_completion_day++ : $count->machine_completion_day;
@@ -110,18 +101,13 @@ class SummaryRepository
                 $data['status_id'] == 21 ? $count->refueling_end++ : $count->refueling_end = 0;
                 $data['status_id'] == 22 ? $count->aggregate_start++ : $count->aggregate_start = 0;
                 $data['status_id'] == 23 ? $count->aggregate_end++ : $count->aggregate_end = 0;
-
             }       
-
-            //同日期的資料序列    
-
-            if($count->resource){
+            if($count->resource){ //同日期的資料序列
                 if ( ($data['orderno'] == '' && $data['date'] != $count->resource->date) || $count->resources_id == 0  ){ //最初$count->resources_id
                     $count->serial_number_day = 1 ;
                 } else {
                     if($data['orderno'] == '' && $data['date'] == $count->resource->date){
                         if($count){
-
                             $count->serial_number_day++;
                         } else{
                             $count->serial_number_day = 1 ;//最開始的那筆沒有資料
@@ -140,7 +126,6 @@ class SummaryRepository
 
     public function restart($data, $status)
     {   
-    
         if($status->open != ''){
             $restart = Summary::where('open', $status['open']-1)->first(); //上一筆開機關機
             if($status['open'] == ''){
@@ -159,26 +144,23 @@ class SummaryRepository
         } else{
             $status["restart_count"] = "";
         }
-
         if($status['turn_off'] != ''){
-
-        $restop = Summary::where('turn_off', $status['turn_off']-1)->first();
-       
+            $restop = Summary::where('turn_off', $status['turn_off']-1)->first();
             if($status['turn_off'] == ''){
                 $status['restop_count'] = '';
             } else{
                 if($status['turn_off'] == '1'){
                     $status['restop_count'] = '';
-            } else{
-                if($restop->turn_off ==  $status['turn_off'] && $date['date']){
-                    $status['restop_count'] = ++$restop->restop_count;
                 } else{
-                    $status['restop_count'] = '';
+                    if($restop->turn_off ==  $status['turn_off'] && $date['date']){
+                        $status['restop_count'] = ++$restop->restop_count;
+                    } else{
+                        $status['restop_count'] = '';
+                    }
                 }
             }
-        }
-    } else{
-        $status['restop_count'] = "";
+        } else{
+            $status['restop_count'] = "";
         }
         return $status;
     }
@@ -190,13 +172,10 @@ class SummaryRepository
 
     public function machineT($data, $status, $machine)
     {
-        
         $machinetime = Summary::where('machine_inputs_day', $status['machine_inputs_day']-1)->where('resources_id', '>', 0)->first();     
         $completionday = Summary::where('machine_completion_day', $status['machine_inputs_day'])->where('resources_id', '>', 0)->first();
-        
         $machineT = 0;
-        $secondT = 0;
-        
+        $secondT = 0; 
         if($machine == '捲料機1'){
             if ($data['status_id'] == 10) {
                 if($status->machine_inputs_day >= 2){
@@ -219,33 +198,27 @@ class SummaryRepository
                 $machineT = 0;
             }
         }
-        
+
         $machintime = Summary::where('machine_completion', $status['machine_completion'])->where('resources_id', '>', 0)->first();
         $machinetime2 = Summary::where('machine_completion', $status['machine_completion']-1)->where('resources_id', '>', 0)->first();//前
         $secondtime = Summary::where('machine_completion_day', $status['machine_completion_day']-1)->where('resources_id', '>', 0)->first();
 
+
         if($data['status_id'] == 9){
-            
             if($status->machine_inputs_day >= 2){
-            
-                if($completionday == null){
-                   
+                if($completionday == null){  
                     if($machinetime2 && $machintime){           
                         $secondT = strtotime($machintime->processing_completion_time) - strtotime($machinetime2->processing_completion_time);
                     } else{
-
-                        if($machintime == null){
-                           
+                        if($machintime == null){   
                             $secondT = strtotime($status->processing_completion_time) - strtotime($machinetime2->processing_completion_time);            
                         } 
                     } 
-
                 } else{
-                    
                     if($secondtime){
                         $secondT = strtotime($completionday->processing_completion_time)- strtotime($secondtime->processing_completion_time);
                     } else{
-                        $secondT = strtotime($completionday->processing_completion_time);
+                        $secondT = strtotime($completionday->processing_completion_time) - strtotime(Carbon::today());
                     }
                 }
             } else{ 
@@ -263,7 +236,6 @@ class SummaryRepository
 
     public function refueling($status) //
     {
-  
         $refueling = '00:00:00';
         $aggregate = '00:00:00';
  
@@ -460,8 +432,8 @@ class SummaryRepository
         
         $worktime = strtotime($status->working_time) - strtotime(Carbon::today());//轉秒數
         $status->restop_count ? $status->restop_count : $status['restop_count'] == 0;
-        $beforeTime = 0;
-        $sumTime = 0;
+        $before_time = 0;
+        $sum_time = 0;
        
         if($status->open == ''){
             if( $worktime > 180 && $data['status'] == 5){
@@ -478,14 +450,17 @@ class SummaryRepository
                 $down_time = '00:00:00';
 
             } else{
-                if((isset($beforeturn) && $beforeturn->turn_off) ? $beforeturn->turn_off : $beforeturn['turn_off'] == 0){
+                $before_status_turn = (isset($beforeturn) && $beforeturn->turn_off) ? $beforeturn->turn_off : $beforeturn['turn_off'] = '0';
+                if($before_status_turn){
                     if($beforeturn['turn_off'] > $status->open && $status->stop_count != '' ){//判斷前面關機數量有沒有大於當前開機數量
-                        if($beforeopen->time ?  $beforeopen->time : $beforeopen['time'] == "00:00:00"){
+                        $before_status_op = $beforeopen->time ?  $beforeopen->time : $beforeopen['time'] = "00:00:00";
+                        if($before_status_op){
                             $down_time = strtotime($status->time) - strtotime($beforeopen['time']);
                             $down_time = date("H:i:s", $down_time-8*60*60);
                         }
                     } else{
-                        if((isset($beforeturn) && $beforeopen->time) ?  $beforeopen->time : $beforeopen['time'] == "00:00:00"){
+                        $before_status_time = (isset($beforeturn) && $beforeopen->stop_count) ?  $beforeopen->stop_count : $beforeopen['stop_count'] = 0;
+                        if($before_status_time){
                             if($beforeopen['open'] > $beforeturn->turn_off && $status->restart_count == ''){
 
                                 $restop = Summary::where('restop_count', '!=' , 0)->desc('time', 'desc')->first();
@@ -496,11 +471,11 @@ class SummaryRepository
                                 )->get();
 
                                     foreach ($nowtime as $key => $data) {
-                                        $beforeTime += strtotime($data->time)-strtotime(Carbon::today());
+                                        $before_time += strtotime($data->time)-strtotime(Carbon::today());
                                     }
 
-                                    if($beforeTime > 0 ? $beforeTime = date("H:i:s", $beforeTime-8*60*60): $beforeTime == '00:00:00'){
-                                        $down_time = strtotime($status->time) - strtotime($beforeTime);
+                                    if($before_time > 0 ? $before_time = date("H:i:s", $before_time-8*60*60): $before_time = '00:00:00'){
+                                        $down_time = strtotime($status->time) - strtotime($before_time);
                                         $down_time = date("H:i:s", $down_time-8*60*60);
                                     }
 
@@ -514,11 +489,11 @@ class SummaryRepository
                                         }
                                     )->get();
                                     foreach ($nowtime as $key => $data) {
-                                        $sumTime += strtotime($data->time)-strtotime(Carbon::today());
+                                        $sum_time += strtotime($data->time)-strtotime(Carbon::today());
                                     }
                                                 
-                                    if($sumTime > 0 ? $sumTime = date("H:i:s", $sumTime-8*60*60): $sumTime == '00:00:00'){
-                                        $down_time = strtotime($status->time) - strtotime($sumTime);
+                                    if($sum_time > 0 ? $sum_time = date("H:i:s", $sum_time-8*60*60): $sum_time == '00:00:00'){
+                                        $down_time = strtotime($status->time) - strtotime($sum_time);
                                         $down_time = date("H:i:s", $down_time-8*60*60);
                                     }
                                 }
@@ -563,9 +538,9 @@ class SummaryRepository
     public function refue_time($data, $status)
     {
        
-        $SameDateID =  Resource::where('id', '<=', $data->id)->where('date', $data['date'])->get(['id']);
+        $same_data_id =  Resource::where('id', '<=', $data->id)->where('date', $data['date'])->get(['id']);
            
-        $sum = Summary::whereIn('resources_id', $SameDateID)->where('refueling_start', $status->refueling_end);
+        $sum = Summary::whereIn('resources_id', $same_data_id)->where('refueling_start', $status->refueling_end);
             
         $refue_time = '';
         $aggregate_time = '';
@@ -575,10 +550,10 @@ class SummaryRepository
             if($sum->count()==0){
                 $refue_time="00:00:00";
             } else{
-                $sumtime = 0;
+                $sum_time = 0;
                 foreach($sum as $sumitem){
-                    $sumitemSec = strtotime($sumitem->down_time) - strtotime(Carbon::today());
-                    $refue_time = $sumtime + $sumitemSec; 
+                    $sum_item_sec = strtotime($sumitem->down_time) - strtotime(Carbon::today());
+                    $refue_time = $sum_time + $sum_item_sec; 
                 }
             }  
         }
@@ -589,10 +564,10 @@ class SummaryRepository
             if($sum->count()==0){
                 $aggregate_time="00:00:00";
             } else{
-                $sumtime = 0;
+                $sum_time = 0;
                 foreach($sum as $sumitem){
-                    $sumitemSec = strtotime($sumitem->down_time) - strtotime(Carbon::today());
-                    $aggregate_time = $sumtime + $sumitemSec; 
+                    $sum_item_sec = strtotime($sumitem->down_time) - strtotime(Carbon::today());
+                    $aggregate_time = $sum_time + $sum_item_sec; 
                 }
             }
         }
@@ -617,86 +592,82 @@ class SummaryRepository
         $sum = $status->machine_completion_day - $status->machine_inputs_day; //Q-R
         $sensros  = Summary::where('machine_inputs_day', $status->machine_completion_day - $sum-1)->where('resources_id', '>', 0)->first(); //Q4-(Q-R)-1 = R
         $sensros2 = Summary::where('machine_inputs_day', $status->machine_completion_day - $sum-2)->where('resources_id', '>', 0)->first();//Q4-(Q-R)-2 = R
-        
+      
         if($status->machine_completion_day > $beforeID->machine_completion_day   && $status->machine_completion_day != 1){
-            
-            if($status->machine_inputs_day - $status->machine_completion_day > 0){
-
+            if($status->machine_inputs_day - $status->machine_completion_day > 0){   
                 if(isset($sensro)){
                     if(strtotime($completion->processing_completion_time) - strtotime($sensro->processing_start_time) > 18) {
-                            $total = strtotime($completion->processing_completion_time) - strtotime($sensro->processing_start_time);
+                            $total_time = strtotime($completion->processing_completion_time) - strtotime($sensro->processing_start_time);
                     } else{
                         if(isset($sensro2)){
-                            $total = strtotime($completion->processing_completion_time) - strtotime($sensro2->processing_start_time);
+                            $total_time = strtotime($completion->processing_completion_time) - strtotime($sensro2->processing_start_time);
                         } else{
-                            $total = strtotime($completion->processing_completion_time);
+                            $total_time = strtotime($completion->processing_completion_time) - strtotime(Carbon::today());
                         }
                     } 
                 } else{
                     if(strtotime($completion->processing_completion_time) > 18) {
-                        $total = strtotime($completion->processing_completion_time);
+                        $total_time = strtotime($completion->processing_completion_time);
                     } else{
                         if(isset($sensro2)){
-                            $total = strtotime($completion->processing_completion_time) - strtotime($sensro2->processing_start_time);
+                            $total_time = strtotime($completion->processing_completion_time) - strtotime($sensro2->processing_start_time);
                         } else{
-                            $total = strtotime($completion->processing_completion_time);
+                            $total_time = strtotime($completion->processing_completion_time) - strtotime(Carbon::today());
                         }
                     } 
                 }
             } else{      
                 if(isset($sensros)){ //$sensros存在
                     if(strtotime($completion->processing_completion_time) - strtotime($sensros->processing_start_time) > 18) {
-                            $total = strtotime($completion->processing_completion_time) - strtotime($sensros->processing_start_time);
+                        $total_time = strtotime($completion->processing_completion_time) - strtotime($sensros->processing_start_time);
                     } else{
                         if(isset($sensros2)){
-                            $total = strtotime($completion->processing_completion_time) - strtotime($sensros2->processing_start_time);
+                            $total_time = strtotime($completion->processing_completion_time) - strtotime($sensros2->processing_start_time);
                         } else{
-                            $total = strtotime($completion->processing_completion_time);
+                            $total_time = strtotime($completion->processing_completion_time) - strtotime(Carbon::today());
                         }
                     }       
                 } else{  //$sensros不存在
                     if(strtotime($completion->processing_completion_time > 18)){
-                        $total = strtotime($completion->processing_completion_time);
+                        $total_time = strtotime($completion->processing_completion_time);
                     } else{
                         if(isset($sensros2)){
-                            $total = strtotime($completion->processing_completion_time) - strtotime($sensros2->processing_start_time);
+                            $total_time = strtotime($completion->processing_completion_time) - strtotime($sensros2->processing_start_time);
                         } else{
-                            $total = strtotime($completion->processing_completion_time);
+                            $total_time = strtotime($completion->processing_completion_time) - strtotime(Carbon::today());
                         }
                     }
                 }
             }
         } else{
-            $total = 0;
+            $total_time = 0;
         }
         $sensro3  = Summary::where('machine_inputs_day', $status->machine_completion_day-3)->where('resources_id', '>', 0)->first();//Q4-3 = R
-        $sensros3 = Summary::where('machine_inputs_day', $status->machine_completion_day - $sum-3)->where('resources_id', '>', 0)->first();//Q4-(Q-R)-3 = R
+        $sensros3 = Summary::where('machine_inputs_day', $status->machine_completion_day - ($sum-3))->where('resources_id', '>', 0)->first();//Q4-(Q-R)-3 = R
                 
         if($status->machine_completion_day > $beforeID->machine_completion_day && $status->processing_completion_time != ""){
-        
-            if($total > 18 && $total < 28){
-                $CTtime = $total;
+            if($total_time > 18 && $total_time < 28){
+                $ct_time = $total_time;
             } else{
-            
                 if($status->machine_inputs_day > $status->machine_completion_day){
-                        if(isset($sensro3)){//前面沒資料就不用相減了
-                            $CTtime = strtotime($completion->processing_completion_time) - strtotime($sensro3->processing_start_time);
-                        } else{
-                            $CTtime = strtotime($completion->processing_completion_time);
-                        } 
+                    if(isset($sensro3)){//前面沒資料就不用相減了
+                        $ct_time = strtotime($completion->processing_completion_time) - strtotime($sensro3->processing_start_time);
+                    } else{
+                        $ct_time = strtotime($completion->processing_completion_time) - strtotime(Carbon::today());;
+                    } 
                 } else{
-                        if(isset($sensros3)){//前面沒資料就不用相減了
-                            $CTtime = strtotime($completion->processing_completion_time) - strtotime($sensros3->processing_start_time);
-                        } else{
-                            $CTtime = strtotime($completion->processing_completion_time);
-                        }         
+                    if(isset($sensros3)){//前面沒資料就不用相減了
+                        $ct_time = strtotime($completion->processing_completion_time) - strtotime($sensros3->processing_start_time);
+                    } else{
+                        $ct_time = strtotime($completion->processing_completion_time) - strtotime(Carbon::today());;
+                    }         
                 }
             }
         } else{
-            $CTtime = 0;
+            $ct_time = 0;
         }
-        $status->total_processing_time = $total;
-        $status->ct_processing_time = $CTtime;
+        $status->total_processing_time = $total_time;
+        $status->ct_processing_time = $ct_time;
         return $status;
     }
 
@@ -735,10 +706,10 @@ class SummaryRepository
     public function update(array $data)
     {
         unset($data['id']);
-        $Machine = Summary::where('resources_id', $data['resources_id'])->first();
+        $machine = Summary::where('resources_id', $data['resources_id'])->first();
 
-        if ($Machine) {
-            return $Machine->update($data);
+        if ($machine) {
+            return $machine->update($data);
         }
     }
 
@@ -822,7 +793,7 @@ class SummaryRepository
             foreach($sameDayAndName as $key =>$data){        
                 $max = $data->summary->max('serial_number_day');    //抓最大值
                 if($max == $data->summary->serial_number_day){      //如果帶進來的值為最大值
-                    $t = strtotime($data->summary->time) - strtotime(Carbon::today());
+                    $t = strtotime($data->summary->time) - strtotime(Carbon::today()); 
                     $s1 = $s1 + $t; 
                 }
             }
