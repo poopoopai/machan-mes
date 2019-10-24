@@ -28,30 +28,24 @@ class OEEperformanceController extends Controller
     {
         $sum =  [];
 
-        $sum['date'] = Carbon::today()->format("Y-m-d");
-        $sum['day'] = $this->OEErepo->day($sum);
-        $sum['weekend'] = $this->OEErepo->weekend($sum);
-        $sum['work_name'] = $this->OEErepo->work_name($sum);   
-        $sum['standard_working_hours'] = $this->OEErepo->standard_working_hours($sum);
-        $sum['total_hours'] = $this->OEErepo->total_hours($sum);
+        // work ( date, day, weekend, work_name, standard_working_hours, total_hours )
+        $work = $this->OEErepo->work($sum);
+        $sum = array_merge($sum, $work);
         
-        
-        //機台加工時間      machine_processing_time
+
+        //機台加工時間  machine_processing_time 
+        // ( mass_production_time, total_downtime, standard_processing_seconds, actual_processing_seconds, updown_time )
         $sum['mass_production_time'] = $this->OEErepo->mass_production_time($sum); //因為真的太長所以分開寫...
-        $sum['total_downtime'] = $this->OEErepo->total_downtime($sum);
-        $sum['standard_processing_seconds'] = $this->OEErepo->standard_processing_seconds($sum);
-        $sum['actual_processing_seconds'] = $this->OEErepo->actual_processing_seconds($sum);
-        $sum['updown_time'] =  '';  //空白 
+        $machine_processing_time = $this->OEErepo->machine_processing_time($sum);
+        $sum = array_merge($sum, $machine_processing_time);
+        
 
-        //機檯作業數量      machine_works_number
-        $sum['total_completion_that_day'] = $this->OEErepo->total_completion_that_day($sum); //必需先做
-
-        $sum['machine_processing'] = $this->OEErepo->machine_processing($sum);  
-        $sum['actual_production_quantity'] = $this->OEErepo->actual_production_quantity($sum); 
-        $sum['standard_completion'] = $this->OEErepo->standard_completion($sum);   //?????
-        $sum['total_input_that_day'] = $this->OEErepo->total_input_that_day($sum);//同上上
-        $sum['adverse_number'] = $this->OEErepo->adverse_number($sum); 
-
+        //機檯作業數量  machine_works_number ( total_completion_that_day, machine_processing, actual_production_quantity, 
+        //                                    standard_completion, total_input_that_day, adverse_number )
+        $machine_works_number = $this->OEErepo->machine_works_number($sum);
+        $sum = array_merge($sum, $machine_works_number);
+        dd($sum);
+        
         //機台嫁動除外工時   machinee_work_except_hours
         $sum['correction_time'] =  '';   //空白 
         $sum['hanging_time'] =  $this->OEErepo->hanging_time($sum); 
@@ -68,7 +62,7 @@ class OEEperformanceController extends Controller
         $sum['performance_rate'] = $this->OEErepo->performance_rate($sum);
         $sum['yield'] = $this->OEErepo->yield($sum);
         $sum['OEE'] = $this->OEErepo->OEE($sum);
-        dd($sum);
+        
         
         OEEperformance::create($sum);
     }
