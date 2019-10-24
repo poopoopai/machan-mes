@@ -973,24 +973,28 @@ class SummaryRepository
         $machinee_work_except_hours['environmental_arrange_time'] = '';  //由APP輸入或由機台自動判定除外工時(環境整理整頓時間)
 
         //excluded_working_hours
-        $a0 = strtotime($machinee_work_except_hours['correction_time']) - strtotime(Carbon::today());
-        $a1 = strtotime($machinee_work_except_hours['hanging_time']) - strtotime(Carbon::today());
-        $a2 = strtotime($machinee_work_except_hours['aggregate_time']) - strtotime(Carbon::today());
-        $a3 = strtotime($machinee_work_except_hours['break_time']) - strtotime(Carbon::today());
-        $a4 = strtotime($machinee_work_except_hours['chang_model_and_line']) - strtotime(Carbon::today());
-        $a5 = strtotime($machinee_work_except_hours['bad_disposal_time']) - strtotime(Carbon::today());
-        $a6 = strtotime($machinee_work_except_hours['model_damge_change_line_time']) - strtotime(Carbon::today());
-        $a7 = strtotime($machinee_work_except_hours['program_modify_time']) - strtotime(Carbon::today());
-        $a8 = strtotime($machinee_work_except_hours['meeting_time']) - strtotime(Carbon::today());
-        $a9 = strtotime($machinee_work_except_hours['environmental_arrange_time']) - strtotime(Carbon::today());
+        $excluded_working_hours = 0;
+        $a0 = $machinee_work_except_hours['correction_time'];
+        $a1 = $machinee_work_except_hours['hanging_time'];
+        $a2 = $machinee_work_except_hours['aggregate_time'];
+        $a3 = $machinee_work_except_hours['break_time'];
+        $a4 = $machinee_work_except_hours['chang_model_and_line'];
+        $a5 = $machinee_work_except_hours['bad_disposal_time'];
+        $a6 = $machinee_work_except_hours['model_damge_change_line_time'];
+        $a7 = $machinee_work_except_hours['program_modify_time'];
+        $a8 = $machinee_work_except_hours['meeting_time'];
+        $a9 = $machinee_work_except_hours['environmental_arrange_time'];
+
         $a = array($a0, $a1, $a2, $a3, $a4, $a5, $a6, $a7, $a8, $a9);
 
-        for( $i=0 ; $i<10 ; $i++ ){     
-            if($a[$i] == -1568908800){      //把原本是空白格的時間更正為0
-                $a[$i] = 0;
-            }
+        for( $i=0 ; $i<10 ; $i++ ){
+            if($a[$i] == '' || $a[$i] == 0){      //把原本是空白格的時間更正為0
+                $a[$i] = "00:00:00";
+            } 
+            $a[$i] = strtotime($a[$i]) - strtotime(Carbon::today());
             $excluded_working_hours = $excluded_working_hours + $a[$i];
         }
+        
         $machinee_work_except_hours['excluded_working_hours'] = date("H:i:s", $excluded_working_hours-8*60*60);
 
         return $machinee_work_except_hours;

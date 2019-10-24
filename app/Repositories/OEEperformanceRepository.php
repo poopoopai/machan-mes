@@ -102,7 +102,7 @@ class OEEperformanceRepository
         $getNextDay = Resource::where('date', $nextDay)->with('summary')->get();
         $s = 0; $s1 = 0; $s2 = 0;
 
-        if( $getSameDay == null ){
+        if( $getSameDay->first() == null ){
             return '';
         }else{
             if( $getNextDay !== null ){
@@ -144,7 +144,7 @@ class OEEperformanceRepository
         $getSameDay = Resource::where('date', $sum['date'])->with('summary')->get();
         
         $total_downtime = 0;   // total_downtime
-        if( $getSameDay == null ){ 
+        if( $getSameDay->first() == null ){ 
             $machine_processing_time['total_downtime'] = '';
         }else{
             foreach($getSameDay as $key =>$data){
@@ -270,240 +270,164 @@ class OEEperformanceRepository
         return $machine_works_number;
     }
 
-    // public function machine_processing($sum){
-
-    //     $max_machine_inputs_day = Summary::with('resource')->whereRaw('machine_inputs_day = (select max(`machine_inputs_day`) from summaries)')->first()->machine_inputs_day; 
-    //     $max_serial_number = Summary::with('resource')->whereRaw('serial_number = (select max(`serial_number`) from summaries)')->first()->serial_number; 
-    //     $get_max_serial_number = Summary::where('serial_number',$max_serial_number)->get(); 
-
-    //     $nextDay = date("Y-m-d",strtotime($sum['date']."+1 day"));
-    //     $getSameDay = Resource::where('date', $sum['date'])->with('summary')->get();
-    //     $getNextDay = Resource::where('date', $nextDay)->with('summary')->get();
-    //     $total = 0;
-
-    //     if( $getSameDay == null ){
-    //         return '';
-    //     }else{
-    //         if( $getNextDay !== null ){
-    //             return $max_machine_inputs_day;
-    //         }else{
-    //             foreach($get_max_serial_number as $key =>$data){
-    //                 $total = $total + $data->machine_inputs_day;
-    //             }
-    //             return $total;
-    //         }   
-    //     }
-    // }
-    // public function actual_production_quantity($sum){
-
-    //     $getSameDay = Resource::where('date', $sum['date'])->with('summary')->get();
-    //     $sameDay_status_id10 = Resource::where('date', $sum['date'])->where('status_id','10')->get();
-    //     $count = 0;
-    //     if( $getSameDay == null ){
-    //         return '';
-    //     }else{
-    //         foreach($sameDay_status_id10 as $key =>$data){
-    //             $count = $count + 1;
-    //         }
-    //         return $count;
-    //     }
-    // }
-    // public function standard_completion($sum){
-
-    //     $getSameDay = Resource::where('date', $sum['date'])->with('summary')->get();
-        
-    //     if( $getSameDay == null ){
-    //         return '';
-    //     }else{
-    //         if($sum['standard_processing_seconds'] == 0){
-    //             return '';
-    //         }
-    //         return ($sum['actual_processing_seconds']*$sum['total_completion_that_day']/$sum['standard_processing_seconds']);
-    //     }
-    // }
-    // public function total_input_that_day($sum){
-
-    //     $getSameDay = Resource::where('date', $sum['date'])->with('summary')->get();
-    //     $sameDay_status_id10 = Resource::where('date', $sum['date'])->where('status_id','10')->get();
-    //     $count = 0;
-    //     if( $getSameDay == null ){
-    //         return '';
-    //     }else{
-    //         foreach($sameDay_status_id10 as $key =>$data){
-    //             $count = $count + 1;
-    //         }
-    //         return $count;
-    //     }
-    // }
-    public function total_completion_that_day($sum){
-
-        $max_machine_completion_day = Summary::with('resource')->whereRaw('machine_completion_day = (select max(`machine_completion_day`) from summaries)')->first()->machine_completion_day; 
-        $max_serial_number = Summary::with('resource')->whereRaw('serial_number = (select max(`serial_number`) from summaries)')->first()->serial_number; 
-        $get_max_serial_number = Summary::where('serial_number',$max_serial_number)->get();
-
-        $getSameDay = Resource::where('date', $sum['date'])->with('summary')->get();
-        $nextDay = date("Y-m-d",strtotime($sum['date']."+1 day"));
-        $getNextDay = Resource::where('date', $nextDay)->with('summary')->get();
-        $total = 0;
-
-        if( $getSameDay == null ){
-            return '';
-        }else{
-            if( $getNextDay !== null ){
-                return $max_machine_completion_day;
-            }else{
-                foreach($get_max_serial_number as $key =>$data){
-                    $total = $total + $data->machine_completion_day;
-                }
-                return $total;
-            }   
-        }
-    }
-    public function adverse_number($sum){
-        if($sum['total_completion_that_day'] == ''){
-            return '';
-        }else{
-            return ($sum['total_input_that_day'] - $sum['total_completion_that_day']);
-        }
-    }
-
-
 
     ///////////////////////////////////////機台嫁動除外工時   machinee_work_except_hours
-    public function hanging_time($sum){
-        // SUMIFS(捲料機績效分析!AN:AN, 捲料機績效分析!E:E,OEE績效數據!B6) AN = refueling_time
-        $getSameDay = Resource::where('date', $sum['date'])->with('summary')->get();
-        $s = 0;
 
+    public function machinee_work_except_hours($sum){
+        $machinee_work_except_hours = [];
+        $getSameDay = Resource::where('date', $sum['date'])->with('summary')->get();
+        
+        $machinee_work_except_hours['correction_time'] = '';
+
+        // hanging_time  
+        // SUMIFS(捲料機績效分析!AN:AN, 捲料機績效分析!E:E,OEE績效數據!B6) AN = refueling_time
+        $hanging_time = 0;
         foreach($getSameDay as $key =>$data){
             if($data->refueling_time != "00:00:00"){
-                $abc = strtotime($data->refueling_time) - strtotime(Carbon::today()); //將字串改為時間戳  之後再相減進行校正
-                $s = $s + $abc;
+                $refueling_time = strtotime($data->refueling_time) - strtotime(Carbon::today()); //將字串改為時間戳  之後再相減進行校正
+                $hanging_time = $hanging_time + $refueling_time;
             }
         }
-        return date("H:i:s", $s-8*60*60);//將時間戳轉回字串
-    }
-    public function aggregate_time($sum){
-        // SUMIFS(捲料機績效分析!AR:AR, 捲料機績效分析!E:E,OEE績效數據!B6) AR = aggregate_time
-        $getSameDay = Resource::where('date', $sum['date'])->with('summary')->get();
-        $s = 0;
+        $machinee_work_except_hours['hanging_time'] = date("H:i:s", $hanging_time-8*60*60);//將時間戳轉回字串
 
+
+        // aggregate_time
+        // SUMIFS(捲料機績效分析!AR:AR, 捲料機績效分析!E:E,OEE績效數據!B6) AR = aggregate_time
+        $sum_aggregate_time = 0;
         foreach($getSameDay as $key =>$data){
             if($data->aggregate_time != "00:00:00"){
-                $abc = strtotime($data->aggregate_time) - strtotime(Carbon::today()); //將字串改為時間戳  之後再相減進行校正
-                $s = $s + $abc;
+                $aggregate_time = strtotime($data->aggregate_time) - strtotime(Carbon::today()); //將字串改為時間戳  之後再相減進行校正
+                $sum_aggregate_time = $sum_aggregate_time + $aggregate_time;
             }
         }
-        return date("H:i:s", $s-8*60*60);//將時間戳轉回字串
-    }
-    public function break_time($sum){
-        // SUMIFS(捲料機績效分析!U:U, 捲料機績效分析!E:E,OEE績效數據!B6) U = break_time
-        $getSameDay = Resource::where('date', $sum['date'])->with('summary')->get();
-        $s = 0;
+        $machinee_work_except_hours['aggregate_time'] = date("H:i:s", $sum_aggregate_time-8*60*60);//將時間戳轉回字串
 
+
+        // break_time
+        // SUMIFS(捲料機績效分析!U:U, 捲料機績效分析!E:E,OEE績效數據!B6) U = break_time
+        $sum_break_time = 0;
         foreach($getSameDay as $key =>$data){
             if($data->break_time != "00:00:00"){
-                $abc = strtotime($data->break_time) - strtotime(Carbon::today()); //將字串改為時間戳  之後再相減進行校正
-                $s = $s + $abc;
+                $break_time = strtotime($data->break_time) - strtotime(Carbon::today()); //將字串改為時間戳  之後再相減進行校正
+                $sum_break_time = $sum_break_time + $break_time;
             }
         }
-        return date("H:i:s", $s-8*60*60);//將時間戳轉回字串
-    }
-    public function machine_downtime($sum){
+        $machinee_work_except_hours['break_time'] = date("H:i:s", $sum_break_time-8*60*60);//將時間戳轉回字串
+
+
+        $machinee_work_except_hours['chang_model_and_line'] = '';
+
+        // machine_downtime
         // IF(O6="","", O6-SUM(T6:V6))
-        $hanging_time = strtotime($sum['hanging_time']) - strtotime(Carbon::today());
-        $aggregate_time = strtotime($sum['aggregate_time']) - strtotime(Carbon::today());
-        $break_time = strtotime($sum['break_time']) - strtotime(Carbon::today());
+        $hanging_time = strtotime($machinee_work_except_hours['hanging_time']) - strtotime(Carbon::today());
+        $aggregate_time = strtotime($machinee_work_except_hours['aggregate_time']) - strtotime(Carbon::today());
+        $break_time = strtotime($machinee_work_except_hours['break_time']) - strtotime(Carbon::today());
         $machine_downtime = $hanging_time + $aggregate_time + $break_time;
         
         if($sum['total_downtime'] == '' || $sum['total_downtime'] == 0){
-            return '';
+            $machinee_work_except_hours['machine_downtime'] = '';
         }else{
             $total_downtime = strtotime($sum['total_downtime']) - strtotime(Carbon::today());
-            return date("H:i:s", ($total_downtime - $machine_downtime)-8*60*60);//將時間戳轉回字串
+            $machinee_work_except_hours['machine_downtime'] = date("H:i:s", ($total_downtime - $machine_downtime)-8*60*60);
         }
-    }
-    public function excluded_working_hours($sum){
+
+        $machinee_work_except_hours['bad_disposal_time'] = '';
+        $machinee_work_except_hours['model_damge_change_line_time'] = '';
+        $machinee_work_except_hours['program_modify_time'] = '';
+        $machinee_work_except_hours['machine_maintain_time'] = '';
+
+        // excluded_working_hours
         $excluded_working_hours = 0;
-        $a0 = strtotime($sum['total_downtime']) - strtotime(Carbon::today());
-        $a1 = strtotime($sum['standard_processing_seconds']) - strtotime(Carbon::today());
-        $a2 = strtotime($sum['actual_processing_seconds']) - strtotime(Carbon::today());
-        $a3 = strtotime($sum['updown_time']) - strtotime(Carbon::today());
-        $a4 = strtotime($sum['correction_time']) - strtotime(Carbon::today());
-        $a5 = strtotime($sum['hanging_time']) - strtotime(Carbon::today());
-        $a6 = strtotime($sum['aggregate_time']) - strtotime(Carbon::today());
-        $a7 = strtotime($sum['break_time']) - strtotime(Carbon::today());
-        $a8 = strtotime($sum['chang_model_and_line']) - strtotime(Carbon::today());
-        $a9 = strtotime($sum['machine_downtime']) - strtotime(Carbon::today());
-        $a10 = strtotime($sum['bad_disposal_time']) - strtotime(Carbon::today());
-        $a11 = strtotime($sum['model_damge_change_line_time']) - strtotime(Carbon::today());
-        $a12 = strtotime($sum['program_modify_time']) - strtotime(Carbon::today());
-        $a13 = strtotime($sum['machine_maintain_time']) - strtotime(Carbon::today());
+        $a0 = $sum['total_downtime'];
+        $a1 = $sum['standard_processing_seconds'];
+        $a2 = $sum['actual_processing_seconds'];
+        $a3 = $sum['updown_time'];
+        $a4 = $machinee_work_except_hours['correction_time'];
+        $a5 = $machinee_work_except_hours['hanging_time'];
+        $a6 = $machinee_work_except_hours['aggregate_time'];
+        $a7 = $machinee_work_except_hours['break_time'];
+        $a8 = $machinee_work_except_hours['chang_model_and_line'];
+        $a9 = $machinee_work_except_hours['machine_downtime'];
+        $a10 = $machinee_work_except_hours['bad_disposal_time'];
+        $a11 = $machinee_work_except_hours['model_damge_change_line_time'];
+        $a12 = $machinee_work_except_hours['program_modify_time'];
+        $a13 = $machinee_work_except_hours['machine_maintain_time'];
         $a = array($a0, $a1, $a2, $a3, $a4, $a5, $a6, $a7, $a8, $a9, $a10, $a11, $a12, $a13);
 
         for( $i=0 ; $i<14 ; $i++ ){     
-            if($a[$i] !== -1568908800){      //如果不是空白格就累加
-                $excluded_working_hours = $excluded_working_hours + $a[$i];
-            }
+            if($a[$i] == '' || $a[$i] == 0){      //把原本是空白格的時間更正為0
+                $a[$i] = "00:00:00";
+            } 
+            $a[$i] = strtotime($a[$i]) - strtotime(Carbon::today());
+            $excluded_working_hours = $excluded_working_hours + $a[$i];
         }
-        return date("H:i:s", $excluded_working_hours-8*60*60);
-    }
+        $machinee_work_except_hours['excluded_working_hours'] = date("H:i:s", $excluded_working_hours-8*60*60);
 
-    public function machine_utilization_rate($sum){
+        return $machinee_work_except_hours;
+
+    }
+    
+    
+    public function machine_performance($sum){
+
+        $machine_performance = [];
+        $getSameDay = Resource::where('date', $sum['date'])->with('summary')->get();
+        
+        // machine_utilization_rate
         // IF(COUNTIFS(捲料機績效分析!E:E,OEE績效數據!B6)=0,"",(N6-O6+R6)/N6) 
         // N = mass_production_time, O = total_downtime, R = updown_time
-        $getSameDay = Resource::where('date', $sum['date'])->with('summary')->get();
-        $s = 0; $mass_production_time = 0; $total_downtime = 0; $updown_time = 0;
-        
+
         $mass_production_time = strtotime($sum['mass_production_time']) - strtotime(Carbon::today());
         $total_downtime = strtotime($sum['total_downtime']) - strtotime(Carbon::today());
         $updown_time = strtotime($sum['updown_time']) - strtotime(Carbon::today());
         
-        if( $getSameDay == null ){
-            return '';
+        if( $getSameDay->first() == null ){
+            $machine_performance['machine_utilization_rate'] = '';
         }else{
             if($sum['mass_production_time'] == ''){
-                return '';
+                $machine_performance['machine_utilization_rate'] = '';
             }
-            return (($mass_production_time - $total_downtime + $updown_time)/$mass_production_time);
+            $machine_performance['machine_utilization_rate'] = (($mass_production_time - $total_downtime + $updown_time)/$mass_production_time);
         }
-    }
-    public function performance_rate($sum){
+
+
+        // performance_rate
         // (COUNTIFS(捲料機績效分析!E:E,OEE績效數據!B6)=0,"", L6/J6 ) 
         // L = total_completion_that_day, J = standard_completion
-        $getSameDay = Resource::where('date', $sum['date'])->with('summary')->get(); 
-        if( $getSameDay == null ){
-            return '';
+        if( $getSameDay->first() == null ){
+            $machine_performance['performance_rate'] = '';
         }else{
             if($sum['standard_completion'] == ''){
-                return '';
+                $machine_performance['performance_rate'] = '';
             }
-            return ($sum['total_completion_that_day']/$sum['standard_completion']);
+            $machine_performance['performance_rate'] = ($sum['total_completion_that_day']/$sum['standard_completion']);
         }
-    }
-    public function yield($sum){
+
+
+        // yield
         // IF(COUNTIFS(捲料機績效分析!E:E,OEE績效數據!B6)=0,"",(L6-M6)/L6) 
         // L = total_completion_that_day, M = adverse_number
-        $getSameDay = Resource::where('date', $sum['date'])->with('summary')->get();
-        if( $getSameDay == null ){
-            return '';
+        if( $getSameDay->first() == null ){
+            $machine_performance['yield'] = '';
         }else{
             if($sum['total_completion_that_day'] == ''){
-                return '';
+                $machine_performance['yield'] = '';
             }
-            return (($sum['total_completion_that_day']-$sum['adverse_number'])/$sum['total_completion_that_day']);
+            $machine_performance['yield'] = (($sum['total_completion_that_day']-$sum['adverse_number'])/$sum['total_completion_that_day']);
         }
-    }
-    public function OEE($sum){
+
+
+        // OEE
         // IF(COUNTIFS(捲料機績效分析!E:E,OEE績效數據!B6)=0,"",AD6*AE6*AF6)
-        $getSameDay = Resource::where('date', $sum['date'])->with('summary')->get();
-        if( $getSameDay == null ){
-            return '';
+        if( $getSameDay->first() == null ){
+            $machine_performance['OEE'] = '';
         }else{ //目前performance_rate為空值
-            if($sum['machine_utilization_rate'] == '' || $sum['performance_rate'] == '' || $sum['yield'] == ''){
-                return 0;
+            if($machine_performance['machine_utilization_rate'] == '' || $machine_performance['performance_rate'] == '' || $machine_performance['yield'] == ''){
+                $machine_performance['OEE'] = 0;
             }
-            return ($sum['machine_utilization_rate']*$sum['performance_rate']*$sum['yield']);
+            $machine_performance['OEE'] = ($machine_performance['machine_utilization_rate']*$machine_performance['performance_rate']*$machine_performance['yield']);
         }
+
+        return $machine_performance;
     }
 }
