@@ -11,206 +11,89 @@ use Carbon\Carbon;
 
 class OEEperformanceRepository
 {
-    public function day($sum){
-        $day = Carbon::now()->dayOfWeek;
+    public function work($sum){
+        $work = [];
+        
+        $work['date'] = Carbon::today()->format("Y-m-d"); // date
+
+        $day = Carbon::now()->dayOfWeek; // day
         if($day == 1){
-            return '一';
+            $work['day'] = '一';
         }elseif($day == 2){
-            return '二';
+            $work['day'] = '二';
         }elseif($day == 3){
-            return '三';
+            $work['day'] = '三';
         }elseif($day == 4){
-            return '四';
+            $work['day'] = '四';
         }elseif($day == 5){
-            return '五';
+            $work['day'] = '五';
         }elseif($day == 6){
-            return '六';
+            $work['day'] = '六';
         }elseif($day == 7){
-            return '日';
+            $work['day'] = '日';
         }
-    }
-    public function weekend($sum){
-        $weekend = Carbon::now()->isWeekend();
+
+        $weekend = Carbon::now()->isWeekend(); // weekend
         if($weekend == false){
-            return '';
+            $work['weekend'] = '';
         }else{
-            return '休';
-        }   
-    }
-    public function work_name($sum){
-        $work_type = ProcessCalendar::where('date', '2019-01-01')->first();
-        // $work_type = ProcessCalendar::where('date', $sum['date'])->first();
+            $work['weekend'] = '休';
+        }
+
+        $work_type = ProcessCalendar::where('date', '2019-01-01')->first(); // work_name
+        // $work_type = ProcessCalendar::where('date', $work['date'])->first();
         if($work_type == false){ //如果沒有加班資料
-            return '';
+            $work['work_name'] = '';
         }
         if($work_type->work_type_id == null){
             if($work_type->status == 2){
-                return '休假';
+                $work['work_name'] = '休假';
             }elseif($work_type->status == 3){
-                return '國定假日';
+                $work['work_name'] = '國定假日';
             }
         }
         $work_name = SetupShift::where('id', $work_type->work_type_id)->first()->type;
-        return $work_name;
-    }
-    public function standard_working_hours($sum){
-        if($sum['work_name'] == ''){
+        $work['work_name'] = $work_name;
+
+        // standard_working_hours
+        if($work['work_name'] == ''){
             return 8;
-        }elseif($sum['work_name'] == '休假' || $sum['work_name'] == '國定假日'){
+        }elseif($work['work_name'] == '休假' || $work['work_name'] == '國定假日'){
             return 0;
         }else{
             $work_type_id = ProcessCalendar::where('date', '2019-01-01')->first()->work_type_id;//抓今天的加班id時段
+            // $work_type_id = ProcessCalendar::where('date', $work['date'])->first()->work_type_id;
             $work_time = SetupShift::where('id', $work_type_id)->first();
             $work_off = strtotime($work_time->work_off) - strtotime(Carbon::today());
             $work_on = strtotime($work_time->work_on) - strtotime(Carbon::today());
-            return date("H:i:s", ($work_off - $work_on + 28800)-8*60*60); //28800為8小時的時間戳
-            //workoff - workon + 8
+            $work['standard_working_hours'] = date("H:i:s", ($work_off - $work_on + 28800)-8*60*60); 
+            // workoff - workon + 8hour  28800為8小時的時間戳
         }
-    }
-    public function total_hours($sum){
-        if($sum['work_name'] == ''){
+
+        // total_hours
+        if($work['work_name'] == ''){
             return '9:20:00';
-        }elseif($sum['work_name'] == '休假' || $sum['work_name'] == '國定假日'){
+        }elseif($work['work_name'] == '休假' || $work['work_name'] == '國定假日'){
             return '00:00:00';
         }else{
             $work_type_id = ProcessCalendar::where('date', '2019-01-01')->first()->work_type_id;//抓今天的加班id時段
+            // $work_type_id = ProcessCalendar::where('date', $work['date'])->first()->work_type_id;
             $work_time = SetupShift::where('id', $work_type_id)->first();
             $work_off = strtotime($work_time->work_off) - strtotime(Carbon::today());
             $work_on = strtotime($work_time->work_on) - strtotime(Carbon::today());
-            return date("H:i:s", ($work_off - $work_on + 28800)-8*60*60); //28800為8小時的時間戳
+            $work['total_hours'] = date("H:i:s", ($work_off - $work_on + 28800)-8*60*60); //28800為8小時的時間戳
             //workoff - workon + 8
         }
-    }
-    //////////////////////////////////機檯作業數量      machine_works_number
 
-    public function machine_processing($sum){
-        // IF( COUNTIFS(捲料機績效分析!E:E,OEE績效數據!B6) = 0, //同一天的資料數為0
-        //  "",
-        //  IF( COUNTIFS(捲料機績效分析!E:E,OEE績效數據!B6+1) > 0 ,//明天的資料數 > 0
-        //     MAX(捲料機績效分析!R:R), //R = machine_inputs_day
-        //     SUMIFS(捲料機績效分析!R:R , 捲料機績效分析!J:J ,MAX(捲料機績效分析!J:J) ) // J = serial_number(要最大值)
-        //     )
-        // )
-        $max_machine_inputs_day = Summary::with('resource')->whereRaw('machine_inputs_day = (select max(`machine_inputs_day`) from summaries)')->first()->machine_inputs_day; 
-        $max_serial_number = Summary::with('resource')->whereRaw('serial_number = (select max(`serial_number`) from summaries)')->first()->serial_number; 
-        $get_max_serial_number = Summary::where('serial_number',$max_serial_number)->get(); 
+        return $work;
 
-        $nextDay = date("Y-m-d",strtotime($sum['date']."+1 day"));
-        $getSameDay = Resource::where('date', $sum['date'])->with('summary')->get();
-        $getNextDay = Resource::where('date', $nextDay)->with('summary')->get();
-        $total = 0;
+    }
 
-        if( $getSameDay == null ){
-            return '';
-        }else{
-            if( $getNextDay !== null ){
-                return $max_machine_inputs_day;
-            }else{
-                foreach($get_max_serial_number as $key =>$data){
-                    $total = $total + $data->machine_inputs_day;
-                }
-                return $total;
-            }   
-        }
-    }
-    public function actual_production_quantity($sum){
-        // IF( COUNTIFS(捲料機績效分析!E:E,OEE績效數據!B6) = 0, //同一天的資料數為0
-        // "",
-        // COUNTIFS(捲料機績效分析!$C:$C,10,捲料機績效分析!$E:$E,B6))
-        $getSameDay = Resource::where('date', $sum['date'])->with('summary')->get();
-        $sameDay_status_id10 = Resource::where('date', $sum['date'])->where('status_id','10')->get();
-        $count = 0;
-        if( $getSameDay == null ){
-            return '';
-        }else{
-            foreach($sameDay_status_id10 as $key =>$data){
-                $count = $count + 1;
-            }
-            return $count;
-        }
-    }
-    public function standard_completion($sum){
-        // IF(COUNTIFS(捲料機績效分析!E:E,OEE績效數據!B6)=0,"",Q6*L6/P6) ,L = total_completion_that_day,
-        // P = standard_processing_seconds , Q = actual_processing_seconds
-        $getSameDay = Resource::where('date', $sum['date'])->with('summary')->get();
-        
-        if( $getSameDay == null ){
-            return '';
-        }else{
-            if($sum['standard_processing_seconds'] == 0){
-                return '';
-            }
-            return ($sum['actual_processing_seconds']*$sum['total_completion_that_day']/$sum['standard_processing_seconds']);
-        }
-    }
-    public function total_input_that_day($sum){
-        // IF( COUNTIFS(捲料機績效分析!E:E,OEE績效數據!B6)=0, //同一天的資料數為0
-        // "",
-        // COUNTIFS(捲料機績效分析!$C:$C,10,捲料機績效分析!$E:$E,$B6))
-        $getSameDay = Resource::where('date', $sum['date'])->with('summary')->get();
-        $sameDay_status_id10 = Resource::where('date', $sum['date'])->where('status_id','10')->get();
-        $count = 0;
-        if( $getSameDay == null ){
-            return '';
-        }else{
-            foreach($sameDay_status_id10 as $key =>$data){
-                $count = $count + 1;
-            }
-            return $count;
-        }
-    }
-    public function total_completion_that_day($sum){
-        // IF( COUNTIFS(捲料機績效分析!E:E,OEE績效數據!B9)=0, //同一天的資料數為0
-        //     "",
-        //     IF( COUNTIFS(捲料機績效分析!E:E,OEE績效數據!B9+1) > 0, //明天的資料數 > 0
-        //         MAX(捲料機績效分析!Q:Q),  //Q = machine_completion_day
-        //         SUMIFS(捲料機績效分析!Q:Q,捲料機績效分析!J:J,MAX(捲料機績效分析!J:J))  // J = serial_number(要最大值)
-        //     )
-        // )
-        $max_machine_completion_day = Summary::with('resource')->whereRaw('machine_completion_day = (select max(`machine_completion_day`) from summaries)')->first()->machine_completion_day; 
-        $max_serial_number = Summary::with('resource')->whereRaw('serial_number = (select max(`serial_number`) from summaries)')->first()->serial_number; 
-        $get_max_serial_number = Summary::where('serial_number',$max_serial_number)->get();
-
-        $getSameDay = Resource::where('date', $sum['date'])->with('summary')->get();
-        $nextDay = date("Y-m-d",strtotime($sum['date']."+1 day"));
-        $getNextDay = Resource::where('date', $nextDay)->with('summary')->get();
-        $total = 0;
-
-        if( $getSameDay == null ){
-            return '';
-        }else{
-            if( $getNextDay !== null ){
-                return $max_machine_completion_day;
-            }else{
-                foreach($get_max_serial_number as $key =>$data){
-                    $total = $total + $data->machine_completion_day;
-                }
-                return $total;
-            }   
-        }
-    }
-    public function adverse_number($sum){
-        //IF(L6="","",K6-L6)
-        if($sum['total_completion_that_day'] == ''){
-            return '';
-        }else{
-            return ($sum['total_input_that_day'] - $sum['total_completion_that_day']);
-        }
-    }
 
     //////////////////////////機台加工時間      machine_processing_time
 
     public function mass_production_time($sum){
-        // IF( COUNTIFS( 捲料機績效分析!E:E,OEE績效數據!B6)=0,  //同一天資料量為0
-        //     "",
-        //     IF( COUNTIFS(捲料機績效分析!E:E,OEE績效數據!B6+1)>0,  //有明天的資料     N = time
-        //         SUMIFS(捲料機績效分析!N:N, 捲料機績效分析!J:J, MAX(捲料機績效分析!K:K))  J = serial_number, K = serial_number_day 
-        //         - SUMIFS(捲料機績效分析!N:N, 捲料機績效分析!E:E, OEE績效數據!B6, 捲料機績效分析!K:K,1),
 
-        //         SUMIFS(捲料機績效分析!N:N, 捲料機績效分析!E:E, OEE績效數據!B6, 捲料機績效分析!K:K, MAX(捲料機績效分析!K:K))
-        //         - SUMIFS(捲料機績效分析!N:N, 捲料機績效分析!E:E, OEE績效數據!B6,捲料機績效分析!E:E,OEE績效數據!B6,捲料機績效分析!K:K,1)
-        //     )
-        // )
         $max_serial_number_day = Summary::with('resource')->whereRaw('serial_number_day = (select max(`serial_number_day`) from summaries)')->first()->serial_number_day; 
         $get_serial_number_with_maxDay = Summary::where('serial_number',$max_serial_number_day)->get();
 
@@ -255,51 +138,236 @@ class OEEperformanceRepository
             }   
         }
     }
-    public function total_downtime($sum){
-        // IF( COUNTIFS(捲料機績效分析!E:E,OEE績效數據!B6)=0,
-        //     "",
-        //     SUMIFS(捲料機績效分析!W:W,捲料機績效分析!E:E,OEE績效數據!B6)      W = down_time
-        // )
+    public function machine_processing_time($sum){
+        $machine_processing_time = [];
+
         $getSameDay = Resource::where('date', $sum['date'])->with('summary')->get();
-        $s = 0;
+        
+        $total_downtime = 0;   // total_downtime
+        if( $getSameDay == null ){ 
+            $machine_processing_time['total_downtime'] = '';
+        }else{
+            foreach($getSameDay as $key =>$data){
+                $total_downtime = $total_downtime + $data->down_time;
+            }
+            $machine_processing_time['total_downtime'] = $total_downtime;
+        }
+
+        $standard_processing_seconds = 0;
+        foreach($getSameDay as $key =>$data){  // standard_processing_seconds
+            $standard_processing_seconds = $standard_processing_seconds + $data->standard_uat_h_26_2 + $data->standard_uat_h_26_3 + $data->standard_uat_h_36_3;
+        }
+        $machine_processing_time['standard_processing_seconds'] = $standard_processing_seconds;
+
+
+        $actual_processing_seconds = 0;
+        foreach($getSameDay as $key =>$data){  // actual_processing_seconds
+            $actual_processing_seconds = $actual_processing_seconds + $data->uat_h_26_2 + $data->uat_h_26_3 + $data->uat_h_36_3;
+        }
+        $machine_processing_time['actual_processing_seconds'] = $actual_processing_seconds;
+
+
+        $machine_processing_time['updown_time'] =  '';  // updown_time
+
+        return $machine_processing_time;
+    }
+    
+    
+    //////////////////////////////////機檯作業數量      machine_works_number
+
+    public function machine_works_number($sum){
+        $machine_works_number = [];
+
+        $max_serial_number = Summary::with('resource')->whereRaw('serial_number = (select max(`serial_number`) from summaries)')->first()->serial_number; 
+        $get_max_serial_number = Summary::where('serial_number',$max_serial_number)->get();
+        
+        $nextDay = date("Y-m-d",strtotime($sum['date']."+1 day"));
+        $getSameDay = Resource::where('date', $sum['date'])->with('summary')->get();
+        $getNextDay = Resource::where('date', $nextDay)->with('summary')->get();
+        $sameDay_status_id10 = Resource::where('date', $sum['date'])->where('status_id','10')->get();
+        
+        //  total_completion_that_day
+        $max_machine_completion_day = Summary::with('resource')->whereRaw('machine_completion_day = (select max(`machine_completion_day`) from summaries)')->first()->machine_completion_day; 
+        $total_completion_that_day = 0;
+
+        if( $getSameDay->first() == null ){            
+            $machine_works_number['total_completion_that_day'] = '';
+        }else{
+            if( $getNextDay->first() !== null ){
+                $machine_works_number['total_completion_that_day'] = $max_machine_completion_day;
+            }else{
+                foreach($get_max_serial_number as $key =>$data){
+                    $total_completion_that_day = $total_completion_that_day + $data->machine_completion_day;
+                }
+                $machine_works_number['total_completion_that_day'] = $total_completion_that_day;
+            }   
+        }
+
+        
+        //  machine_processing
+        $max_machine_inputs_day = Summary::with('resource')->whereRaw('machine_inputs_day = (select max(`machine_inputs_day`) from summaries)')->first()->machine_inputs_day; 
+        $machine_processing = 0;
+
+        if( $getSameDay->first() == null ){
+            $machine_works_number['machine_processing'] = '';
+        }else{
+            if( $getNextDay->first() !== null ){
+                $machine_works_number['machine_processing'] = $max_machine_inputs_day;
+            }else{
+                foreach($get_max_serial_number as $key =>$data){
+                    $machine_processing = $machine_processing + $data->machine_inputs_day;
+                }
+                $machine_works_number['machine_processing'] = $machine_processing;
+            }   
+        }
+
+
+        //  actual_production_quantity
+        $actual_production_quantity = 0;
+
+        if( $getSameDay->first() == null ){
+            $machine_works_number['actual_production_quantity'] = '';
+        }else{
+            foreach($sameDay_status_id10 as $key =>$data){
+                $actual_production_quantity = $actual_production_quantity + 1;
+            }
+            $machine_works_number['actual_production_quantity'] = $actual_production_quantity;
+        }
+
+
+        //  standard_completion
+        if( $getSameDay->first() == null ){
+            $machine_works_number['standard_completion'] = '';
+        }else{
+            if($sum['standard_processing_seconds'] == 0){
+                $machine_works_number['standard_completion'] = '';
+            }else{
+                $machine_works_number['standard_completion'] = ($sum['actual_processing_seconds']*$machine_works_number['total_completion_that_day']/$sum['standard_processing_seconds']);
+            }
+        }
+
+
+        //  total_input_that_day
+        $total_input_that_day = 0;
+
+        if( $getSameDay->first() == null ){
+            $machine_works_number['total_input_that_day'] = '';
+        }else{
+            foreach($sameDay_status_id10 as $key =>$data){
+                $total_input_that_day = $total_input_that_day + 1;
+            }
+            $machine_works_number['total_input_that_day'] = $total_input_that_day;
+        }
+
+
+        //  adverse_number
+        if($machine_works_number['total_completion_that_day'] == ''){
+            $machine_works_number['adverse_number'] = '';
+        }else{
+            $machine_works_number['adverse_number'] = ($machine_works_number['total_input_that_day'] - $machine_works_number['total_completion_that_day']);
+        }
+
+        return $machine_works_number;
+    }
+
+    // public function machine_processing($sum){
+
+    //     $max_machine_inputs_day = Summary::with('resource')->whereRaw('machine_inputs_day = (select max(`machine_inputs_day`) from summaries)')->first()->machine_inputs_day; 
+    //     $max_serial_number = Summary::with('resource')->whereRaw('serial_number = (select max(`serial_number`) from summaries)')->first()->serial_number; 
+    //     $get_max_serial_number = Summary::where('serial_number',$max_serial_number)->get(); 
+
+    //     $nextDay = date("Y-m-d",strtotime($sum['date']."+1 day"));
+    //     $getSameDay = Resource::where('date', $sum['date'])->with('summary')->get();
+    //     $getNextDay = Resource::where('date', $nextDay)->with('summary')->get();
+    //     $total = 0;
+
+    //     if( $getSameDay == null ){
+    //         return '';
+    //     }else{
+    //         if( $getNextDay !== null ){
+    //             return $max_machine_inputs_day;
+    //         }else{
+    //             foreach($get_max_serial_number as $key =>$data){
+    //                 $total = $total + $data->machine_inputs_day;
+    //             }
+    //             return $total;
+    //         }   
+    //     }
+    // }
+    // public function actual_production_quantity($sum){
+
+    //     $getSameDay = Resource::where('date', $sum['date'])->with('summary')->get();
+    //     $sameDay_status_id10 = Resource::where('date', $sum['date'])->where('status_id','10')->get();
+    //     $count = 0;
+    //     if( $getSameDay == null ){
+    //         return '';
+    //     }else{
+    //         foreach($sameDay_status_id10 as $key =>$data){
+    //             $count = $count + 1;
+    //         }
+    //         return $count;
+    //     }
+    // }
+    // public function standard_completion($sum){
+
+    //     $getSameDay = Resource::where('date', $sum['date'])->with('summary')->get();
+        
+    //     if( $getSameDay == null ){
+    //         return '';
+    //     }else{
+    //         if($sum['standard_processing_seconds'] == 0){
+    //             return '';
+    //         }
+    //         return ($sum['actual_processing_seconds']*$sum['total_completion_that_day']/$sum['standard_processing_seconds']);
+    //     }
+    // }
+    // public function total_input_that_day($sum){
+
+    //     $getSameDay = Resource::where('date', $sum['date'])->with('summary')->get();
+    //     $sameDay_status_id10 = Resource::where('date', $sum['date'])->where('status_id','10')->get();
+    //     $count = 0;
+    //     if( $getSameDay == null ){
+    //         return '';
+    //     }else{
+    //         foreach($sameDay_status_id10 as $key =>$data){
+    //             $count = $count + 1;
+    //         }
+    //         return $count;
+    //     }
+    // }
+    public function total_completion_that_day($sum){
+
+        $max_machine_completion_day = Summary::with('resource')->whereRaw('machine_completion_day = (select max(`machine_completion_day`) from summaries)')->first()->machine_completion_day; 
+        $max_serial_number = Summary::with('resource')->whereRaw('serial_number = (select max(`serial_number`) from summaries)')->first()->serial_number; 
+        $get_max_serial_number = Summary::where('serial_number',$max_serial_number)->get();
+
+        $getSameDay = Resource::where('date', $sum['date'])->with('summary')->get();
+        $nextDay = date("Y-m-d",strtotime($sum['date']."+1 day"));
+        $getNextDay = Resource::where('date', $nextDay)->with('summary')->get();
+        $total = 0;
 
         if( $getSameDay == null ){
             return '';
         }else{
-            foreach($getSameDay as $key =>$data){
-                $s = $s + $data->down_time;
-            }
-            return $s;
+            if( $getNextDay !== null ){
+                return $max_machine_completion_day;
+            }else{
+                foreach($get_max_serial_number as $key =>$data){
+                    $total = $total + $data->machine_completion_day;
+                }
+                return $total;
+            }   
         }
     }
-    public function standard_processing_seconds($sum){
-        // SUMIFS(捲料機績效分析!AW:AW, 捲料機績效分析!E:E, OEE績效數據!B6) AW = standard_uat_h_26_2
-        // + SUMIFS(捲料機績效分析!AX:AX, 捲料機績效分析!E:E, OEE績效數據!B6) AX = standard_uat_h_26_3
-        // + SUMIFS(捲料機績效分析!AY:AY, 捲料機績效分析!E:E, OEE績效數據!B6) AY = standard_uat_h_36_3
-        $getSameDay = Resource::where('date', $sum['date'])->with('summary')->get();
-        $s = 0; $s1 = 0; $s2 =0; $s3 = 0;
-        foreach($getSameDay as $key =>$data){
-            $s1 = $s1 + $data->standard_uat_h_26_2;
-            $s2 = $s2 + $data->standard_uat_h_26_3;
-            $s3 = $s3 + $data->standard_uat_h_36_3;
+    public function adverse_number($sum){
+        if($sum['total_completion_that_day'] == ''){
+            return '';
+        }else{
+            return ($sum['total_input_that_day'] - $sum['total_completion_that_day']);
         }
-        $s = $s1 + $s2 + $s3;
-        return $s;
     }
-    public function actual_processing_seconds($sum){
-        // SUMIFS(捲料機績效分析!AT:AT, 捲料機績效分析!E:E, OEE績效數據!B6) AT = uat_h_26_2
-        // + SUMIFS(捲料機績效分析!AU:AU, 捲料機績效分析!E:E, OEE績效數據!B6) AU = uat_h_26_3
-        // + SUMIFS(捲料機績效分析!AV:AV, 捲料機績效分析!E:E, OEE績效數據!B6) AV = uat_h_36_3
-        $getSameDay = Resource::where('date', $sum['date'])->with('summary')->get();
-        $s = 0; $s1 = 0; $s2 =0; $s3 = 0;
-        foreach($getSameDay as $key =>$data){
-            $s1 = $s1 + $data->uat_h_26_2;
-            $s2 = $s2 + $data->uat_h_26_3;
-            $s3 = $s3 + $data->uat_h_36_3;
-        }
-        $s = $s1 + $s2 + $s3;
-        return $s;
-    }
+
+
 
     ///////////////////////////////////////機台嫁動除外工時   machinee_work_except_hours
     public function hanging_time($sum){
