@@ -29,7 +29,7 @@ class DayPerformanceStatisticsController extends Controller
         // foreach($parme as $parmas) {
             $dayPerfor =  [];
 
-            $dayPerfor['report_work_date'] = '2019-10-21';   //Carbon::today()->format("Y-m-d")
+            $dayPerfor['report_work_date'] = Carbon::today()->format("Y-m-d");   //Carbon::today()->format("Y-m-d")
             $dayPerfor['work_name'] = '正常班';     //無運算??
             $dayPerfor['standard_working_hours'] = $this->SumRepo->standard_working_hours($dayPerfor);
             $dayPerfor['total_hours'] = $this->SumRepo->total_hours($dayPerfor);   
@@ -42,7 +42,7 @@ class DayPerformanceStatisticsController extends Controller
             
             //製令資訊
             $dayPerfor['order_number'] = '';  //空白??
-            $dayPerfor['material_name'] = 'UAT-H-26-89';   //無運算??
+            $dayPerfor['material_name'] = 'UAT-H-26-252';   //無運算??
             $dayPerfor['production_quantity'] = 1;   //空白??
             
             //標準ct
@@ -65,7 +65,7 @@ class DayPerformanceStatisticsController extends Controller
             //機台性能除外工時      performance_exclusion_time
             $performance_exclusion_time = $this->SumRepo->performance_exclusion_time($dayPerfor);
             $dayPerfor = array_merge($dayPerfor, $performance_exclusion_time);
-            dd($dayPerfor);
+       
 
             DayPerformanceStatistics::create($dayPerfor);
     }

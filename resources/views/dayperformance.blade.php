@@ -66,7 +66,7 @@
             <div style="float:right; margin-top:-7px">
             </div> 
         </div>
-        <div class="total-data">載入筆數 | 共  筆</div>
+        <div class="total-data">載入筆數 | 共 {{$datas->total()}} 筆</div>
         <div style="margin-top:15px;">
             <table class="table table-striped table-pos">
                 <thead class="thead-color">

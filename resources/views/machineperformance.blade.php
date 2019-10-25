@@ -66,7 +66,7 @@
             <div style="float:right; margin-top:-7px">
             </div> 
         </div>
-        <div class="total-data">載入筆數 | 共  筆</div>
+        <div class="total-data">載入筆數 | 共 {{$datas->total()}}  筆</div>
         <div style="margin-top:15px;">
             <table class="table table-striped table-pos">
                 <thead class="thead-color">
@@ -113,18 +113,13 @@
                         <th scope="col">集料結束</th>
                         <th scope="co1">集料時間</th>
                         <th scope="col">集料器時間</th>
-                        <th scope="col">UAT-H-26-2</th>
-                        <th scope="col">UAT-H-26-3</th>
-                        <th scope="col">UAT-H-36-3</th>
-                        <th scope="col">標準UAT-H-36-2</th>
-                        <th scope="col">標準UAT-H-26-3</th>
-                        <th scope="col">標準UAT-H-36-3</th>
                     </tr>
                 </thead>
                 <tbody>  
                         @foreach ($datas as $key =>$data)
                     <tr>     
-                        <td>{{ ++$key + ($datas->currentPage() - 1) * 100 }}</td>
+                    @if ($data->id>1)
+                        <td>{{ $key + ($datas->currentPage() - 1) * 100 }}</td>
                         <td>{{ $data->machine }}</td>
                         <td>{{ $data->description }}</td>
                         <td>{{ $data->type }}</td>
@@ -165,16 +160,11 @@
                         <td>{{ $data->aggregate_start }}</td>
                         <td>{{ $data->aggregate_end }}</td>
                         <td>{{ $data->aggregate_time }}</td>
-                        <td>{{ $data->collector_time }}</td>
-                        <td>{{ $data->uat_h_26_2 }}</td>
-                        <td>{{ $data->uat_h_26_3 }}</td>
-                        <td>{{ $data->uat_h_36_3 }}</td>
-                        <td>{{ $data->standard_uat_h_26_2 }}</td>
-                        <td>{{ $data->standard_uat_h_26_3 }}</td>
-                        <td>{{ $data->standard_uat_h_36_3 }}</td>   
-                               
+                        <td>{{ $data->collector_time }}</td>                       
                     </tr>
+                    @endif
                     @endforeach
+                    
 
                     {!! $datas->links() !!}
                 </tbody>
