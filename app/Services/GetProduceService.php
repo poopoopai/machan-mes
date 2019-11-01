@@ -2,7 +2,6 @@
 
 namespace App\Services;
 
-use Carbon\Carbon;
 use Ixudra\Curl\Facades\Curl;
 use App\Repositories\ManufactureRepository;
 
@@ -11,7 +10,6 @@ class GetProduceService
     private $apiServer;
     private $bodyStart;
     private $bodyEnd;
-    private $strConnecting;
     private $strData;
     protected $manufactRepo;
 

@@ -29,8 +29,6 @@ class ProcessingTimeController extends Controller
     
     public function store()
     {
-        $data =  $this->standctRepo->create(request()->all());
-
         return redirect()->route('processing-time.index');
     }
 
