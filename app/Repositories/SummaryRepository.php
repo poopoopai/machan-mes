@@ -892,7 +892,7 @@ class SummaryRepository
         $actual_processing_seconds = 0;
 
         // total_downtime
-        if ($sameDayAndName == null) {
+        if ($sameDayAndName->first() == null) {
             $machine_processing_time['total_downtime'] = '';
         } else {
             foreach ($sameDayAndName as $key => $data) {

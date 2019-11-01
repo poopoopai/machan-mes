@@ -7,6 +7,7 @@ use App\Entities\Resource;
 use App\Entities\StandardCt;
 use App\Entities\ProcessCalendar;
 use App\Entities\SetupShift;
+use App\Entities\DayPerformanceStatistics;
 use Carbon\Carbon;
 
 class OEEperformanceRepository
@@ -371,62 +372,82 @@ class OEEperformanceRepository
     public function machine_performance($sum){
 
         $machine_performance = [];
-        $getSameDay = Resource::where('date', $sum['date'])->with('summary')->get();
+        // $getSameDay = Resource::where('date', $sum['date'])->with('summary')->get();
         
         // machine_utilization_rate
         // IF(COUNTIFS(捲料機績效分析!E:E,OEE績效數據!B6)=0,"",(N6-O6+R6)/N6) 
         // N = mass_production_time, O = total_downtime, R = updown_time
 
-        $mass_production_time = strtotime($sum['mass_production_time']) - strtotime(Carbon::today());
-        $total_downtime = strtotime($sum['total_downtime']) - strtotime(Carbon::today());
-        $updown_time = strtotime($sum['updown_time']) - strtotime(Carbon::today());
+        // $mass_production_time = strtotime($sum['mass_production_time']) - strtotime(Carbon::today());
+        // $total_downtime = strtotime($sum['total_downtime']) - strtotime(Carbon::today());
+        // $updown_time = strtotime($sum['updown_time']) - strtotime(Carbon::today());
         
-        if( $getSameDay->first() == null ){
-            $machine_performance['machine_utilization_rate'] = '';
-        }else{
-            if($sum['mass_production_time'] == ''){
-                $machine_performance['machine_utilization_rate'] = '';
-            }
-            $machine_performance['machine_utilization_rate'] = (($mass_production_time - $total_downtime + $updown_time)/$mass_production_time);
+        // if( $getSameDay->first() == null ){
+        //     $machine_performance['machine_utilization_rate'] = '';
+        // }else{
+        //     if($sum['mass_production_time'] == ''){
+        //         $machine_performance['machine_utilization_rate'] = '';
+        //     }
+        //     $machine_performance['machine_utilization_rate'] = (($mass_production_time - ($total_downtime + $updown_time))/$mass_production_time);
+        // }
+        $sameday = DayPerformanceStatistics::where('report_work_date', $sum['date'])->get();
+        $machine_utilization_rate = 0;
+        foreach($sameday as $key =>$datas){
+            $machine_utilization_rate = $machine_utilization_rate + $datas->machine_utilization_rate;
         }
-
+        $machine_performance['machine_utilization_rate'] = $machine_utilization_rate/count($sameday);
 
         // performance_rate
         // (COUNTIFS(捲料機績效分析!E:E,OEE績效數據!B6)=0,"", L6/J6 ) 
         // L = total_completion_that_day, J = standard_completion
-        if( $getSameDay->first() == null ){
-            $machine_performance['performance_rate'] = '';
-        }else{
-            if($sum['standard_completion'] == ''){
-                $machine_performance['performance_rate'] = '';
-            }
-            $machine_performance['performance_rate'] = ($sum['total_completion_that_day']/$sum['standard_completion']);
+        // if( $getSameDay->first() == null ){
+        //     $machine_performance['performance_rate'] = '';
+        // }else{
+        //     if($sum['standard_completion'] == ''){
+        //         $machine_performance['performance_rate'] = '';
+        //     }
+        //     $machine_performance['performance_rate'] = ($sum['total_completion_that_day']/$sum['standard_completion']);
+        // }
+        $performance_rate = 0;
+        foreach($sameday as $key =>$datas){
+            $performance_rate = $performance_rate + $datas->performance_rate;
         }
+        $machine_performance['performance_rate'] = $performance_rate/count($sameday);
 
 
         // yield
         // IF(COUNTIFS(捲料機績效分析!E:E,OEE績效數據!B6)=0,"",(L6-M6)/L6) 
         // L = total_completion_that_day, M = adverse_number
-        if( $getSameDay->first() == null ){
-            $machine_performance['yield'] = '';
-        }else{
-            if($sum['total_completion_that_day'] == ''){
-                $machine_performance['yield'] = '';
-            }
-            $machine_performance['yield'] = (($sum['total_completion_that_day']-$sum['adverse_number'])/$sum['total_completion_that_day']);
+        // if( $getSameDay->first() == null ){
+        //     $machine_performance['yield'] = '';
+        // }else{
+        //     if($sum['total_completion_that_day'] == ''){
+        //         $machine_performance['yield'] = '';
+        //     }
+        //     $machine_performance['yield'] = (($sum['total_completion_that_day']-$sum['adverse_number'])/$sum['total_completion_that_day']);
+        // }
+        $yield = 0;
+        foreach($sameday as $key =>$datas){
+            $yield = $yield + $datas->yield;
         }
+        $machine_performance['yield'] = $yield/count($sameday);
 
 
         // OEE
         // IF(COUNTIFS(捲料機績效分析!E:E,OEE績效數據!B6)=0,"",AD6*AE6*AF6)
-        if( $getSameDay->first() == null ){
-            $machine_performance['OEE'] = '';
-        }else{ //目前performance_rate為空值
-            if($machine_performance['machine_utilization_rate'] == '' || $machine_performance['performance_rate'] == '' || $machine_performance['yield'] == ''){
-                $machine_performance['OEE'] = 0;
-            }
-            $machine_performance['OEE'] = ($machine_performance['machine_utilization_rate']*$machine_performance['performance_rate']*$machine_performance['yield']);
+        // if( $getSameDay->first() == null ){
+        //     $machine_performance['OEE'] = '';
+        // }else{ //目前performance_rate為空值
+        //     if($machine_performance['machine_utilization_rate'] == '' || $machine_performance['performance_rate'] == '' || $machine_performance['yield'] == ''){
+        //         $machine_performance['OEE'] = 0;
+        //     }
+        //     $machine_performance['OEE'] = ($machine_performance['machine_utilization_rate']*$machine_performance['performance_rate']*$machine_performance['yield']);
+        // }
+        $OEE = 0;
+        foreach($sameday as $key =>$datas){
+            $OEE = $OEE + $datas->OEE;
         }
+        $machine_performance['OEE'] = $OEE/count($sameday);
 
         return $machine_performance;
     }
