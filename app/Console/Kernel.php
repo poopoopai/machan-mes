@@ -24,8 +24,9 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        // $schedule->command('inspire')
-        //          ->hourly();
+        $schedule->command('raw-data:get')->hourly();
+       
+        $schedule->call('App\Http\Controllers\api\ResourceController@getmachinedatabase')->hourly();
     }
 
     /**

@@ -41,7 +41,6 @@ class ProcessRoutingController extends Controller
     }
     public function getOrganization()
     {
-        // dd(request()->all());
         $data = $this->processRepo->getOrganization(request()->org_id);
 
         return response()->json($data);
