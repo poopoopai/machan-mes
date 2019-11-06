@@ -33,12 +33,12 @@ class MachineCategoryRepository
         return MachineCategory::destroy($id);
     }
 
-    public function getAll()
+    public function getmachines()
     {
         return  MachineCategory::get();
     }
 
-    public function identify($data)
+    public function identifymachine($data)
     {
 
         $data['machine_id'] = $data['auto'];
@@ -88,5 +88,10 @@ class MachineCategoryRepository
         }
 
         return $data;
+    }
+
+    public function machineCategoryIndex($amount)
+    {
+        return MachineCategory::paginate($amount);
     }
 }

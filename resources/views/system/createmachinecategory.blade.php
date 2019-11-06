@@ -102,7 +102,7 @@
                                 <label class="col-md-2 control-label">單機 ／ 多機</label>
                                 <div class="col-md-10">
                                         <select name="type"class="form-control" required >
-                                            <option value=""></option>
+                                            <option value="" disabled selected>--- 請選擇 ---</option>
                                             <option value="SS">單工序單機</option>
                                             <option value="SM">單工序多機</option>
                                             <option value="MS">多工序單機</option>
@@ -115,7 +115,7 @@
                                 <label class="col-md-2 control-label">自動化</label>
                                 <div class="col-md-10">
                                         <select name="auto" class="form-control" required >
-                                            <option value=""></option>
+                                            <option value="" disabled selected>--- 請選擇 ---</option>
                                             <option value="FA">無人全自動化</option>
                                             <option value="HA">人機同步全自動化</option>
                                             <option value="SH">人機同步半自動化</option>
@@ -130,7 +130,7 @@
                                 <label class="col-md-2 control-label">人機介面</label>
                                 <div class="col-md-10">
                                     <select name="interface"class="form-control" required>
-                                            <option value=""></option>
+                                            <option value="" disabled selected>--- 請選擇人機介面 ---</option>
                                             <option value="可離線生產">可離線生產</option>
                                             <option value="人機同步生產">人機同步生產</option>
                                             <option value="遠端遙控生產">遠端遙控生產</option>
@@ -144,7 +144,7 @@
                                 <label class="col-md-2 control-label">休息時間可生產</label>
                                     <div class="col-md-10">
                                         <select  name="break_time"class="form-control" required >
-                                            <option value=""></option>
+                                            <option value="" disabled selected>--- 請選擇 ---</option>
                                             <option value="是">是</option>
                                             <option value="否">否</option>
                                             <option value="部分">部分</option>
@@ -157,7 +157,7 @@
                                 <label class="col-md-2 control-label">數據整合方案</label>
                                     <div class="col-md-10">
                                         <select  name="data_integration"class="form-control" required >
-                                            <option value=""></option>
+                                            <option value="" disabled selected>--- 請選擇整合方案 ---</option>
                                             <option value="SMB">SMB</option>
                                             <option value="影像辨識">影像辨識</option>
                                             <option value="自行開發">自行開發</option>
@@ -170,7 +170,7 @@
                                 <label class="col-md-2 control-label">機台類別</label>
                                     <div class="col-md-10">
                                         <select  name="machine_type"class="form-control" required >
-                                            <option value=""></option>
+                                            <option value="" disabled selected>--- 請選擇機台類型 ---</option>
                                             <option value="L">雷射</option>
                                             <option value="N">NCT</option>
                                             <option value="S">P1</option>

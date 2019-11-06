@@ -45,6 +45,7 @@ Route::get('/OEE', 'OEEperformanceController@getOEEperformance');
 
 Route::get('/Processing-Time', 'ProcessingTimeController@ProcessingTimeIndex')->name('ProcessingTimeIndex');
 Route::get('/Machine-Definition', 'MachineDefinitionController@machineDefinitionIndex')->name('MachineDefinitionIndex');
+Route::get('/Machine-Category', 'MachineCategoryController@machineCategoryIndex')->name('MachineCategoryIndex');
 Route::get('/get-work-time', 'WorkTypeController@getWokrTime')->name('get-work-time');
 Route::get('/Organization', 'ProcessRoutingController@getOrganization')->name('getOrganization');
 

@@ -102,8 +102,7 @@
                             <div class="form-group">
                                 <label class="col-md-2 control-label">單機 ／ 多機</label>
                                 <div class="col-md-10">
-                                        <select name="type"class="form-control" required >  
-                                            <option value=""></option>          
+                                        <select name="type"class="form-control" required >          
                                             <option value="SS" {{$datas->type=="SS"?'selected':""}}>單工序單機</option>
                                             <option value="SM" {{$datas->type=="SM"?'selected':""}}>單工序多機</option>
                                             <option value="MS" {{$datas->type=="MS"?'selected':""}}>多工序單機</option>
@@ -116,7 +115,6 @@
                                 <label class="col-md-2 control-label">自動化</label>
                                 <div class="col-md-10">
                                         <select name="auto" class="form-control" required >
-                                            <option value=""></option>
                                             <option value="FA"{{$datas->auto=="FA"?'selected':""}}>無人全自動化</option>
                                             <option value="HA"{{$datas->auto=="HA"?'selected':""}}>人機同步全自動化</option>
                                             <option value="SH"{{$datas->auto=="SH"?'selected':""}}>人機同步半自動化</option>
@@ -131,7 +129,6 @@
                                 <label class="col-md-2 control-label">人機介面</label>
                                 <div class="col-md-10">
                                     <select name="interface"class="form-control" required>
-                                            
                                             <option value="可離線生產"{{$datas->interface=="可離線生產"?'selected':""}}>可離線生產</option>
                                             <option value="人機同步生產"{{$datas->interface=="人機同步生產"?'selected':""}}>人機同步生產</option>
                                             <option value="遠端遙控生產"{{$datas->interface=="遠端遙控生產"?'selected':""}}>遠端遙控生產</option>
@@ -145,7 +142,6 @@
                                     <label class="col-md-2 control-label">數據整合方案</label>
                                         <div class="col-md-10">
                                             <select  name="data_integration"class="form-control" required >
-                                                <option value=""></option>
                                                 <option value="SMB"{{$datas->data_integration=="SMB"?'selected':""}}>SMB</option>
                                                 <option value="影像辨識"{{$datas->data_integration=="影像辨識"?'selected':""}}>影像辨識</option>
                                                 <option value="自行開發"{{$datas->data_integration=="自行開發"?'selected':""}}>自行開發</option>
@@ -158,7 +154,6 @@
                                 <label class="col-md-2 control-label">休息時間可生產</label>
                                     <div class="col-md-10">
                                         <select  name="break_time"class="form-control" required >
-                                            <option value=""></option>
                                             <option value="是"{{$datas->break_time=="是"?'selected':""}}>是</option>
                                             <option value="否"{{$datas->break_time=="否"?'selected':""}}>否</option>
                                             <option value="部分"{{$datas->break_time=="部分"?'selected':""}}>部分</option>
@@ -172,7 +167,6 @@
                                     <label class="col-md-2 control-label">機台類別</label>
                                         <div class="col-md-10">
                                             <select  name="machine_type"class="form-control" required >
-                                                <option value=""></option>
                                                 <option value="L"{{$datas->machine_type=="L"?'selected':""}}>雷射</option>
                                                 <option value="N"{{$datas->machine_type=="N"?'selected':""}}>NCT</option>
                                                 <option value="S"{{$datas->machine_type=="S"?'selected':""}}>P1</option>
