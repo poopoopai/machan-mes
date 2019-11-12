@@ -22,7 +22,7 @@ class SummaryRepository
 
         $oldopen = Summary::where('open', '!=', '')->orderby('id', 'desc')->first();
         $oldturn = Summary::where('turn_off', '!=', '')->orderby('id', 'desc')->first();
-        if ($count->resources_id == 0 || $data['date'] != $count->resource->date) {  //如果為第一筆資料 或者 不是同一天 (就要重頭計算)
+        if ($count->resources_id == 0 || $data['date'] != Carbon::today()->format("Y-m-d")) {  //如果為第一筆資料 或者 不是同一天 (就要重頭計算)
             $count->open = 0;
             $count->turn_off = 0;   //關機
             $count->start_count = 0;
@@ -112,8 +112,6 @@ class SummaryRepository
             $data['status_id'] == 23 ? $count->aggregate_end++ : $count->aggregate_end = 0;
         }
 
-        //同日期的資料序列    
-
         if ($count->resource) {
             if (($data['orderno'] == '' && $data['date'] != $count->resource->date) || $count->resources_id == 0) { //最初$count->resources_id
                 $count->serial_number_day = 1;
@@ -139,46 +137,36 @@ class SummaryRepository
 
     public function restart($data, $status)
     {
-
-        if ($status->open != '') {
-            $restart = Summary::where('open', $status['open'] - 1)->first(); //上一筆開機關機
-            if ($status['open'] == '') {
+        $restart = Resource::where('date', $data['date'])->where('id', '<',$data['id'])->orderby('id', 'desc')->first();
+    
+        if ($status['open'] == '') {
+            $status["restart_count"] = '';
+        } else {
+            if ($status['open'] == '1') {
                 $status["restart_count"] = '';
             } else {
-                if ($status['open'] == '1') {
-                    $status["restart_count"] = '';
+                
+                if (($restart->status_id == 3) && ($restart->status_id == 3)) {
+                    $status["restart_count"] = ++$status->restart_count;
                 } else {
-                    if ($restart->open == $status['open'] && $data['date']) {
-                        $status["restart_count"] = ++$restart->restart_count;
-                    } else {
-                        $status["restart_count"] = '';
-                    }
+                    $status["restart_count"] = '';
                 }
             }
-        } else {
-            $status["restart_count"] = "";
         }
-
-        if ($status['turn_off'] != '') {
-
-            $restop = Summary::where('turn_off', $status['turn_off'] - 1)->first();
-
-            if ($status['turn_off'] == '') {
+        if ($status['turn_off'] == '') {
+            $status['restop_count'] = '';
+        } else {
+            if ($status['turn_off'] == '1') {
                 $status['restop_count'] = '';
             } else {
-                if ($status['turn_off'] == '1') {
-                    $status['restop_count'] = '';
+                if (($restart->status_id == 4) && ($restart->status_id == 4)) {
+                    $status['restop_count'] = ++$status->restop_count;
                 } else {
-                    if ($restop->turn_off ==  $status['turn_off'] && $data['date']) {
-                        $status['restop_count'] = ++$restop->restop_count;
-                    } else {
-                        $status['restop_count'] = '';
-                    }
+                    $status['restop_count'] = '';
                 }
             }
-        } else {
-            $status['restop_count'] = "";
         }
+       
         return $status;
     }
 
@@ -189,7 +177,7 @@ class SummaryRepository
 
     public function machineT($data, $status, $machine)
     {
-        
+
         $machinetime = Summary::where('machine_inputs_day', $status['machine_inputs_day'] - 1)
             ->where('resources_id', '>', 0)->whereHas(
                 'resource',
@@ -200,20 +188,20 @@ class SummaryRepository
 
         $completionday = Summary::where('machine_completion_day', $status['machine_inputs_day'])->where('resources_id', '>', 0)->whereHas(
             'resource',
-            function ($query) use ($data){
+            function ($query) use ($data) {
                 $query->where('date', $data['date']);
             }
         )->first();
 
         $machineT = 0;
         $secondT = 0;
- 
+
         if ($machine == '捲料機1') {
 
             if ($data['status_id'] == 10) {
                 if ($status->machine_inputs_day >= 2) {
                     if ($machinetime->processing_start_time) {
-                        $machineT = strtotime($status->processing_start_time) - strtotime($machinetime->processing_start_time);   
+                        $machineT = strtotime($status->processing_start_time) - strtotime($machinetime->processing_start_time);
                     } else {
                         $machineT = 0;
                     }
@@ -230,7 +218,7 @@ class SummaryRepository
                 $machineT = 0;
             }
         }
-   
+
         $machintime = Summary::where('machine_completion', $status['machine_completion'])->where('resources_id', '>', 0)->first();
         $machinetime2 = Summary::where('machine_completion', $status['machine_completion'] - 1)->where('resources_id', '>', 0)->first(); //前
         $secondtime = Summary::where('machine_completion_day', $status['machine_completion_day'] - 1)->where('resources_id', '>', 0)->first();
@@ -703,7 +691,7 @@ class SummaryRepository
 
     public function actual($data, $status, $machine)
     {
-        
+
         $actual = 0;
         if ($machine == '捲料機1') {
             if ($data['status_id'] == 9) {
@@ -720,9 +708,9 @@ class SummaryRepository
                 }
             }
         }
-        
+
         $status['actual_processing'] = $actual;
-       
+
         return $status;
     }
     public function update(array $data)
