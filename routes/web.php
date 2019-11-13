@@ -34,7 +34,6 @@ Route::group(['middleware' => ['auth']], function () {
     Route::resource('variable-formula', 'VariableFormulaController')->except('show');
     Route::resource('formula-setting', 'FormulaSettingController')->except('show');
     Route::resource('machineoee', 'MachineOeeController')->except('show');
-    // Route::resource('aps-processcode', 'ApsProcessCodeController')->except('show');
 
     Route::get('/home', 'HomeController@index')->name('home');
     Route::post('/inform', 'ResourceController@inform')->name('inform');

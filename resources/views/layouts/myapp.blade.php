@@ -153,7 +153,7 @@
                                 </li>
                             </ul>
                         </li>
-                        <li>
+                        <!-- <li>
                             <a href="#" style="color: white;">稼動參數<span class="fa arrow"></span></a>
                             <ul class="nav nav-second-level">
                                 <li>
@@ -167,15 +167,15 @@
                                 </li>
                                
                             </ul>
-                        </li>
-                        <li>
+                        </li> -->
+                        <!-- <li>
                         <a href="#" style="color: white;">帳號管理<span class="fa arrow"></span></a>
                             <ul class="nav nav-second-level">
                                 <li>
                                     <a href="{{route('personnel-management')}}" style="color: white;">人員帳號設定</a>
                                 </li>
                             </ul>
-                        </li>
+                        </li> -->
                         <li>
                             <a href="#" style="color: white;">MES管理<span class="fa arrow"></span></a>
                             <ul class="nav nav-second-level">

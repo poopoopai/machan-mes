@@ -132,9 +132,9 @@
 </div>
 
 <script>
-    let a = true;
-    let b = true;
-    let c = true;
+    let firsta = true;
+    let firstb = true;
+    let firstc = true;
     const getRestId = () => {
         axios.get('{{ route('rest-group') }}', {
             params: {
@@ -144,11 +144,11 @@
         .then(({ data }) => {
 
             $("#rest-id").empty();
-            if (a) {
+            if (firsta) {
                 $("#rest-id").append(`
                     <option disabled selected ">{{$datas->Rest->rest_name}}</option>
                 `)
-                a = !a
+                firsta = !firsta
             }
             data.forEach(data => {
                 $('#rest-id').append(`
@@ -166,11 +166,11 @@
         .then(({ data }) => {
 
             $("#machine-name").empty();
-            if (b) {
+            if (firstb) {
                 $("#machine-name").append(`
                     <option disabled selected >{{ $datas->machine_category_name }}</option>
                 `)
-                b = !b
+                firstb = !firstb
             }
             data.forEach(data => {
                 $('#machine-name').append(`
@@ -188,11 +188,11 @@
         .then(({ data }) => {
 
             $("#ApsProcessCode").empty();
-            if (c) {
+            if (firstc) {
                 $("#ApsProcessCode").append(`
                     <option disabled selected >{{$datas->process_description}}</option>
                 `)
-                c = !c
+                firstc = !firstc
             }
             data.forEach(data => {
                 $('#ApsProcessCode').append(`
