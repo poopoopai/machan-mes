@@ -27,10 +27,12 @@ class MachineDefinitionController extends Controller
 
     public function store()
     {
-        $getMachineId = $this->machineRepo->getMachineCode(request()->all());
-        
+        $data = request()->only('machine_name', 'machine_category', 'aps_process_code', 'group_setting', 'change_line_time', 'class_assign', 'oee_assign');
+
+        $getMachineId = $this->machineRepo->getMachineCode($data);
+
         $this->machineRepo->create($getMachineId);
-        
+
         return redirect()->route('machine-definition.index');
     }
 
@@ -50,8 +52,10 @@ class MachineDefinitionController extends Controller
     }
 
     public function update($id)
-    { 
-        $this->machineRepo->update($id, request()->all());
+    {
+        $data = request()->only('machine_name', 'machine_category', 'aps_process_code', 'group_setting', 'change_line_time','oee_assign');
+        
+        $this->machineRepo->update($id, $data);
 
         return redirect()->route('machine-definition.index');
     }
@@ -60,7 +64,7 @@ class MachineDefinitionController extends Controller
     {
         $machinedef = $this->machineRepo->destroy($id);
 
-        if($machinedef){
+        if ($machinedef) {
             return redirect()->route('machine-definition.index');
         }
 
