@@ -16,16 +16,16 @@ class ResourceController extends Controller
         if (is_null($last)) {
             $last['time'] = "00:00:00";
         }
-
+     
         try {
-            $datas = DB::connection('mysql2')->table('db')->where('Date', Carbon::today()->format("Y-m-d"))->where('Time', '>', $last['time'])->orderby('Time')->get();
+            $datas = DB::connection('mysql2')->table('12_11_backup')->where('Date', Carbon::today()->format("Y-m-d"))->where('Time', '>', $last['time'])->orderby('Time')->get();
         } catch (Exception $e) {
             throw new Exception('DATABASE CONNECT ERROR!');
         }
         foreach ($datas as $key => $data) {
 
             Resource::create([
-                'machine_id' => $data->Id,
+                'machine_id' => $data->id,
                 'orderno' => trim($data->OrderNo),
                 'status_id' => $data->Status,
                 'code' => $data->Code,
