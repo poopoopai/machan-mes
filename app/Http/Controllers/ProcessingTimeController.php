@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Repositories\StandardCtRepository;
 
 class ProcessingTimeController extends Controller
@@ -26,9 +25,12 @@ class ProcessingTimeController extends Controller
         return view('system/createprocessingtime');
     }
 
-    
     public function store()
     {
+        $data = request()->only('orderno' , 'machinedefinition_id' , 'standard_ct' , 'standard_updown');
+
+        $this->standctRepo->create($data);
+
         return redirect()->route('processing-time.index');
     }
 
@@ -51,7 +53,6 @@ class ProcessingTimeController extends Controller
 
     public function update($id)
     {
-       
         $standct = $this->standctRepo->update($id, request()->all());
 
         if(is_null($standct)){
