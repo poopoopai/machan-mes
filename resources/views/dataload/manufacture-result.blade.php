@@ -63,7 +63,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    {{$mo_id}}
+                   
                 </tbody>
             </table>
         </div>
