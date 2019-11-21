@@ -10,6 +10,7 @@ use App\Entities\Summary;
 use App\Entities\Resource;
 use Carbon\Carbon;
 
+set_time_limit(0);
 class DayPerformanceStatisticsController extends Controller
 {
     protected $SummaryRepo;
@@ -26,13 +27,14 @@ class DayPerformanceStatisticsController extends Controller
     public function getmachineperformance()
     {
         $today = Carbon::today()->format("Y-m-d");
-        $orderno = Resource::where('date', '2019-10-02')->select('orderno')->distinct()->get();
+        // $orderno = Resource::where('date', '2019-11-08')->select('orderno')->distinct()->get();
+        $orderno = Resource::where('date', $today)->select('orderno')->distinct()->get();
         // dd($orderno);
         foreach($orderno as $key =>$datas){
             if($datas->orderno !== ''){
                 $dayPerfor =  [];
 
-                $dayPerfor['report_work_date'] = '2019-10-02';
+                $dayPerfor['report_work_date'] = $today; //$today
                 $dayPerfor['work_name'] = '正常班';     //無運算??
                 $dayPerfor['standard_working_hours'] = $this->SumRepo->standard_working_hours($dayPerfor);
                 $dayPerfor['total_hours'] = $this->SumRepo->total_hours($dayPerfor);   

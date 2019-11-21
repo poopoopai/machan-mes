@@ -194,6 +194,9 @@
                                 <li>
                                     <a href="{{route('show_dayperformance')}}" style="color: white;">機台日績效統計</a>
                                 </li>
+                                <li>
+                                    <a href="{{route('show_OEEperformance')}}" style="color: white;">OEE績效統計</a>
+                                </li>
                             </ul>
                         </li>
                     </ul>
