@@ -769,7 +769,7 @@ class SummaryRepository
         $machine_works_number['actual_production_quantity'] = $count1;  // 同上？
         $machine_works_number['total_input_that_day'] = $count1;    //同上上？？
 
-        // standard_completion
+        // standard_completion //個別料號分開計算 有問題
         $machine_works_number['standard_completion'] = intval(($dayPerfor['standard_working_hours'] * 3600) / ($dayPerfor['standard_processing'] + $dayPerfor['standard_updown']));
 
         // total_completion_that_day

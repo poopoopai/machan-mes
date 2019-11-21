@@ -39,6 +39,7 @@ Route::group(['middleware' => ['auth']], function () {
     Route::post('/inform', 'ResourceController@inform')->name('inform');
     
     Route::get('dayperformance', 'DayPerformanceStatisticsController@show')->name('show_dayperformance');
+    Route::get('/OEEperformance', 'OEEperformanceController@show')->name('show_OEEperformance');
     
     Route::get('/sale-order', 'SaleOrderController@index')->name('sale-order');
     Route::get('/sale-order-result-form', 'SaleOrderController@synchroizedForm')->name('sale-order-result-form');

@@ -16,6 +16,8 @@ class OEEperformanceRepository
         $work = [];
         
         $work['date'] = Carbon::today()->format("Y-m-d"); // date
+        // $work['date'] = '2019-11-08';
+        // dd($work['date']);
 
         $day = Carbon::now()->dayOfWeek; // day
         if($day == 1){
@@ -41,29 +43,30 @@ class OEEperformanceRepository
             $work['weekend'] = '休';
         }
 
-        $work_type = ProcessCalendar::where('date', '2019-01-01')->first(); // work_name
-        // $work_type = ProcessCalendar::where('date', $work['date'])->first();
+        // $work_type = ProcessCalendar::where('date', '2019-11-08')->first(); // work_name
+        $work_type = ProcessCalendar::where('date', $work['date'])->first();
         if($work_type == false){ //如果沒有加班資料
             $work['work_name'] = '';
-        }
-        if($work_type->work_type_id == null){
+        }elseif($work_type->work_type_id == null){
             if($work_type->status == 2){
                 $work['work_name'] = '休假';
             }elseif($work_type->status == 3){
                 $work['work_name'] = '國定假日';
             }
+        }else{
+            $work_name = SetupShift::where('id', $work_type->work_type_id)->first()->type;
+            $work['work_name'] = $work_name;
         }
-        $work_name = SetupShift::where('id', $work_type->work_type_id)->first()->type;
-        $work['work_name'] = $work_name;
+        
 
         // standard_working_hours
         if($work['work_name'] == ''){
-            return 8;
+            $work['standard_working_hours'] = 8;
         }elseif($work['work_name'] == '休假' || $work['work_name'] == '國定假日'){
-            return 0;
+            $work['standard_working_hours'] = 0;
         }else{
-            $work_type_id = ProcessCalendar::where('date', '2019-01-01')->first()->work_type_id;//抓今天的加班id時段
-            // $work_type_id = ProcessCalendar::where('date', $work['date'])->first()->work_type_id;
+            // $work_type_id = ProcessCalendar::where('date', '2019-11-08')->first()->work_type_id;//抓今天的加班id時段
+            $work_type_id = ProcessCalendar::where('date', $work['date'])->first()->work_type_id;
             $work_time = SetupShift::where('id', $work_type_id)->first();
             $work_off = strtotime($work_time->work_off) - strtotime(Carbon::today());
             $work_on = strtotime($work_time->work_on) - strtotime(Carbon::today());
@@ -73,12 +76,12 @@ class OEEperformanceRepository
 
         // total_hours
         if($work['work_name'] == ''){
-            return '9:20:00';
+            $work['total_hours'] = '9:20:00';
         }elseif($work['work_name'] == '休假' || $work['work_name'] == '國定假日'){
-            return '00:00:00';
+            $work['total_hours'] = '00:00:00';
         }else{
-            $work_type_id = ProcessCalendar::where('date', '2019-01-01')->first()->work_type_id;//抓今天的加班id時段
-            // $work_type_id = ProcessCalendar::where('date', $work['date'])->first()->work_type_id;
+            // $work_type_id = ProcessCalendar::where('date', '2019-11-08')->first()->work_type_id;//抓今天的加班id時段
+            $work_type_id = ProcessCalendar::where('date', $work['date'])->first()->work_type_id;
             $work_time = SetupShift::where('id', $work_type_id)->first();
             $work_off = strtotime($work_time->work_off) - strtotime(Carbon::today());
             $work_on = strtotime($work_time->work_on) - strtotime(Carbon::today());
@@ -168,7 +171,7 @@ class OEEperformanceRepository
         $machine_processing_time['actual_processing_seconds'] = $actual_processing_seconds;
 
 
-        $machine_processing_time['updown_time'] =  '';  // updown_time
+        $machine_processing_time['updown_time'] =  0;  // updown_time
 
         return $machine_processing_time;
     }
@@ -238,10 +241,10 @@ class OEEperformanceRepository
 
         //  standard_completion
         if( $getSameDay->first() == null ){
-            $machine_works_number['standard_completion'] = '';
+            $machine_works_number['standard_completion'] = 0;
         }else{
             if($sum['standard_processing_seconds'] == 0){
-                $machine_works_number['standard_completion'] = '';
+                $machine_works_number['standard_completion'] = 0;
             }else{
                 $machine_works_number['standard_completion'] = ($sum['actual_processing_seconds']*$machine_works_number['total_completion_that_day']/$sum['standard_processing_seconds']);
             }
@@ -372,24 +375,7 @@ class OEEperformanceRepository
     public function machine_performance($sum){
 
         $machine_performance = [];
-        // $getSameDay = Resource::where('date', $sum['date'])->with('summary')->get();
         
-        // machine_utilization_rate
-        // IF(COUNTIFS(捲料機績效分析!E:E,OEE績效數據!B6)=0,"",(N6-O6+R6)/N6) 
-        // N = mass_production_time, O = total_downtime, R = updown_time
-
-        // $mass_production_time = strtotime($sum['mass_production_time']) - strtotime(Carbon::today());
-        // $total_downtime = strtotime($sum['total_downtime']) - strtotime(Carbon::today());
-        // $updown_time = strtotime($sum['updown_time']) - strtotime(Carbon::today());
-        
-        // if( $getSameDay->first() == null ){
-        //     $machine_performance['machine_utilization_rate'] = '';
-        // }else{
-        //     if($sum['mass_production_time'] == ''){
-        //         $machine_performance['machine_utilization_rate'] = '';
-        //     }
-        //     $machine_performance['machine_utilization_rate'] = (($mass_production_time - ($total_downtime + $updown_time))/$mass_production_time);
-        // }
         $sameday = DayPerformanceStatistics::where('report_work_date', $sum['date'])->get();
         $machine_utilization_rate = 0;
         foreach($sameday as $key =>$datas){
@@ -397,17 +383,7 @@ class OEEperformanceRepository
         }
         $machine_performance['machine_utilization_rate'] = $machine_utilization_rate/count($sameday);
 
-        // performance_rate
-        // (COUNTIFS(捲料機績效分析!E:E,OEE績效數據!B6)=0,"", L6/J6 ) 
-        // L = total_completion_that_day, J = standard_completion
-        // if( $getSameDay->first() == null ){
-        //     $machine_performance['performance_rate'] = '';
-        // }else{
-        //     if($sum['standard_completion'] == ''){
-        //         $machine_performance['performance_rate'] = '';
-        //     }
-        //     $machine_performance['performance_rate'] = ($sum['total_completion_that_day']/$sum['standard_completion']);
-        // }
+        
         $performance_rate = 0;
         foreach($sameday as $key =>$datas){
             $performance_rate = $performance_rate + $datas->performance_rate;
@@ -415,17 +391,7 @@ class OEEperformanceRepository
         $machine_performance['performance_rate'] = $performance_rate/count($sameday);
 
 
-        // yield
-        // IF(COUNTIFS(捲料機績效分析!E:E,OEE績效數據!B6)=0,"",(L6-M6)/L6) 
-        // L = total_completion_that_day, M = adverse_number
-        // if( $getSameDay->first() == null ){
-        //     $machine_performance['yield'] = '';
-        // }else{
-        //     if($sum['total_completion_that_day'] == ''){
-        //         $machine_performance['yield'] = '';
-        //     }
-        //     $machine_performance['yield'] = (($sum['total_completion_that_day']-$sum['adverse_number'])/$sum['total_completion_that_day']);
-        // }
+        
         $yield = 0;
         foreach($sameday as $key =>$datas){
             $yield = $yield + $datas->yield;
@@ -433,16 +399,7 @@ class OEEperformanceRepository
         $machine_performance['yield'] = $yield/count($sameday);
 
 
-        // OEE
-        // IF(COUNTIFS(捲料機績效分析!E:E,OEE績效數據!B6)=0,"",AD6*AE6*AF6)
-        // if( $getSameDay->first() == null ){
-        //     $machine_performance['OEE'] = '';
-        // }else{ //目前performance_rate為空值
-        //     if($machine_performance['machine_utilization_rate'] == '' || $machine_performance['performance_rate'] == '' || $machine_performance['yield'] == ''){
-        //         $machine_performance['OEE'] = 0;
-        //     }
-        //     $machine_performance['OEE'] = ($machine_performance['machine_utilization_rate']*$machine_performance['performance_rate']*$machine_performance['yield']);
-        // }
+        
         $OEE = 0;
         foreach($sameday as $key =>$datas){
             $OEE = $OEE + $datas->OEE;

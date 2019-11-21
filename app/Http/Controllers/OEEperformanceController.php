@@ -50,12 +50,12 @@ class OEEperformanceController extends Controller
         //   bad_disposal_time, model_damge_change_line_time, program_modify_time, machine_maintain_time, excluded_working_hours )                              )
         $machinee_work_except_hours = $this->OEErepo->machinee_work_except_hours($sum);
         $sum = array_merge($sum, $machinee_work_except_hours);
-       
+    
         // 機檯表現    machine_performance ( machine_utilization_rate, performance_rate, yield, OEE )
         $machine_performance = $this->OEErepo->machine_performance($sum);
         $sum = array_merge($sum, $machine_performance);
-        
-        dd($sum);
+        // dd($sum);
+
         OEEperformance::create($sum);
     }
 }
