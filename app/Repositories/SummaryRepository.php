@@ -138,7 +138,8 @@ class SummaryRepository
     public function restart($data, $status)
     {
         $restart = Resource::where('date', $data['date'])->where('id', '<',$data['id'])->orderby('id', 'desc')->first();
-    
+        is_null($restart) ? $restart['status_id'] = 0 : $restart->status_id;
+        
         if ($status['open'] == '') {
             $status["restart_count"] = '';
         } else {
@@ -146,7 +147,7 @@ class SummaryRepository
                 $status["restart_count"] = '';
             } else {
                 
-                if (($restart->status_id == 3) && ($restart->status_id == 3)) {
+                if (($status->status_id == 3) && ($restart['status_id'] == 3)) {
                     $status["restart_count"] = ++$status->restart_count;
                 } else {
                     $status["restart_count"] = '';
@@ -159,7 +160,7 @@ class SummaryRepository
             if ($status['turn_off'] == '1') {
                 $status['restop_count'] = '';
             } else {
-                if (($restart->status_id == 4) && ($restart->status_id == 4)) {
+                if (($status->status_id == 4) && ($restart['status_id'] == 4)) {
                     $status['restop_count'] = ++$status->restop_count;
                 } else {
                     $status['restop_count'] = '';
