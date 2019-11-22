@@ -48,6 +48,19 @@
         color: #fff;
         height: 10px;
     }
+    .panel-default {
+        border-color: #000000;
+    }
+    .panel-default > .panel-heading {
+        color: #fff;
+        background-color: #000000;
+        border-color: #000000;
+    }
+    .btn-secondary {
+        color: #fff;
+        background-color: #6c757d;
+        border-color: #6c757d;
+    }
 </style>
 @endsection
 
@@ -61,11 +74,30 @@
             <span class="space-item">></span>
             <span class="space-item">機台日績效統計<span>
         </ol>
-        <div class="breadcrumb-custom">
-            <span>資料列表</span>
-            <div style="float:right; margin-top:-7px">
-            </div> 
+        <div class="row">
+            <div class="col-md-12">
+                <div class="panel panel-default">
+                    <div class="panel-heading">資料編輯</div>
+                    <div class="panel-body">
+                        <form class="form-horizontal" action="{{ route('search_dayperformance_date')}}"  method="POST">
+                            @csrf
+                                <div class="form-group">
+                                    <label class="col-md-2 control-label">機台日績效統計日期查詢</label>
+                                        <div class="col-md-10">
+                                            <input type="date" name="date" class="clearable form-control" required>
+                                        </div>
+                                </div>
+                                <hr>
+                            <div style="text-align:center">
+                                <button type="submit" onclick="" id="sendBtn" class="btn btn-success btn-lg" style="width:45%">確認</button>
+                                <button type="reset" onclick="" class="btn btn-secondary btn-lg" style="width:45%">清除資料</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
         </div>
+        
         <div class="total-data">載入筆數 | 共 {{$datas->total()}} 筆</div>
         <div style="margin-top:15px;">
             <table class="table table-striped table-pos">

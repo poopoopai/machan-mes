@@ -37,7 +37,9 @@ Route::group(['middleware' => ['auth']], function () {
 
     Route::get('/home', 'HomeController@index')->name('home');
     Route::post('/inform', 'ResourceController@inform')->name('inform');
-    
+
+    Route::post('dayperformance/search', 'DayPerformanceStatisticsController@searchdate')->name('search_dayperformance_date');
+    Route::post('/OEEperformance/search', 'OEEperformanceController@searchdate')->name('search_OEEperformance_date');
     Route::get('dayperformance', 'DayPerformanceStatisticsController@show')->name('show_dayperformance');
     Route::get('/OEEperformance', 'OEEperformanceController@show')->name('show_OEEperformance');
     
