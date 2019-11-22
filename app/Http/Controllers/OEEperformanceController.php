@@ -24,6 +24,17 @@ class OEEperformanceController extends Controller
         return view('OEEperformance', ['datas' => $datas]);
     }
 
+    public function searchdate()
+    {
+        $datas = OEEperformance::where('date' , request()->date)->paginate(100);
+       
+            if($datas[0]){
+                return view('searchOEEperformance', ['datas' => $datas]);
+            }
+            return redirect()->route('show_OEEperformance');
+            
+    }
+
     public function getOEEperformance()
     {
         $sum =  [];

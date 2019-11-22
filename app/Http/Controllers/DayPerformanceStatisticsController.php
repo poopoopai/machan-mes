@@ -23,6 +23,16 @@ class DayPerformanceStatisticsController extends Controller
         $datas = DayPerformanceStatistics::paginate(100);
         return view('dayperformance', ['datas' => $datas]);
     }
+    public function searchdate()
+    {
+        $datas = DayPerformanceStatistics::where('report_work_date' , request()->date)->paginate(100);
+       
+            if($datas[0]){
+                return view('searchdayperformance', ['datas' => $datas]);
+            }
+            return redirect()->route('show_dayperformance');
+            
+    }
 
     public function getmachineperformance()
     {

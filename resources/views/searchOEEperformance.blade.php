@@ -72,7 +72,10 @@
             <img src="{{ asset('img/u12.png') }}">
             <span class="space-item">系統設定</span>
             <span class="space-item">></span>
-            <span class="space-item">OEE績效統計<span>
+            <span class="space-item">
+            <a href="{{ route('show_OEEperformance') }}">OEE績效統計</a><span>
+            <span class="space-item">></span>
+            <span class="space-item">{{$datas[0]->date}}<span>
         </ol>
         <div class="row">
             <div class="col-md-12">
