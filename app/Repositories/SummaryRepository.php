@@ -19,16 +19,17 @@ class SummaryRepository
 
         $count->id = $count->id + 1;
         $count->time = $data->time;
-
+        
         $oldopen = Summary::where('open', '!=', '')->orderby('id', 'desc')->first();
         $oldturn = Summary::where('turn_off', '!=', '')->orderby('id', 'desc')->first();
-        if ($count->resources_id == 0 || $data['date'] != Carbon::today()->format("Y-m-d")) {  //如果為第一筆資料 或者 不是同一天 (就要重頭計算)
+        if ($count->resources_id == 0 || $data['date'] != $count['date']) { 
+             //如果為第一筆資料 或者 不是同一天 (就要重頭計算)
             $count->open = 0;
             $count->turn_off = 0;   //關機
             $count->start_count = 0;
-            $count->stop_count = 0;
-            $data['status_id'] == 3 ? $count->open++ : $count->open = '';
-            $data['status_id'] == 4 ? $count->turn_off++ : $count->turn_off = '';
+            $count->stop_count = 0;    
+            $data['status_id'] == 3 ? $count->open++ : ($count->open == 0 ? $count->open : $count->open = '');
+            $data['status_id'] == 4 ? $count->turn_off++ : ($count->turn_off == 0 ? $count->turn_off : $count->turn_off = '');
             $data['status_id'] == 3 ? $count->start_count++ : $count->start_count;
             $data['status_id'] == 4 ? $count->stop_count++ : $count->stop_count;
         } else {
@@ -37,7 +38,6 @@ class SummaryRepository
             $data['status_id'] == 3 ? $count->start_count++ : $count->start_count;
             $data['status_id'] == 4 ? $count->stop_count++ : $count->stop_count;
         }
-
         $data['status_id'] == 15 ? $count->sensro_inputs++ : $count->sensro_inputs;     //Sensor投入累計數
 
         if ($machine == '捲料機1') {
@@ -132,6 +132,7 @@ class SummaryRepository
                 }
             }
         }
+        $count->date = $data->date;
         return $count;
     }
 
@@ -381,7 +382,14 @@ class SummaryRepository
 
         $breaktime = "休息";
         $description->completion_status == '異常' ?
-            strtotime($status->time) - strtotime($time[0]) < 0 && $data['status_id'] == 4 ? $breaktime = "休息" : (int) $status->time == 10 && strtotime($status->time) - strtotime($time[1]) <= 0 ? $breaktime = "休息" : (int) $status->time == 12 && strtotime($status->time) - strtotime($time[2]) <= 0 ? $breaktime = "休息" : (int) $status->time == 13 && strtotime($status->time) - strtotime($time[3]) <= 0 ? $breaktime = "休息" : (int) $status->time == 15 && strtotime($status->time) - strtotime($time[4]) <= 0 ? $breaktime = "休息" : strtotime($status->time) >= strtotime($time[5]) && strtotime($status->time) <= strtotime($time[6]) ? $breaktime = "休息" : strtotime($status->time) >= strtotime($time[7]) && strtotime($status->time) <= strtotime($time[8]) ? $breaktime = "休息" : $breaktime = ""
+            strtotime($status->time) - strtotime($time[0]) < 0 && $data['status_id'] == 4 ? $breaktime = "休息" :
+            (int) $status->time == 10 && strtotime($status->time) - strtotime($time[1]) <= 0 ? $breaktime = "休息" :
+            (int) $status->time == 12 && strtotime($status->time) - strtotime($time[2]) <= 0 ? $breaktime = "休息" :
+            (int) $status->time == 13 && strtotime($status->time) - strtotime($time[3]) <= 0 ? $breaktime = "休息" :
+            (int) $status->time == 15 && strtotime($status->time) - strtotime($time[4]) <= 0 ? $breaktime = "休息" :
+            strtotime($status->time) >= strtotime($time[5]) && strtotime($status->time) <= strtotime($time[6]) ? $breaktime = "休息" :
+            strtotime($status->time) >= strtotime($time[7]) && strtotime($status->time) <= strtotime($time[8]) ? $breaktime = "休息" :
+            $breaktime = ""
             : $breaktime = "";
 
         $status->break = $breaktime;
@@ -760,7 +768,6 @@ class SummaryRepository
         $sameDayAndName_id9 = Resource::where('orderno', $dayPerfor['material_name'])->where('date', $dayPerfor['report_work_date'])->where('status_id', 9)->with('summary')->get();
         $count1 = 0;
         $count2 = 0;
-
         // machine_processing
         // COUNTIFS( 捲料機績效分析!$C:$C, 10,  捲料機績效分析!$E:$E,機台日績效統計表!$B6,   捲料機績效分析!$B:$B,機台日績效統計表!$J6) 
         foreach ($sameDayAndName_id10 as $key => $data) {
