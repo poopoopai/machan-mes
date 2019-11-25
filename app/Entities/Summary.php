@@ -17,6 +17,7 @@ class Summary extends Model
         'serial_number_day',
         'open',
         'turn_off',
+        'date',
         'time',
         'machine_completion',
         'machine_inputs',

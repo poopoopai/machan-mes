@@ -80,6 +80,7 @@
                         <th scope="col">當天序號</th>
                         <th scope="col">開機</th>
                         <th scope="co1">關機</th>
+                        <th scope="col">當天日期</th>
                         <th scope="col">時間</th>
                         <th scope="col">機台累計完工數</th>
                         <th scope="col">機台累計投入數</th>
@@ -128,6 +129,7 @@
                         <td>{{ $data->serial_number_day }}</td>
                         <td>{{ $data->open }}</td>
                         <td>{{ $data->turn_off }}</td>
+                        <td>{{ $data->date }}</td>
                         <td>{{ $data->time }}</td>
                         <td>{{ $data->machine_completion }}</td>
                         <td>{{ $data->machine_inputs }}</td>
