@@ -79,8 +79,8 @@
                 <div class="panel panel-default">
                     <div class="panel-heading">資料編輯</div>
                     <div class="panel-body">
-                        <form class="form-horizontal" action="{{ route('search_dayperformance_date')}}"  method="POST">
-                            @csrf
+                        <form class="form-horizontal" action="{{ route('search_dayperformance_date')}}"  method="GET">
+                            
                                 <div class="form-group">
                                     <label class="col-md-2 control-label">機台日績效統計日期查詢</label>
                                         <div class="col-md-10">

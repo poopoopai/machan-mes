@@ -82,8 +82,7 @@
                 <div class="panel panel-default">
                     <div class="panel-heading">資料編輯</div>
                     <div class="panel-body">
-                        <form class="form-horizontal" action="{{ route('search_OEEperformance_date')}}"  method="POST">
-                            @csrf
+                        <form class="form-horizontal" action="{{ route('search_OEEperformance_date')}}"  method="GET">
                                 <div class="form-group">
                                     <label class="col-md-2 control-label">OEE績效統計日期查詢</label>
                                         <div class="col-md-10">
@@ -180,7 +179,7 @@
                     </tr>
                     @endforeach
 
-                    {!! $datas->links() !!}
+                    {!! $datas->appends(request()->query())->links() !!}
                 </tbody>
             </table>
             

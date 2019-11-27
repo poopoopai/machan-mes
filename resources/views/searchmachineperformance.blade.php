@@ -72,14 +72,16 @@
             <img src="{{ asset('img/u12.png') }}">
             <span class="space-item">系統設定</span>
             <span class="space-item">></span>
-            <span class="space-item">機台績效<span>
+            <a href="{{ route('show_machineperformance') }}">機台績效</a><span>
+            <span class="space-item">></span>
+            <span class="space-item">{{$datas[0]->date}}<span>
         </ol>
         <div class="row">
             <div class="col-md-12">
                 <div class="panel panel-default">
                     <div class="panel-heading">資料編輯</div>
                     <div class="panel-body">
-                        <form class="form-horizontal" action="{{ route('search_machineperformance')}}"  method="GET">
+                        <form class="form-horizontal" action="{{ route('search_machineperformance')}}"  method="GET">    
                                 <div class="form-group">
                                     <label class="col-md-2 control-label">機台績效日期查詢</label>
                                         <div class="col-md-10">
@@ -198,7 +200,7 @@
                     @endforeach
                     
 
-                    {!! $datas->links() !!}
+                    {{!! $datas->appends(request()->query())->links() !!}}
                 </tbody>
             </table>
             

@@ -35,12 +35,6 @@ class ResourceController extends Controller
         }
         dd("資料抓完了");
     }
-    public function show()
-    {
-        $data = Summary::paginate(100);
-
-        return view('machineperformance', ['datas' => $data]);
-    }
     public function getdatabase()
     {
         $results = Summary::wheredate('created_at', '>=', Carbon::today())
