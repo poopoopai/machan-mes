@@ -5,6 +5,10 @@ namespace App\Repositories;
 use App\Entities\Summary;
 use App\Entities\Resource;
 use App\Entities\StandardCt;
+use App\Entities\ProcessCalendar;
+use App\Entities\CompanyCalendar;
+use App\Entities\SetupShift;
+use App\Entities\RestSetup;
 use Carbon\Carbon;
 
 class SummaryRepository
@@ -19,17 +23,16 @@ class SummaryRepository
 
         $count->id = $count->id + 1;
         $count->time = $data->time;
-        
+
         $oldopen = Summary::where('open', '!=', '')->orderby('id', 'desc')->first();
         $oldturn = Summary::where('turn_off', '!=', '')->orderby('id', 'desc')->first();
-        if ($count->resources_id == 0 || $data['date'] != $count['date']) { 
-             //如果為第一筆資料 或者 不是同一天 (就要重頭計算)
+        if ($count->resources_id == 0 || $data['date'] != Carbon::today()->format("Y-m-d")) {  //如果為第一筆資料 或者 不是同一天 (就要重頭計算)
             $count->open = 0;
             $count->turn_off = 0;   //關機
             $count->start_count = 0;
-            $count->stop_count = 0;    
-            $data['status_id'] == 3 ? $count->open++ : ($count->open == 0 ? $count->open : $count->open = '');
-            $data['status_id'] == 4 ? $count->turn_off++ : ($count->turn_off == 0 ? $count->turn_off : $count->turn_off = '');
+            $count->stop_count = 0;
+            $data['status_id'] == 3 ? $count->open++ : $count->open = '';
+            $data['status_id'] == 4 ? $count->turn_off++ : $count->turn_off = '';
             $data['status_id'] == 3 ? $count->start_count++ : $count->start_count;
             $data['status_id'] == 4 ? $count->stop_count++ : $count->stop_count;
         } else {
@@ -38,6 +41,7 @@ class SummaryRepository
             $data['status_id'] == 3 ? $count->start_count++ : $count->start_count;
             $data['status_id'] == 4 ? $count->stop_count++ : $count->stop_count;
         }
+
         $data['status_id'] == 15 ? $count->sensro_inputs++ : $count->sensro_inputs;     //Sensor投入累計數
 
         if ($machine == '捲料機1') {
@@ -132,15 +136,13 @@ class SummaryRepository
                 }
             }
         }
-        $count->date = $data->date;
         return $count;
     }
 
     public function restart($data, $status)
     {
         $restart = Resource::where('date', $data['date'])->where('id', '<',$data['id'])->orderby('id', 'desc')->first();
-        is_null($restart) ? $restart['status_id'] = 0 : $restart->status_id;
-        
+    
         if ($status['open'] == '') {
             $status["restart_count"] = '';
         } else {
@@ -148,7 +150,7 @@ class SummaryRepository
                 $status["restart_count"] = '';
             } else {
                 
-                if (($status->status_id == 3) && ($restart['status_id'] == 3)) {
+                if (($restart->status_id == 3) && ($restart->status_id == 3)) {
                     $status["restart_count"] = ++$status->restart_count;
                 } else {
                     $status["restart_count"] = '';
@@ -161,7 +163,7 @@ class SummaryRepository
             if ($status['turn_off'] == '1') {
                 $status['restop_count'] = '';
             } else {
-                if (($status->status_id == 4) && ($restart['status_id'] == 4)) {
+                if (($restart->status_id == 4) && ($restart->status_id == 4)) {
                     $status['restop_count'] = ++$status->restop_count;
                 } else {
                     $status['restop_count'] = '';
@@ -382,14 +384,7 @@ class SummaryRepository
 
         $breaktime = "休息";
         $description->completion_status == '異常' ?
-            strtotime($status->time) - strtotime($time[0]) < 0 && $data['status_id'] == 4 ? $breaktime = "休息" :
-            (int) $status->time == 10 && strtotime($status->time) - strtotime($time[1]) <= 0 ? $breaktime = "休息" :
-            (int) $status->time == 12 && strtotime($status->time) - strtotime($time[2]) <= 0 ? $breaktime = "休息" :
-            (int) $status->time == 13 && strtotime($status->time) - strtotime($time[3]) <= 0 ? $breaktime = "休息" :
-            (int) $status->time == 15 && strtotime($status->time) - strtotime($time[4]) <= 0 ? $breaktime = "休息" :
-            strtotime($status->time) >= strtotime($time[5]) && strtotime($status->time) <= strtotime($time[6]) ? $breaktime = "休息" :
-            strtotime($status->time) >= strtotime($time[7]) && strtotime($status->time) <= strtotime($time[8]) ? $breaktime = "休息" :
-            $breaktime = ""
+            strtotime($status->time) - strtotime($time[0]) < 0 && $data['status_id'] == 4 ? $breaktime = "休息" : (int) $status->time == 10 && strtotime($status->time) - strtotime($time[1]) <= 0 ? $breaktime = "休息" : (int) $status->time == 12 && strtotime($status->time) - strtotime($time[2]) <= 0 ? $breaktime = "休息" : (int) $status->time == 13 && strtotime($status->time) - strtotime($time[3]) <= 0 ? $breaktime = "休息" : (int) $status->time == 15 && strtotime($status->time) - strtotime($time[4]) <= 0 ? $breaktime = "休息" : strtotime($status->time) >= strtotime($time[5]) && strtotime($status->time) <= strtotime($time[6]) ? $breaktime = "休息" : strtotime($status->time) >= strtotime($time[7]) && strtotime($status->time) <= strtotime($time[8]) ? $breaktime = "休息" : $breaktime = ""
             : $breaktime = "";
 
         $status->break = $breaktime;
@@ -734,29 +729,74 @@ class SummaryRepository
 
     //////////////////////////////////////////////////////////////////////////////////////DayPerformanceStatistics
 
+    public function work_name($dayPerfor){
+        $com_work_type = CompanyCalendar::where('date', $dayPerfor['report_work_date'])->first(); //看看公司行事曆有沒有加班資料
 
-    public function standard_working_hours($dayPerfor)
-    {
-        if ($dayPerfor['work_name'] == '正常班') {
-            return 8;
-        } elseif ($dayPerfor['work_name'] == '加班三小時') {
-            return 11;
-        } elseif ($dayPerfor['work_name'] == '加班四小時') {
-            return 12;
-        } else {
-            return 0;
+        if( $com_work_type == null ){ //如果公司行事曆沒資料
+            $work_type = ProcessCalendar::where('date', $dayPerfor['report_work_date'])->first(); //看看機台行事曆有沒有加班資料
+            
+            if( $work_type == false ){ //如果機台行事曆沒有加班資料 //沒加班
+                return '正常班';  
+            }elseif( $work_type->work_type_id == null ){
+                if($work_type->status == 2 ){
+                    return '休假';
+                }elseif($work_type->status == 3){
+                    return '國定假日';
+                }
+            }else{ //有加班
+                $work_name = SetupShift::where('id', $work_type->work_type_id)->first()->type;
+                if(Carbon::now()->isWeekend() == true){
+                    return '假日加班';
+                }else{
+                    return $work_name;
+                }
+            }
+
+        }else{  //如果公司行事曆有資料 
+            if( $com_work_type->work_type_id == null ){
+                if($com_work_type->status == 2 ){
+                    return '休假';
+                }elseif($com_work_type->status == 3){
+                    return '國定假日';
+                }
+            }else{ //有加班
+                $work_name = SetupShift::where('id', $com_work_type->work_type_id)->first()->type;
+                if(Carbon::now()->isWeekend() == true){
+                    return '假日加班';
+                }else{
+                    return $work_name;
+                }
+            }
         }
     }
-    public function total_hours($dayPerfor)
+
+    public function standard_working_hours($dayPerfor)  //改成從resource抓當天同料號的運作時間(最後一筆減去第一筆)
     {
-        if ($dayPerfor['work_name'] == '正常班') {
-            return '9:20:00';
-        } elseif ($dayPerfor['work_name'] == '加班三小時') {
-            return '12:50:00';
-        } elseif ($dayPerfor['work_name'] == '加班四小時') {
-            return '13:50:00';
-        } else {
-            return '00:00:00';
+        if ($dayPerfor['work_name'] == '休假' || $dayPerfor['work_name'] == '國定假日') {
+            return 0;
+        } else { //加班幾小時?
+            $first_time = Resource::where('orderno', $dayPerfor['material_name'])->where('date', $dayPerfor['report_work_date'])->first()->time;
+            $last_time = Resource::where('orderno', $dayPerfor['material_name'])->where('date', $dayPerfor['report_work_date'])->latest('time')->first()->time;
+            // dd($first_time, $last_time);
+            $first_time = strtotime($first_time) - strtotime(Carbon::today());
+            $last_time = strtotime($last_time) - strtotime(Carbon::today());
+            // dd($last_time - $first_time);  //秒數
+            // dd(date("H:i:s", ($last_time - $first_time)-8*60*60));
+            return (($last_time - $first_time)/3600);
+        }
+    }
+    public function total_hours($dayPerfor)  //改成 當天這筆料號在summaries的總working_time
+    {
+        if ($dayPerfor['work_name'] == '休假' || $dayPerfor['work_name'] == '國定假日') {
+            return 0;
+        } else { //加班幾小時?
+            $first_time = Resource::where('orderno', $dayPerfor['material_name'])->where('date', $dayPerfor['report_work_date'])->first()->time;
+            $last_time = Resource::where('orderno', $dayPerfor['material_name'])->where('date', $dayPerfor['report_work_date'])->latest('time')->first()->time;
+            // dd($first_time, $last_time);
+            $first_time = strtotime($first_time) - strtotime(Carbon::today());
+            $last_time = strtotime($last_time) - strtotime(Carbon::today());
+
+            return date("H:i:s", ($last_time - $first_time)-8*60*60);
         }
     }
 
@@ -768,6 +808,7 @@ class SummaryRepository
         $sameDayAndName_id9 = Resource::where('orderno', $dayPerfor['material_name'])->where('date', $dayPerfor['report_work_date'])->where('status_id', 9)->with('summary')->get();
         $count1 = 0;
         $count2 = 0;
+
         // machine_processing
         // COUNTIFS( 捲料機績效分析!$C:$C, 10,  捲料機績效分析!$E:$E,機台日績效統計表!$B6,   捲料機績效分析!$B:$B,機台日績效統計表!$J6) 
         foreach ($sameDayAndName_id10 as $key => $data) {

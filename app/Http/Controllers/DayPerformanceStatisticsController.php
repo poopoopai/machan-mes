@@ -23,29 +23,24 @@ class DayPerformanceStatisticsController extends Controller
         $datas = DayPerformanceStatistics::paginate(100);
         return view('dayperformance', ['datas' => $datas]);
     }
-    public function searchdate()
-    {
-        $datas = DayPerformanceStatistics::where('report_work_date' , request()->date)->paginate(100);
-       
-            if($datas[0]){
-                return view('searchdayperformance', ['datas' => $datas]);
-            }
-            return redirect()->route('show_dayperformance');
-            
-    }
 
     public function getmachineperformance()
     {
-        $today = Carbon::today()->format("Y-m-d");
-        // $orderno = Resource::where('date', '2019-11-08')->select('orderno')->distinct()->get();
-        $orderno = Resource::where('date', $today)->select('orderno')->distinct()->get();
+        // $today = Carbon::today()->format("Y-m-d");
+        $orderno = Resource::where('date', '2019-11-08')->select('orderno')->distinct()->get();
+        // $orderno = Resource::where('date', $today)->select('orderno')->distinct()->get();
         // dd($orderno);
         foreach($orderno as $key =>$datas){
             if($datas->orderno !== ''){
                 $dayPerfor =  [];
 
-                $dayPerfor['report_work_date'] = $today; //$today
-                $dayPerfor['work_name'] = '正常班';     //無運算??
+                //製令資訊
+                $dayPerfor['order_number'] = '';  // 製令單號 空白??
+                $dayPerfor['material_name'] = $datas->orderno;   
+                $dayPerfor['production_quantity'] = 1;   // 生產數量 空白??
+                
+                $dayPerfor['report_work_date'] = '2019-11-08'; //$today
+                $dayPerfor['work_name'] = $this->SumRepo->work_name($dayPerfor);     //跟oee一樣去抓是否有加班?setup_shifts->name, process_calendars
                 $dayPerfor['standard_working_hours'] = $this->SumRepo->standard_working_hours($dayPerfor);
                 $dayPerfor['total_hours'] = $this->SumRepo->total_hours($dayPerfor);   
 
@@ -55,10 +50,6 @@ class DayPerformanceStatisticsController extends Controller
                 
                 $dayPerfor['production_category'] = '量產';
                 
-                //製令資訊
-                $dayPerfor['order_number'] = '';  // 製令單號 空白??
-                $dayPerfor['material_name'] = $datas->orderno;   
-                $dayPerfor['production_quantity'] = 1;   // 生產數量 空白??
                 
                 //標準ct
                 $dayPerfor['standard_processing'] = $this->SumRepo->standard_processing($dayPerfor); 
