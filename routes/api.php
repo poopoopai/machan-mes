@@ -31,7 +31,7 @@ Route::get('/getmachinedatabase', 'api\ResourceController@getmachinedatabase')->
 Route::get('/test', 'ResourceController@test');
 Route::get('/test2', 'ResourceController@test2');
 Route::get('/inform', 'ResourceController@inform');
-Route::get('/show', 'ResourceController@show');
+
 
 Route::get('/organization', 'OrganizationController@getOrganization')->name('getorganization');
 Route::get('/sale-order-data', 'SaleOrderController@getSaleOrderData')->name('save-sale-order');

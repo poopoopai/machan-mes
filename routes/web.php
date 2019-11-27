@@ -20,7 +20,6 @@ Route::group(['middleware' => ['auth']], function () {
 
 
     Route::get('/resource', 'ResourceController@index')->name('resource');
-    Route::get('machineperformance', 'ResourceController@show')->name('show_machine');
     Route::resource('machine-category', 'MachineCategoryController')->except('show');
     
     Route::post('/rest-time/{id}', 'RestTimeController@createData');
@@ -38,8 +37,10 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('/home', 'HomeController@index')->name('home');
     Route::post('/inform', 'ResourceController@inform')->name('inform');
 
-    Route::post('dayperformance/search', 'DayPerformanceStatisticsController@searchdate')->name('search_dayperformance_date');
-    Route::post('/OEEperformance/search', 'OEEperformanceController@searchdate')->name('search_OEEperformance_date');
+    Route::get('machineperformance/search', 'api\ResourceController@searchdate')->name('search_machineperformance');
+    Route::get('dayperformance/search', 'DayPerformanceStatisticsController@searchdate')->name('search_dayperformance_date');
+    Route::get('/OEEperformance/search', 'OEEperformanceController@searchdate')->name('search_OEEperformance_date');
+    Route::get('machineperformance', 'api\ResourceController@show')->name('show_machineperformance');
     Route::get('dayperformance', 'DayPerformanceStatisticsController@show')->name('show_dayperformance');
     Route::get('/OEEperformance', 'OEEperformanceController@show')->name('show_OEEperformance');
     

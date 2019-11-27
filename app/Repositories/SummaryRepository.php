@@ -13,6 +13,16 @@ use Carbon\Carbon;
 
 class SummaryRepository
 {
+    public function index()
+    {  
+        return Summary::paginate(100);
+    }
+
+    public function searchdate()
+    {
+        return Summary::where('date' , request()->date)->paginate(100)->appends(request()->query());
+    }
+
     public function counts($data, $machine)
     {
         $count = Summary::with('resource')->whereRaw('id = (select max(`id`) from summaries)')->first(); //前一筆資料

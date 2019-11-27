@@ -22,6 +22,26 @@ class ResourceController extends Controller
         $this->SumRepo = $SummaryRepo;
     }
 
+    public function show()
+    {
+       
+        $data = $this->SumRepo->index();
+        
+        return view('machineperformance', ['datas' => $data]);
+    }
+
+
+    public function searchdate()
+    {
+        $datas = $this->SumRepo->searchdate(request()->date);
+        
+        if($datas[0]){
+            return view('searchmachineperformance', ['datas' => $datas]);
+        }
+        return redirect()->route('show_machineperformance');
+    }
+
+
     public function getmachinedatabase()
     {
         #$parmas = request()->only('id','orderno','status','code','date','time');

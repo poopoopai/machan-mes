@@ -189,7 +189,7 @@
                                     <a href="{{route('order-inbound')}}" style="color: white;">入庫單查詢</a>
                                 </li> -->
                                 <li>
-                                    <a href="{{route('show_machine')}}" style="color: white;">機台績效</a>
+                                    <a href="{{route('show_machineperformance')}}" style="color: white;">機台績效</a>
                                 </li>
                                 <li>
                                     <a href="{{route('show_dayperformance')}}" style="color: white;">機台日績效統計</a>
