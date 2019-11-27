@@ -6,7 +6,9 @@ use App\Entities\Summary;
 use App\Entities\Resource;
 use App\Entities\StandardCt;
 use App\Entities\ProcessCalendar;
+use App\Entities\CompanyCalendar;
 use App\Entities\SetupShift;
+use App\Entities\RestSetup;
 use App\Entities\DayPerformanceStatistics;
 use Carbon\Carbon;
 
@@ -15,8 +17,8 @@ class OEEperformanceRepository
     public function work($sum){
         $work = [];
         
-        $work['date'] = Carbon::today()->format("Y-m-d"); // date
-        // $work['date'] = '2019-11-08';
+        // $work['date'] = Carbon::today()->format("Y-m-d"); // date
+        $work['date'] = '2019-11-09';
         // dd($work['date']);
 
         $day = Carbon::now()->dayOfWeek; // day
@@ -42,51 +44,113 @@ class OEEperformanceRepository
         }else{
             $work['weekend'] = '休';
         }
-
-        // $work_type = ProcessCalendar::where('date', '2019-11-08')->first(); // work_name
-        $work_type = ProcessCalendar::where('date', $work['date'])->first();
-        if($work_type == false){ //如果沒有加班資料
-            $work['work_name'] = '';
-        }elseif($work_type->work_type_id == null){
-            if($work_type->status == 2){
-                $work['work_name'] = '休假';
-            }elseif($work_type->status == 3){
-                $work['work_name'] = '國定假日';
-            }
-        }else{
-            $work_name = SetupShift::where('id', $work_type->work_type_id)->first()->type;
-            $work['work_name'] = $work_name;
-        }
         
+        // $work_type = ProcessCalendar::where('date', '2019-11-08')->first(); // work_name
+        $com_work_type = CompanyCalendar::where('date', $work['date'])->first(); //看看公司行事曆有沒有加班資料
+
+        if( $com_work_type == null ){ //如果公司行事曆沒資料
+            $work_type = ProcessCalendar::where('date', $work['date'])->first(); //看看機台行事曆有沒有加班資料
+            
+            if( $work_type == false ){ //如果機台行事曆沒有加班資料 //沒加班
+                $work['work_name'] = '正常班';  
+            }elseif( $work_type->work_type_id == null ){
+                if($work_type->status == 2 ){
+                    $work['work_name'] = '休假';
+                }elseif($work_type->status == 3){
+                    $work['work_name'] = '國定假日';
+                }
+            }else{ //有加班
+                $work_name = SetupShift::where('id', $work_type->work_type_id)->first()->type;
+                if($work['weekend'] == '休'){
+                    $work['work_name'] = '假日加班';
+                }else{
+                    $work['work_name'] = $work_name;
+                }
+            }
+
+        }else{  //如果公司行事曆有資料 
+            if( $com_work_type->work_type_id == null ){
+                if($com_work_type->status == 2 ){
+                    $work['work_name'] = '休假';
+                }elseif($com_work_type->status == 3){
+                    $work['work_name'] = '國定假日';
+                }
+            }else{ //有加班
+                $work_name = SetupShift::where('id', $com_work_type->work_type_id)->first()->type;
+                if($work['weekend'] == '休'){
+                    $work['work_name'] = '假日加班';
+                }else{
+                    $work['work_name'] = $work_name;
+                }
+            }
+        }
+
 
         // standard_working_hours
-        if($work['work_name'] == ''){
+        if($work['work_name'] == '正常班'){
             $work['standard_working_hours'] = 8;
         }elseif($work['work_name'] == '休假' || $work['work_name'] == '國定假日'){
             $work['standard_working_hours'] = 0;
-        }else{
-            // $work_type_id = ProcessCalendar::where('date', '2019-11-08')->first()->work_type_id;//抓今天的加班id時段
-            $work_type_id = ProcessCalendar::where('date', $work['date'])->first()->work_type_id;
-            $work_time = SetupShift::where('id', $work_type_id)->first();
-            $work_off = strtotime($work_time->work_off) - strtotime(Carbon::today());
-            $work_on = strtotime($work_time->work_on) - strtotime(Carbon::today());
-            $work['standard_working_hours'] = date("H:i:s", ($work_off - $work_on + 28800)-8*60*60); 
-            // workoff - workon + 8hour  28800為8小時的時間戳
+        }else{  // 以下處理加班
+            if($com_work_type == null){  // 如果公司行事曆沒資料
+                $work_type_id = ProcessCalendar::where('date', $work['date'])->first()->work_type_id; //看看機台行事曆的加班資料
+                $work_time = SetupShift::where('id', $work_type_id)->first();
+                $work_off = strtotime($work_time->work_off) - strtotime(Carbon::today());
+                $work_on = strtotime($work_time->work_on) - strtotime(Carbon::today());
+
+                $rest = RestSetup::where('id', $work_time->rest_group)->first();
+                $rest_start = strtotime($rest->start) - strtotime(Carbon::today());
+                $rest_end = strtotime($rest->end) - strtotime(Carbon::today());
+                $rest_time = $rest_end - $rest_start;
+
+                $work['standard_working_hours'] = date("H:i:s", ($work_off - $work_on - $rest_time + 28800)-8*60*60); 
+                // workoff - workon - 休息時間 + 8hour      28800為8小時的時間戳(秒數)
+            }else{
+                $work_time = SetupShift::where('id', $com_work_type->work_type_id)->first();
+                $work_off = strtotime($work_time->work_off) - strtotime(Carbon::today());
+                $work_on = strtotime($work_time->work_on) - strtotime(Carbon::today());
+
+                $rest = RestSetup::where('id', $work_time->rest_group)->first();
+                $rest_start = strtotime($rest->start) - strtotime(Carbon::today());
+                $rest_end = strtotime($rest->end) - strtotime(Carbon::today());
+                $rest_time = $rest_end - $rest_start;
+
+                $work['standard_working_hours'] = date("H:i:s", ($work_off - $work_on - $rest_time + 28800)-8*60*60); 
+            }
         }
 
+
         // total_hours
-        if($work['work_name'] == ''){
-            $work['total_hours'] = '9:20:00';
+        if($work['work_name'] == '正常班'){
+            $work['standard_working_hours'] = '9:20:00';
         }elseif($work['work_name'] == '休假' || $work['work_name'] == '國定假日'){
-            $work['total_hours'] = '00:00:00';
-        }else{
-            // $work_type_id = ProcessCalendar::where('date', '2019-11-08')->first()->work_type_id;//抓今天的加班id時段
-            $work_type_id = ProcessCalendar::where('date', $work['date'])->first()->work_type_id;
-            $work_time = SetupShift::where('id', $work_type_id)->first();
-            $work_off = strtotime($work_time->work_off) - strtotime(Carbon::today());
-            $work_on = strtotime($work_time->work_on) - strtotime(Carbon::today());
-            $work['total_hours'] = date("H:i:s", ($work_off - $work_on + 28800)-8*60*60); //28800為8小時的時間戳
-            //workoff - workon + 8
+            $work['standard_working_hours'] = '00:00:00';
+        }else{  // 以下處理加班
+            if($com_work_type == null){  // 如果公司行事曆沒資料
+                $work_type_id = ProcessCalendar::where('date', $work['date'])->first()->work_type_id; //看看機台行事曆的加班資料
+                $work_time = SetupShift::where('id', $work_type_id)->first();
+                $work_off = strtotime($work_time->work_off) - strtotime(Carbon::today());
+                $work_on = strtotime($work_time->work_on) - strtotime(Carbon::today());
+
+                $rest = RestSetup::where('id', $work_time->rest_group)->first();
+                $rest_start = strtotime($rest->start) - strtotime(Carbon::today());
+                $rest_end = strtotime($rest->end) - strtotime(Carbon::today());
+                $rest_time = $rest_end - $rest_start;
+
+                $work['standard_working_hours'] = date("H:i:s", ($work_off - $work_on - $rest_time + 28800)-8*60*60); 
+                // workoff - workon - 休息時間 + 8hour      28800為8小時的時間戳(秒數)
+            }else{
+                $work_time = SetupShift::where('id', $com_work_type->work_type_id)->first();
+                $work_off = strtotime($work_time->work_off) - strtotime(Carbon::today());
+                $work_on = strtotime($work_time->work_on) - strtotime(Carbon::today());
+
+                $rest = RestSetup::where('id', $work_time->rest_group)->first();
+                $rest_start = strtotime($rest->start) - strtotime(Carbon::today());
+                $rest_end = strtotime($rest->end) - strtotime(Carbon::today());
+                $rest_time = $rest_end - $rest_start;
+
+                $work['standard_working_hours'] = date("H:i:s", ($work_off - $work_on - $rest_time + 28800)-8*60*60); 
+            }
         }
 
         return $work;
