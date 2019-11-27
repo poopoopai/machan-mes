@@ -17,8 +17,8 @@ class OEEperformanceRepository
     public function work($sum){
         $work = [];
         
-        // $work['date'] = Carbon::today()->format("Y-m-d"); // date
-        $work['date'] = '2019-11-09';
+        $work['date'] = Carbon::today()->format("Y-m-d"); // date
+        // $work['date'] = '2019-11-09';
         // dd($work['date']);
 
         $day = Carbon::now()->dayOfWeek; // day
@@ -122,9 +122,9 @@ class OEEperformanceRepository
 
         // total_hours
         if($work['work_name'] == '正常班'){
-            $work['standard_working_hours'] = '9:20:00';
+            $work['total_hours'] = '9:20:00';
         }elseif($work['work_name'] == '休假' || $work['work_name'] == '國定假日'){
-            $work['standard_working_hours'] = '00:00:00';
+            $work['total_hours'] = '00:00:00';
         }else{  // 以下處理加班
             if($com_work_type == null){  // 如果公司行事曆沒資料
                 $work_type_id = ProcessCalendar::where('date', $work['date'])->first()->work_type_id; //看看機台行事曆的加班資料
@@ -137,7 +137,7 @@ class OEEperformanceRepository
                 $rest_end = strtotime($rest->end) - strtotime(Carbon::today());
                 $rest_time = $rest_end - $rest_start;
 
-                $work['standard_working_hours'] = date("H:i:s", ($work_off - $work_on - $rest_time + 28800)-8*60*60); 
+                $work['total_hours'] = date("H:i:s", ($work_off - $work_on - $rest_time + 28800)-8*60*60); 
                 // workoff - workon - 休息時間 + 8hour      28800為8小時的時間戳(秒數)
             }else{
                 $work_time = SetupShift::where('id', $com_work_type->work_type_id)->first();
@@ -149,7 +149,7 @@ class OEEperformanceRepository
                 $rest_end = strtotime($rest->end) - strtotime(Carbon::today());
                 $rest_time = $rest_end - $rest_start;
 
-                $work['standard_working_hours'] = date("H:i:s", ($work_off - $work_on - $rest_time + 28800)-8*60*60); 
+                $work['total_hours'] = date("H:i:s", ($work_off - $work_on - $rest_time + 28800)-8*60*60); 
             }
         }
 
