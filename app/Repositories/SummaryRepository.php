@@ -36,13 +36,13 @@ class SummaryRepository
 
         $oldopen = Summary::where('open', '!=', '')->orderby('id', 'desc')->first();
         $oldturn = Summary::where('turn_off', '!=', '')->orderby('id', 'desc')->first();
-        if ($count->resources_id == 0 || $data['date'] != Carbon::today()->format("Y-m-d")) {  //如果為第一筆資料 或者 不是同一天 (就要重頭計算)
+        if ($count->resources_id == 0 || $data['date'] != $count['date']) {  //如果為第一筆資料 或者 不是同一天 (就要重頭計算)
             $count->open = 0;
             $count->turn_off = 0;   //關機
             $count->start_count = 0;
             $count->stop_count = 0;
-            $data['status_id'] == 3 ? $count->open++ : $count->open = '';
-            $data['status_id'] == 4 ? $count->turn_off++ : $count->turn_off = '';
+            $data['status_id'] == 3 ? $count->open++ : ($count->open == 0 ? $count->open : $count->open = '');
+            $data['status_id'] == 4 ? $count->turn_off++ : ($count->turn_off == 0 ? $count->turn_off : $count->turn_off = '');
             $data['status_id'] == 3 ? $count->start_count++ : $count->start_count;
             $data['status_id'] == 4 ? $count->stop_count++ : $count->stop_count;
         } else {
@@ -146,13 +146,15 @@ class SummaryRepository
                 }
             }
         }
+        $count->date = $data->date;
         return $count;
     }
 
     public function restart($data, $status)
     {
         $restart = Resource::where('date', $data['date'])->where('id', '<',$data['id'])->orderby('id', 'desc')->first();
-    
+        is_null($restart) ? $restart['status_id'] = 0 : $restart->status_id;
+
         if ($status['open'] == '') {
             $status["restart_count"] = '';
         } else {
@@ -160,7 +162,7 @@ class SummaryRepository
                 $status["restart_count"] = '';
             } else {
                 
-                if (($restart->status_id == 3) && ($restart->status_id == 3)) {
+                if (($status->status_id == 3) && ($restart['status_id'] == 3)) {
                     $status["restart_count"] = ++$status->restart_count;
                 } else {
                     $status["restart_count"] = '';
@@ -173,7 +175,7 @@ class SummaryRepository
             if ($status['turn_off'] == '1') {
                 $status['restop_count'] = '';
             } else {
-                if (($restart->status_id == 4) && ($restart->status_id == 4)) {
+                if (($status->status_id == 4) && ($restart['status_id'] == 4)) {
                     $status['restop_count'] = ++$status->restop_count;
                 } else {
                     $status['restop_count'] = '';
