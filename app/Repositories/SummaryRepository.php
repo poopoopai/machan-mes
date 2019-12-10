@@ -20,7 +20,7 @@ class SummaryRepository
 
     public function searchdate()
     {
-        return Summary::where('date' , request()->date)->paginate(100)->appends(request()->query());
+       return Summary::where('date' , request()->date)->paginate(100);
     }
 
     public function counts($data, $machine)
