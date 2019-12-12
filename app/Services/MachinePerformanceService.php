@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Repositories\MachinePerformanceRepository;
 use App\Repositories\RollerDataRepository;
 use App\Services\RollerDataService;
+use App\Entities\StandardCt;
 use Carbon\Carbon;
 
 class MachinePerformanceService
@@ -196,6 +197,7 @@ class MachinePerformanceService
     
         $machineT = 0;
         $secondT = 0;
+        $actual = 0;
 
         if ($status->machine == '捲料機1') {
 
@@ -251,7 +253,360 @@ class MachinePerformanceService
 
         $status->roll_t = $machineT;
         $status->second_t = $secondT;
-        dd($status);
+    
+        if ($status->machine == '捲料機1') {
+            if ($data['status_id'] == 9) {
+                $actual = $status->second_t;
+            } else {
+                if ($status->machine == '捲料機2') {
+                    if ($data['status_id'] == 10) {
+                        $actual = $status->roll_t;
+                    } else {
+                        $actual = 0;
+                    }
+                } else {
+                    $actual = 0;
+                }
+            }
+        }
+
+        $status->actual_processing = $actual;
+
+        return $status;
+    }
+
+    public function standard($data)
+    {
+        $status = $this->machineT($data);
+
+        $calculate262 = 0;
+        $calculate263 = 0;
+        $calculate363 = 0;
+
+        if ($status['actual_processing'] == 0) {
+            $calculate262 = 0;
+        } else {
+            if ($data->orderno == 'UAT-H-26-2') {
+                $calculate262 = $status['actual_processing'];
+            } else {
+                $calculate262 = 0;
+            }
+        }
+
+        if ($status['actual_processing'] == 0) {
+            $calculate263 = 0;
+        } else {
+            if ($data->orderno == 'UAT-H-26-3') {
+                $calculate263 = $status['actual_processing'];
+            } else {
+                $calculate263 = 0;
+            }
+        }
+
+        if ($status['actual_processing'] == 0) {
+            $calculate363 = 0;
+        } else {
+            if ($data->orderno == 'UAT-H-36-3') {
+                $calculate363 = $status['actual_processing'];
+            } else {
+                $calculate363 = 0;
+            }
+        }
+
+        $status['uat_h_26_2'] = $calculate262;
+        $status['uat_h_26_3'] = $calculate263;
+        $status['uat_h_36_3'] = $calculate363;
+
+        $standard = StandardCt::where('orderno', $data['orderno'])->first();
+
+        $standard262 = 0;
+        $standard263 = 0;
+        $standard363 = 0;
+
+        if ($status['uat_h_26_2'] == 0) { //一定要改
+            $standard262 = 0;
+        } else {
+            $standard262 = $standard->standard_ct;
+        }
+
+        if ($status['uat_h_26_3'] == 0) { //一定要改
+            $standard263 = 0;
+        } else {
+            $standard263 = $standard->standard_ct;
+        }
+
+        if ($status['uat_h_36_3'] == 0) { //一定要改
+            $standard363 = 0;
+        } else {
+            $standard363 = $standard->standard_ct;
+        }
+
+        $status['standard_uat_h_26_2'] = $standard262;
+        $status['standard_uat_h_26_3'] = $standard263;
+        $status['standard_uat_h_36_3'] = $standard363;
+
+        return $status;
+    }
+
+    public function break($data)
+    {
+        $mainprogram = $this->rollerDataService->completion($data);
+        $status = $this->standard($data);
+
+        $time = array("08:00:00", "10:10:00", "12:00:00", "13:10:00", "15:10:00", "17:20:00", "17:50:00", "19:20:00", "19:30:00");
+        $breaktime = "休息";
+
+        $mainprogram->completion_status == '異常' ? strtotime($status->time) - strtotime($time[0]) < 0 && $data['status_id'] == 4 ? $breaktime = "休息" :
+        (int) $status->time == 10 && strtotime($status->time) - strtotime($time[1]) <= 0 ? $breaktime = "休息" :
+        (int) $status->time == 12 && strtotime($status->time) - strtotime($time[2]) <= 0 ? $breaktime = "休息" :
+        (int) $status->time == 13 && strtotime($status->time) - strtotime($time[3]) <= 0 ? $breaktime = "休息" :
+        (int) $status->time == 15 && strtotime($status->time) - strtotime($time[4]) <= 0 ? $breaktime = "休息" :
+        strtotime($status->time) >= strtotime($time[5]) && strtotime($status->time) <= strtotime($time[6]) ? $breaktime = "休息" :
+        strtotime($status->time) >= strtotime($time[7]) && strtotime($status->time) <= strtotime($time[8]) ? $breaktime = "休息" : 
+        $breaktime = ""
+        : $breaktime = "";
+        /**
+         * 這邊把 $mainprogram的資料做合併
+         * 
+         */
+        $status->description = $mainprogram->description;
+        $status->type = $mainprogram->type;
+        $status->abnormal = $mainprogram->abnormal;
+        $status->message_status = $mainprogram->message_status;
+        $status->completion_status = $mainprogram->completion_status;
+        $status->break = $breaktime;
+    
+        return  $status;
+    }
+
+    public function worktime($data)
+    {
+        $status = $this->break($data);
+        $before = $this->machinePerformanceRepo->findPreviousResourcesId($data);
+        $time = date("08:00:00");
+        $worktime = '0';
+
+        if (isset($before)) {
+            if ($before->resources_id == 0 || $before->resource->date != $data['date']) {
+                (int) $status->time < (int) $time ? $worktime = '0' : $worktime = strtotime($status->time) - strtotime($time);
+            } else {
+                $before->time == "" ? $worktime = '0' : strtotime($status->time) - strtotime($before->time) < 0 ? $worktime = '0' : $worktime =  strtotime($status->time) - strtotime($before->time);
+            }
+        } else {
+            $worktime = '0';
+        }
+
+        $worktime = date("H:i:s", $worktime - 8 * 3600); //
+
+        $status->working_time = $worktime;
+        return $status;
+    }
+
+    public function manufacturing($data)
+    {
+        $status = $this->worktime($data);
+        $manufacture = '0';
+
+        if ($status->serial_number_day < 10 && $status->open <= 1 && $data->date) { //當天且開機小於等於1
+            $manufacture = '上班';
+        } else {
+            if ($data['status_id'] == 4 && $status->break == '休息') {
+                $manufacture = '休息';
+            } else {
+                if ($data['status_id'] == 3) {
+                    $manufacture = '開始生產';
+                } else {
+                    if ($data['status_id'] == 9 && $data['code'] == '500') {
+                        $manufacture = "自動完工";
+                    } else {
+                        $manufacture = $status->completion_status;
+                    }
+                }
+            }
+        }
+
+        $status->manufacturing_status = $manufacture;
+        return $status;
+    }
+
+    public function downtime($data)
+    {
+        $status = $this->manufacturing($data);
+        $worktime = strtotime($status->working_time) - strtotime(Carbon::today()); //轉秒數
+        $status->restop_count ? $status->restop_count : $status['restop_count'] == 0;
+        $beforeTime = 0;
+        $sumTime = 0;
+
+        if ($status->open == '') {
+            if ($worktime > 180 && $data['status'] == 5) {
+                $down_time = $status->working_time;
+            } else {
+                $down_time = '00:00:00';
+            }
+        } else {
+            $beforeturn =  $this->machinePerformanceRepo->findTurnOff($status);
+            $beforeopen =  $this->machinePerformanceRepo->findPreviousOpen($status);
+            
+            if ($status->open == 1) {
+                $down_time = '00:00:00';
+            } else {
+                if ((isset($beforeturn) && $beforeturn->turn_off) ? $beforeturn->turn_off : $beforeturn['turn_off'] == 0) {
+                    if ($beforeturn['turn_off'] > $status->open && $status->stop_count != '') { //判斷前面關機數量有沒有大於當前開機數量
+                        if ($beforeopen->time ?  $beforeopen->time : $beforeopen['time'] == "00:00:00") {
+                            $down_time = strtotime($status->time) - strtotime($beforeopen['time']);
+                            $down_time = date("H:i:s", $down_time - 8 * 60 * 60);
+                        }
+                    } else {
+                        if ((isset($beforeturn) && $beforeopen->time) ?  $beforeopen->time : $beforeopen['time'] == "00:00:00") {
+                            if ($beforeopen['open'] > $beforeturn->turn_off && $status->restart_count == '') {
+
+                                $restop = $this->machinePerformanceRepo->findReOpen();
+                                $nowtime = $this->machinePerformanceRepo->findTurnOffEqualStopCount($data, $beforeopen, $restop);
+
+                                foreach ($nowtime as $key => $data) {
+                                    $beforeTime += strtotime($data->time) - strtotime(Carbon::today());
+                                }
+
+                                if ($beforeTime > 0 ? $beforeTime = date("H:i:s", $beforeTime - 8 * 60 * 60) : $beforeTime == '00:00:00') {
+                                    $down_time = strtotime($status->time) - strtotime($beforeTime);
+                                    $down_time = date("H:i:s", $down_time - 8 * 60 * 60);
+                                }
+                            } else {
+                                if ($status->restart_count != '') {
+                                    $down_time = '00:00:00';
+                                } else {
+                                    $nowtime = $this->machinePerformanceRepo->findTurnOffEqualStop($data, $status);
+                                    foreach ($nowtime as $key => $data) {
+                                        $sumTime += strtotime($data->time) - strtotime(Carbon::today());
+                                    }
+
+                                    if ($sumTime > 0 ? $sumTime = date("H:i:s", $sumTime - 8 * 60 * 60) : $sumTime == '00:00:00') {
+                                        $down_time = strtotime($status->time) - strtotime($sumTime);
+                                        $down_time = date("H:i:s", $down_time - 8 * 60 * 60);
+                                    }
+                                }
+                            }
+                        } else {
+                            $down_time = '00:00:00';
+                        }
+                    }
+                } else {
+                    $down_time = '00:00:00';
+                }
+            }
+        }
+        $status->down_time = $down_time;
+
+        $breaktime = $this->breaktime($status);
+
+        $status->break_time = $breaktime;
+
+        return $status;
+    }
+
+    public function breaktime($status)
+    {
+        $breaktime = '';
+        $break =  $this->machinePerformanceRepo->findTurnOff($status);
+
+        if ($break) {
+            if ($break->break == '休息') {
+                $breaktime = $status->down_time;
+            } else {
+                if ($status->break == '休息' && $status->down_time != '') {
+                    $breaktime = $status->down_time;
+                } else {
+                    $breaktime = '00:00:00';
+                }
+            }
+        } else {
+            $breaktime = '00:00:00';
+        }
+
+        return $breaktime;
+    }
+
+    public function refue_time($data)
+    {
+        $status = $this->downtime($data);
+        $findLessId =  $this->rollerDataRepo->findLessId($data);
+        $findResourceId = $this->machinePerformanceRepo->findResourceId($status, $findLessId);
+
+        $refue_time = '';
+        $aggregate_time = '';
+        if ($status->refueling_end == '') {
+            $refue_time = '';
+        } else {
+            if ($findResourceId->count() == 0) {
+                $refue_time = "00:00:00";
+            } else {
+                $sumtime = 0;
+                foreach ($findResourceId as $sumitem) {     
+                    $sumitemSec = strtotime($sumitem->down_time) - strtotime(Carbon::today());
+                    $refue_time = $sumtime + $sumitemSec;
+                }
+            }
+        }
+        
+        if ($status->aggregate_end == '') {
+            $aggregate_time = '';
+        } else {
+            if ($findResourceId->count() == 0) {
+                $aggregate_time = "00:00:00";
+            } else {
+                $sumtime = 0;
+                foreach ($findResourceId as $sumitem) {
+                    $sumitemSec = strtotime($sumitem->down_time) - strtotime(Carbon::today());
+                    $aggregate_time = $sumtime + $sumitemSec;
+                }
+            }
+        }
+        
+        $status->refueling_time = $refue_time;
+        $status->aggregate_time = $aggregate_time;
+
+        return $status;
+    }
+
+    public function refueling($data)
+    {
+        $status = $this->refue_time($data);
+        $refueling = '00:00:00';
+        $aggregate = '00:00:00';
+
+        //累計剛好只有一筆資料 會找不到
+
+        if ($status['refueling_end'] != 0) {
+            $RefuelingStart = $this->machinePerformanceRepo->findRefuelingStart($status);
+            $RefuelingEnd = $this->machinePerformanceRepo->findRefuelingEnd($status);
+            if ($RefuelingEnd && $RefuelingStart) { //有小問題
+                $refueling = strtotime($RefuelingEnd->time) - strtotime($RefuelingStart->time);
+                $refueling = date("H:i:s", $refueling - 8 * 60 * 60);
+            } else {
+                $refueling = '00:00:00'; 
+            }
+        } else {
+            $refueling = '00:00:00';
+        }
+
+        if ($status['aggregate_end'] != 0) {
+            $AggregateStart = $this->machinePerformanceRepo->findAggregateStart($status);
+            $AggregateEnd = $this->machinePerformanceRepo->findAggregateEnd($status); 
+            if ($AggregateEnd && $AggregateStart) {
+                $aggregate = strtotime($AggregateEnd->time) - strtotime($AggregateStart->time);
+                $aggregate = date("H:i:s", $aggregate - 8 * 60 * 60);
+            } else {
+                $aggregate = '00:00:00'; 
+            }
+        } else {
+            $aggregate = '00:00:00';
+        }
+
+        $status['refueler_time'] = $refueling;
+        $status['collector_time'] = $aggregate;
+
+        $status->resources_id = $data->id;
+
         return $status;
     }
 }

@@ -5,9 +5,9 @@ namespace App\Http\Controllers\api;
 use App\Http\Controllers\Controller;
 use App\Repositories\SummaryRepository;
 use App\Repositories\ResourceRepository;
+use App\Repositories\MachinePerformanceRepository;
 use App\Repositories\MainProgramRepository;
 use App\Services\MachinePerformanceService;
-use App\Services\RollerDataService;
 
 set_time_limit(0);
 class ResourceController extends Controller
@@ -15,18 +15,18 @@ class ResourceController extends Controller
 
     protected $ResourceRepo;
     protected $MainProgramRepo;
+    protected $machinePerformanceRepo;
     protected $SummaryRepo;
-    protected $MaPerformanceRepo;
-    protected $rollerDataService;
+   
     public function __construct(ResourceRepository $ResourceRepo, MainProgramRepository $MainProgramRepo,
-                                SummaryRepository $SummaryRepo, MachinePerformanceService $machinePerformanceService
-                                , RollerDataService $rollerDataService)
+                                SummaryRepository $SummaryRepo, MachinePerformanceRepository $machinePerformanceRepo,
+                                 MachinePerformanceService $machService)
     {
         $this->ResRepo = $ResourceRepo;
         $this->MainRepo = $MainProgramRepo;
         $this->SumRepo = $SummaryRepo;
-        $this->MaPerformanceRepo = $machinePerformanceService;
-        $this->rollerDataService = $rollerDataService;
+        $this->machinePerformanceRepo = $machinePerformanceRepo;
+        $this->machService = $machService;
     }
 
     public function show()
@@ -66,47 +66,48 @@ class ResourceController extends Controller
 
             $restart = $this->SumRepo->restart($parmas, $count);//1
 
-            $machineT = $this->SumRepo->machineT($parmas, $restart, $machine);//1
+            $machineT = $this->SumRepo->machineT($parmas, $restart, $machine);//1.1
  
-            $actual = $this->SumRepo->actual($parmas, $count, $machineT);//
+            $actual = $this->SumRepo->actual($parmas, $count, $machineT);//1.1
 
-            $calculate = $this->SumRepo->calculate($parmas, $actual);
+            $calculate = $this->SumRepo->calculate($parmas, $actual);//1.2
           
-            $standard = $this->SumRepo->standard($parmas, $calculate);
+            $standard = $this->SumRepo->standard($parmas, $calculate);//1.2
            
             $message = $this->ResRepo->message($parmas, $description);//2
         
-            $completion = $this->ResRepo->completion($parmas, $message, $machine);
+            $completion = $this->ResRepo->completion($parmas, $message, $machine);//2
 
             $description->machine = $machine;// 1
             $description->message_status = $message;//2
-            $description->completion_status = $completion;
+            $description->completion_status = $completion;//2
 
-            $break = $this->SumRepo->break($parmas, $standard, $description);
+            $break = $this->SumRepo->break($parmas, $standard, $description);//2 1 這裡合併
         
-            $worktime = $this->SumRepo->worktime($parmas, $break);
+            $worktime = $this->SumRepo->worktime($parmas, $break);//1
       
-            $manufacturing = $this->SumRepo->manufacturing($parmas, $worktime, $description);//
+            $manufacturing = $this->SumRepo->manufacturing($parmas, $worktime, $description);//1
           
-            $downtime = $this->SumRepo->downtime($parmas, $manufacturing);
+            $downtime = $this->SumRepo->downtime($parmas, $manufacturing);//1
        
-            $breaktime = $this->SumRepo->breaktime($downtime);
+            $breaktime = $this->SumRepo->breaktime($downtime);//1
 
-            $refue_time = $this->SumRepo->refue_time($parmas, $breaktime);
+            $refue_time = $this->SumRepo->refue_time($parmas, $breaktime);//1
            
-            $refueling = $this->SumRepo->refueling($refue_time);
+            $refueling = $this->SumRepo->refueling($refue_time);//1
 
-            $sum = $description->toArray(); //把collection 轉陣列
+            $sum = $description->toArray(); //把collection 轉陣列 //2
 
-            $refue_time->resources_id = $parmas->id;
+            $refue_time->resources_id = $parmas->id;//1
 
-            $sum1 = $refueling->toArray();
+            $sum1 = $refueling->toArray();//1
 
-            $status2 = array_merge($sum1, $sum);
+            $status2 = array_merge($sum1, $sum);//1
+            
+            $show = $this->SumRepo->create($status2);// 
 
-            $show = $this->SumRepo->create($status2);
-
-            $check = $this->SumRepo->check($parmas);
+            $check = $this->SumRepo->check($parmas);//
+          
             if ($check) {
                 $this->ResRepo->updateflag($parmas);
             } else {
@@ -121,14 +122,19 @@ class ResourceController extends Controller
     }
 
     public function fixmachinedatabase()
-    {
-        $parme = $this->ResRepo->data();
+    { 
         
+        $parme = $this->ResRepo->data();
+       
         foreach ($parme as $parmas) {
+            
+            $status = $this->machService->refueling($parmas);
+            
+            $this->machinePerformanceRepo->create($status->toArray());
+            
+            // $this->rollerDataService->updateFlag($parmas);
 
-            $this->MaPerformanceRepo->machineT($parmas);
-
-            $this->rollerDataService->message($parmas);
+            
         }
     }
 }

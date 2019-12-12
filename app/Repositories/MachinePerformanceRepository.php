@@ -79,5 +79,74 @@
             return Summary::where('machine_completion_day', $status['machine_completion_day'] - 1)->where('resources_id', '>', 0)->first();
         }
 
+        public function findPreviousResourcesId($data)
+        {
+            return Summary::with('resource')->where('resources_id', $data['id'] - 1)->first();
+        }
+
+        public function findTurnOff($status)
+        {
+            return Summary::where('turn_off', $status->open)->first();
+        }
+
+        public function findPreviousOpen($status)
+        {
+            return Summary::where('open', $status->open - 1)->first(); //前一筆開機次數 因為沒有0
+        }
+
+        public function findReOpen()
+        {
+            return Summary::where('restop_count', '!=', 0)->desc('time', 'desc')->first();
+        }
+
+        function findTurnOffEqualStopCount($data, $beforeopen, $restop)
+        {
+            return Summary::where('turn_off', $beforeopen['stop_count'] + $restop)->whereHas(
+                'resource',
+                function ($query) use ($data) {
+                    $query->where('date', $data['date']);
+                }
+            )->get();
+        }
+
+        public function findTurnOffEqualStop($data, $status)
+        {
+            return Summary::where('turn_off', $status['stop_count'])->whereHas(
+                'resource',
+                function ($query) use ($data) {
+                    $query->where('date', $data['date']);
+                }
+            )->get();
+        }
+
+        public function findResourceId($status, $findLessId)
+        {
+            return Summary::whereIn('resources_id', $findLessId)->where('refueling_start', $status->refueling_end)->get();
+        }
+
+        public function findRefuelingEnd($status)
+        {
+            return Summary::where('refueling_end', $status['refueling_end'])->first();
+        }
+
+        public function findRefuelingStart($status)
+        {
+            return Summary::where('refueling_start', $status['refueling_end'])->first();
+        }
+
+        public function findAggregateEnd($status)
+        {
+            return Summary::where('aggregate_end', $status['aggregate_end'])->first(); //累計剛好只有一筆資料
+        }
+
+        public function findAggregateStart($status)
+        {
+            return Summary::where('aggregate_start', $status['aggregate_end'])->first();
+        }
+
+        public function create($data)
+        {
+            return Summary::create($data);
+        }
     }
 ?>

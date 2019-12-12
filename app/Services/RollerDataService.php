@@ -1,5 +1,7 @@
 <?php
+
 namespace App\Services;
+
 use App\Entities\ErrorCode;
 use App\Entities\StandardCt;
 use App\Repositories\RollerDataRepository;
@@ -12,8 +14,9 @@ class RollerDataService
     protected $rollerDataRepo;
     protected $mainProgramRepo;
     
-    public function __construct(MachinePerformanceRepository $machinePerformanceRepository, RollerDataRepository $rollerDataRepository
-                                , MainProgramRepository $mainProgramRepository)
+    
+    public function __construct(MachinePerformanceRepository $machinePerformanceRepository, RollerDataRepository $rollerDataRepository,
+                                MainProgramRepository $mainProgramRepository)
     {
         $this->machinePerformanceRepo = $machinePerformanceRepository;
         $this->rollerDataRepo = $rollerDataRepository;
@@ -91,6 +94,57 @@ class RollerDataService
         return  $rollerAbnormal;
     }
 
+    public function completion($data)
+    {
+        $status = $this->message($data);
+        $machine = $this->machine($data);
+        $Statusid = $this->rollerDataRepo->findId($data);
+        
+        $completion = 0;
+
+        if ($Statusid) {
+            if ($machine == '捲料機1') {
+                if ($data['status_id'] == 9 || $data['status_id'] == 10 || $data['status_id'] == 15 || $data['status_id'] == 16) {
+
+                    if ($data['status_id'] == 9) {
+                        $Statusid->status_id - $data['status_id'] == 1 ? $completion = '正常生產' : $completion = '不正常';
+                    } else {
+                        if ($data['status_id'] == 10) {
+                            $Statusid->status_id - $data['status_id'] == 5 ? $completion = '正常生產' : $completion = '不正常';
+                        } else {
+                            if ($data['status_id'] == 16) {
+                                $Statusid->status_id - $data['status_id'] == 6 ? $completion = '正常生產' : $completion = '不正常';
+                            } else {
+                                if ($data['status_id'] == 15) {
+                                    $Statusid->status_id - $data['status_id'] == 6 ? $completion = '正常生產' : $completion = '不正常';
+                                } else {
+                                    if ($data['status_id'] == 3 || $data['status_id'] == 4 || $data['status_id'] == 20 || $data['status_id'] == 21) {
+                                        $completion = $status->message_status;
+                                    } else {
+                                        $completion = '異常';
+                                    }
+                                }
+                            }
+                        }
+                    }
+                } else {
+                    $completion = '異常';
+                }
+            } else {
+                if ($data['status_id'] == 10) {
+                    $completion = '正常生產';
+                } else {
+                    $completion = '異常';
+                }
+            }
+        } else { // 最後一筆
+            $completion = '異常';
+        }
+
+        $status->completion_status = $completion;
+
+        return $status;
+    }
 }
         
     
