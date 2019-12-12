@@ -106,10 +106,10 @@ class ResourceController extends Controller
             
             $show = $this->SumRepo->create($status2);// 
 
-            $check = $this->SumRepo->check($parmas);//
+            $check = $this->SumRepo->check($parmas);//3
           
             if ($check) {
-                $this->ResRepo->updateflag($parmas);
+                $this->ResRepo->updateflag($parmas);//3
             } else {
                 dd($check);
             }
@@ -123,7 +123,6 @@ class ResourceController extends Controller
 
     public function fixmachinedatabase()
     { 
-        
         $parme = $this->ResRepo->data();
        
         foreach ($parme as $parmas) {
@@ -132,9 +131,10 @@ class ResourceController extends Controller
             
             $this->machinePerformanceRepo->create($status->toArray());
             
-            // $this->rollerDataService->updateFlag($parmas);
+            $this->machService->updateflag($parmas);
 
-            
+            $updat = $this->machService->update($status);   
         }
+        return response()->json(['status' => $updat]);
     }
 }

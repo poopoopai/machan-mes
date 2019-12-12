@@ -148,5 +148,61 @@
         {
             return Summary::create($data);
         }
+
+        public function check($data)
+        {
+            $check = Summary::where('resources_id', $data->id)->count();
+
+            if ($check != 0) {
+                return True;
+            } else {
+                return False;
+            }
+        }
+
+        public function findPreviousResourceId($status)
+        {
+            return Summary::where('resources_id', $status->resources_id - 1)->first();
+        }
+
+        public function findMachineCompletionDay($status)
+        {
+            return Summary::where('machine_completion_day', $status->machine_completion_day)->where('resources_id', '>', 0)->first(); //找前面一筆相同的 顯示完工時間
+        }
+
+        public function findPreviousInputDay($status)
+        {
+            return Summary::where('machine_inputs_day', $status->machine_completion_day - 1)->where('resources_id', '>', 0)->first(); //Q4-1 = R
+        }
+
+        public function findPreviousTwoInputDay($status)
+        {
+            return Summary::where('machine_inputs_day', $status->machine_completion_day - 2)->where('resources_id', '>', 0)->first(); //Q4-2 = R
+        }
+
+        public function findPreviousInputDaySubtractSum($status, $sum)
+        {
+            return Summary::where('machine_inputs_day', $status->machine_completion_day - $sum - 1)->where('resources_id', '>', 0)->first(); //Q4-(Q-R)-1 = R
+        }
+
+        public function findPreviousTwoInputDaySubtractSum($status, $sum)
+        {
+            return Summary::where('machine_inputs_day', $status->machine_completion_day - $sum - 2)->where('resources_id', '>', 0)->first(); //Q4-(Q-R)-2 = R
+        }
+
+        public function findPreviousThreeInputDay($status)
+        {
+            return Summary::where('machine_inputs_day', $status->machine_completion_day - 3)->where('resources_id', '>', 0)->first(); //Q4-3 = R
+        }
+
+        public function findPreviousThreeInputDaySubtractSum($status, $sum)
+        {
+            return Summary::where('machine_inputs_day', $status->machine_completion_day - $sum - 3)->where('resources_id', '>', 0)->first(); //Q4-(Q-R)-3 = R
+        }
+
+        public function checkResourceId($newdata)
+        {
+            return Summary::where('resources_id', $newdata['resources_id'])->first();
+        }
     }
 ?>

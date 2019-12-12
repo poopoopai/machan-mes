@@ -609,4 +609,121 @@ class MachinePerformanceService
 
         return $status;
     }
+
+    public function updateflag($data)
+    {
+        $check = $this->machinePerformanceRepo->check($data);
+       
+        if ($check) {
+            $this->rollerDataRepo->updateflag($data);
+        } else {
+            dd($check);
+        }
+    }
+
+    public function total($status)
+    {
+        $beforeID = $this->machinePerformanceRepo->findPreviousResourceId($status);
+        $completion = $this->machinePerformanceRepo->findMachineCompletionDay($status);
+        $sensro  = $this->machinePerformanceRepo->findPreviousInputDay($status);
+        $sensro2 = $this->machinePerformanceRepo->findPreviousTwoInputDay($status);
+
+        $sum = $status->machine_completion_day - $status->machine_inputs_day; //Q-R
+        $sensros  = $this->machinePerformanceRepo->findPreviousInputDaySubtractSum($status, $sum);
+        $sensros2 = $this->machinePerformanceRepo->findPreviousTwoInputDaySubtractSum($status, $sum);
+
+        is_null($beforeID) ? $beforeID['machine_completion_day'] = 0 : $beforeID->machine_completion_day;
+        if ($status->machine_completion_day > $beforeID['machine_completion_day']  && $status->machine_completion_day != 1) {
+
+            if ($status->machine_inputs_day - $status->machine_completion_day > 0) {
+
+                if (isset($sensro)) {
+                    if (strtotime($completion->processing_completion_time) - strtotime($sensro->processing_start_time) > 18) {
+                        $total = strtotime($completion->processing_completion_time) - strtotime($sensro->processing_start_time);
+                    } else {
+                        if (isset($sensro2)) {
+                            $total = strtotime($completion->processing_completion_time) - strtotime($sensro2->processing_start_time);
+                        } else {
+                            $total = strtotime($completion->processing_completion_time) - strtotime(Carbon::today());
+                        }
+                    }
+                } else {
+                    if (strtotime($completion->processing_completion_time) > 18) {
+                        $total = strtotime($completion->processing_completion_time);
+                    } else {
+                        if (isset($sensro2)) {
+                            $total = strtotime($completion->processing_completion_time) - strtotime($sensro2->processing_start_time);
+                        } else {
+                            $total = strtotime($completion->processing_completion_time) - strtotime(Carbon::today());
+                        }
+                    }
+                }
+            } else {
+                if (isset($sensros)) { //$sensros存在
+                    if (strtotime($completion->processing_completion_time) - strtotime($sensros->processing_start_time) > 18) {
+                        $total = strtotime($completion->processing_completion_time) - strtotime($sensros->processing_start_time);
+                    } else {
+                        if (isset($sensros2)) {
+                            $total = strtotime($completion->processing_completion_time) - strtotime($sensros2->processing_start_time);
+                        } else {
+                            $total = strtotime($completion->processing_completion_time) - strtotime(Carbon::today());
+                        }
+                    }
+                } else {  //$sensros不存在
+                    if (strtotime($completion->processing_completion_time > 18)) {
+                        $total = strtotime($completion->processing_completion_time);
+                    } else {
+                        if (isset($sensros2)) {
+                            $total = strtotime($completion->processing_completion_time) - strtotime($sensros2->processing_start_time);
+                        } else {
+                            $total = strtotime($completion->processing_completion_time) - strtotime(Carbon::today());
+                        }
+                    }
+                }
+            }
+        } else {
+            $total = 0;
+        }
+        $sensro3  = $this->machinePerformanceRepo->findPreviousThreeInputDay($status);
+        $sensros3 = $this->machinePerformanceRepo->findPreviousThreeInputDaySubtractSum($status, $sum);
+
+        if ($status->machine_completion_day > $beforeID['machine_completion_day'] && $status->processing_completion_time != "") {
+
+            if ($total > 18 && $total < 28) {
+                $CTtime = $total;
+            } else {
+
+                if ($status->machine_inputs_day > $status->machine_completion_day) {
+                    if (isset($sensro3)) { //前面沒資料就不用相減了
+                        $CTtime = strtotime($completion->processing_completion_time) - strtotime($sensro3->processing_start_time);
+                    } else {
+                        $CTtime = strtotime($completion->processing_completion_time) - strtotime(Carbon::today());
+                    }
+                } else {
+                    if (isset($sensros3)) { //前面沒資料就不用相減了
+                        $CTtime = strtotime($completion->processing_completion_time) - strtotime($sensros3->processing_start_time);
+                    } else {
+                        $CTtime = strtotime($completion->processing_completion_time) - strtotime(Carbon::today());
+                    }
+                }
+            }
+        } else {
+            $CTtime = 0;
+        }
+        $status->total_processing_time = $total;
+        $status->ct_processing_time = $CTtime;
+        return $status;
+    }
+
+    public function update($status)
+    {
+        $data = $this->total($status);
+        $newdata = $data->toArray();
+        unset($newdata['id']);
+        $checkResourceId =  $this->machinePerformanceRepo->checkResourceId($newdata);
+
+        if ($checkResourceId) {
+            return $checkResourceId->update($newdata);
+        }
+    }
 }
