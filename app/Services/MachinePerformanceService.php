@@ -25,43 +25,63 @@ class MachinePerformanceService
     public function counts($data)
     {
         $count = $this->machinePerformanceRepo->getBeforeData();
-        
+        $machine = $this->rollerDataService->machine($data);
         $count->id = $count->id + 1;
-        
+        $count->serial_number++;
+     
         if ($count->resources_id == 0 || $data['date'] != $count['date']) {  //如果為第一筆資料 或者 不是同一天 (就要重頭計算)
             $count->open = 0;
-            $count->turn_off = 0;   //關機
+            $count->turn_off = 0;   
             $count->start_count = 0;
             $count->stop_count = 0;
+            $count->refueling_start = 0;
+            $count->refueling_end = 0;
+            $count->aggregate_start = 0;
+            $count->aggregate_end = 0;
+            $count->machine_completion_day = 0;
+            $count->machine_inputs_day = 0;    
+            
             $data['status_id'] == 3 ? $count->open++ : ($count->open == 0 ? $count->open : $count->open = '');
             $data['status_id'] == 4 ? $count->turn_off++ : ($count->turn_off == 0 ? $count->turn_off : $count->turn_off = '');
+            $data['status_id'] == 20 ? $count->refueling_start++ : ($count->refueling_start == 0 ? $count->refueling_start : $count->refueling_start = '');
+            $data['status_id'] == 21 ? $count->refueling_end++ : ($count->refueling_end == 0 ? $count->refueling_end : $count->refueling_end = '');
+            $data['status_id'] == 22 ? $count->aggregate_start++ : ($count->aggregate_start == 0 ? $count->aggregate_start : $count->aggregate_start = '');
+            $data['status_id'] == 23 ? $count->aggregate_end++ : ($count->aggregate_end == 0 ? $count->aggregate_end : $count->aggregate_end = '');
             $data['status_id'] == 3 ? $count->start_count++ : $count->start_count;
             $data['status_id'] == 4 ? $count->stop_count++ : $count->stop_count;
         } else {
-            $oldopen = $this->machinePerformanceRepo->getLastOpen();
-            $oldturn = $this->machinePerformanceRepo->getLastTurn();
-            $data['status_id'] == 3 ? $count->open = $oldopen->open + 1 : $count->open = '';
-            $data['status_id'] == 4 ? $count->turn_off = $oldturn->turn_off + 1 : $count->turn_off = '';
+            $lastopen = $this->machinePerformanceRepo->getLastOpen();
+            $lastturn = $this->machinePerformanceRepo->getLastTurn();
+            $lastrefuelingstart = $this->machinePerformanceRepo->getLastRefuelingStart();
+            $lastrefuelingend = $this->machinePerformanceRepo->getLastRefuelingEnd();
+            $lastaggregatestart = $this->machinePerformanceRepo->getLastAggregateStart();
+            $lastaggregateend = $this->machinePerformanceRepo->getLastAggregateEnd();
+
+            $data['status_id'] == 3 ? $count->open = $lastopen->open + 1 : $count->open = '';
+            $data['status_id'] == 4 ? $count->turn_off = $lastturn->turn_off + 1 : $count->turn_off = '';
+            $data['status_id'] == 20 ? $count->refueling_start = $lastrefuelingstart->refueling_start + 1 : $count->refueling_start = '';
+            $data['status_id'] == 21 ? $count->refueling_end = $lastrefuelingend->refueling_end + 1 : $count->refueling_end = '';
+            $data['status_id'] == 22 ? $count->aggregate_start = $lastaggregatestart->aggregate_start + 1 : $count->aggregate_start = '';
+            $data['status_id'] == 23 ? $count->aggregate_end = $lastaggregateend->aggregate_end + 1: $count->aggregate_end = '';
             $data['status_id'] == 3 ? $count->start_count++ : $count->start_count;
             $data['status_id'] == 4 ? $count->stop_count++ : $count->stop_count;
         }
-
-        $data['status_id'] == 15 ? $count->sensro_inputs++ : $count->sensro_inputs;     //Sensor投入累計數
-     
-        $machine = $this->rollerDataService->machine($data);
-      
+        
+        $data['status_id'] == 15 ? $count->sensro_inputs++ : $count->sensro_inputs;
+        $data['status_id'] == 10 ? $count->machine_inputs_day++ : $count->machine_inputs_day;
+        
         if ($machine == '捲料機1') {
             $data['status_id'] == 9 ? $count->second_completion++ : $count->second_completion;
+            $data['status_id'] == 9 ? $count->machine_completion_day++ : $count->machine_completion_day;
         } else {
             $data['status_id'] == 10 ? $count->second_completion++ : $count->second_completion;
+            $data['status_id'] == 10 ? $count->machine_completion_day++ : $count->machine_completion_day;
         }
- 
-        $count->serial_number++;    //資料數列順序
-
-        if ($count->resources_id == 0 || $data['orderno'] != $count->resource->orderno) { //料號不相同 或者是 第一筆資料
+      
+        if ($count->resources_id == 0 || $data['orderno'] != $count->resource->orderno) {
             $count->machine_completion = 0;
             $count->machine_inputs = 0;
-            if ($machine == '捲料機1') {   //相同料號機台累計完工數machine_completion 相同料號機台累計投入數machine_inputs
+            if ($machine == '捲料機1') {   
                 $data['status_id'] == 9 ? $count->machine_completion++ : $count->machine_completion;
             } else {
                 $data['status_id'] == 10 ? $count->machine_completion++ : $count->machine_completion;
@@ -71,7 +91,7 @@ class MachinePerformanceService
 
             $data['status_id'] == 10 ? $count->machine_inputs++ : $count->machine_inputs;
 
-            if ($machine == '捲料機1') {   //相同料號機台累計完工數machine_completion  相同料號機台累計投入數machine_inputs
+            if ($machine == '捲料機1') {   
                 $data['status_id'] == 9 ? $count->machine_completion++ : $count->machine_completion;
                 $data['status_id'] == 9 ? $count->processing_completion_time = $data['time'] : $count->processing_completion_time = "";
             } else {
@@ -99,48 +119,11 @@ class MachinePerformanceService
                 }
             }
         }
-
-        if ($count->resources_id == 0 || $data['date'] != $count->resource->date) { //累積當天數量
-            $count->machine_completion_day = 0;     //同一天累計完工數
-            $count->machine_inputs_day = 0;         //同一天累計投入數
-            if ($machine == '捲料機1') {
-                $data['status_id'] == 9 ? $count->machine_completion_day++ : $count->machine_completion_day;
-            } else {
-                $data['status_id'] == 10 ? $count->machine_completion_day++ : $count->machine_completion_day;
-            }
-            $data['status_id'] == 10 ? $count->machine_inputs_day++ : $count->machine_inputs_day;
+    
+        if (($data['orderno'] == '' && $data['date'] != $count['date']) || $count->resources_id == 0) {
+            $count->serial_number_day = 1;
         } else {
-            if ($machine == '捲料機1') {
-                $data['status_id'] == 9 ? $count->machine_completion_day++ : $count->machine_completion_day;
-            } else {
-                $data['status_id'] == 10 ? $count->machine_completion_day++ : $count->machine_completion_day;
-            }
-            $data['status_id'] == 10 ? $count->machine_inputs_day++ : $count->machine_inputs_day;
-            $data['status_id'] == 20 ? $count->refueling_start++ : $count->refueling_start = 0;
-            $data['status_id'] == 21 ? $count->refueling_end++ : $count->refueling_end = 0;
-            $data['status_id'] == 22 ? $count->aggregate_start++ : $count->aggregate_start = 0;
-            $data['status_id'] == 23 ? $count->aggregate_end++ : $count->aggregate_end = 0;
-        }
-
-        if ($count->resource) {
-            if (($data['orderno'] == '' && $data['date'] != $count->resource->date) || $count->resources_id == 0) { //最初$count->resources_id
-                $count->serial_number_day = 1;
-            } else {
-                if ($data['orderno'] == '' && $data['date'] == $count->resource->date) {
-                    if ($count) {
-
-                        $count->serial_number_day++;
-                    } else {
-                        $count->serial_number_day = 1; //最開始的那筆沒有資料
-                    }
-                } else {  //料號不為空同日期，前面加總料號數量+1 
-                    if ($count) {
-                        $count->serial_number_day++;
-                    } else {
-                        $count->serial_number_day = 1;
-                    }
-                }
-            }
+            $count->serial_number_day++;
         }
         
         $count->date = $data->date;

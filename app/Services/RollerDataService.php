@@ -13,7 +13,6 @@ class RollerDataService
     protected $rollerDataRepo;
     protected $mainProgramRepo;
     
-    
     public function __construct(MachinePerformanceRepository $machinePerformanceRepository, RollerDataRepository $rollerDataRepository,
                                 MainProgramRepository $mainProgramRepository)
     {
@@ -50,9 +49,9 @@ class RollerDataService
         $findPreviousId = $this->rollerDataRepo->findPreviousId($data);
         $rollerStatus = $this->mainProgramRepo->description($data);
         $summary = '0';
-
+       
         if ($data['status_id'] == '9' || $data['status_id'] == '10' || $data['status_id'] == '3' || $data['status_id'] == '15' || $data['status_id'] == '16') {
-
+            
             if ($data['orderno'] != $findPreviousId['orderno'] && $findPreviousId['id'] != null) {
                 $summary = "換線";
             } else {
@@ -61,21 +60,18 @@ class RollerDataService
         } elseif ($data['code'] == 0) {
             $summary = $rollerStatus->description;
         } elseif ($data['code'] != 0) {
-            $summary = ErrorCode::where('machine_type', $rollerStatus->type)->where('code', $data['code'])->first();
-            return $summary->message;
+            $summary = ErrorCode::where('machine_type', $rollerStatus->type)->where('code', $data['code'])->pluck('message')->first();
         } else {
             $summary = '0';
         }
-
         $rollerStatus->abnormal = $summary;
-       
+        
         return $rollerStatus;
     }
 
     public function message($data)
     {
         $rollerAbnormal = $this->abnormal($data);
-        
         $message = '0';
 
         $rollerAbnormal->abnormal == '0' ? $message = $rollerAbnormal->description : $message = $rollerAbnormal->abnormal;
@@ -145,6 +141,3 @@ class RollerDataService
         return $status;
     }
 }
-        
-    
-?>

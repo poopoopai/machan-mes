@@ -32,6 +32,26 @@
             return Summary::where('turn_off', '!=', '')->orderby('id', 'desc')->first();
         }
 
+        public function getLastRefuelingStart()
+        {
+            return Summary::where('refueling_start', '!=', '')->orderby('id', 'desc')->first();
+        }
+
+        public function getLastRefuelingEnd()
+        {
+            return Summary::where('refueling_end', '!=', '')->orderby('id', 'desc')->first();
+        }
+
+        public function getLastAggregateStart()
+        {
+            return Summary::where('aggregate_start', '!=', '')->orderby('id', 'desc')->first();
+        }
+
+        public function getLastAggregateEnd()
+        {
+            return Summary::where('aggregate_end', '!=', '')->orderby('id', 'desc')->first();
+        }
+
         public function getPreviousCompletion($count)
         {
             return Summary::where('machine_completion_day', $count->machine_completion_day - 1)->first();
