@@ -13,7 +13,6 @@
        
         public function getBeforeData()
         {
-            
             $count = Summary::with('resource')->whereRaw('id = (select max(`id`) from summaries)')->first(); //前一筆資料
 
             if ($count == null) {
@@ -203,6 +202,15 @@
         public function checkResourceId($newdata)
         {
             return Summary::where('resources_id', $newdata['resources_id'])->first();
+        }
+        public function index()
+        {
+            return Summary::paginate(100);
+        }
+
+        public function searchdate()
+        {
+            return Summary::where('date' , request()->date)->paginate(100);
         }
     }
 ?>

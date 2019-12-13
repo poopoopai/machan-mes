@@ -3,43 +3,41 @@
 namespace App\Http\Controllers\api;
 
 use App\Http\Controllers\Controller;
-use App\Repositories\SummaryRepository;
-use App\Repositories\ResourceRepository;
 use App\Repositories\MachinePerformanceRepository;
-use App\Repositories\MainProgramRepository;
+use App\Repositories\RollerDataRepository;
 use App\Services\MachinePerformanceService;
-
+// use App\Repositories\SummaryRepository;
+// use App\Repositories\ResourceRepository;
+// use App\Repositories\MainProgramRepository;
 set_time_limit(0);
 class ResourceController extends Controller
 {
-
-    protected $ResourceRepo;
-    protected $MainProgramRepo;
+    // protected $ResourceRepo;
+    // protected $MainProgramRepo;
     protected $machinePerformanceRepo;
-    protected $SummaryRepo;
+    // protected $SummaryRepo;
+    protected $rollerDataRepo;
    
-    public function __construct(ResourceRepository $ResourceRepo, MainProgramRepository $MainProgramRepo,
-                                SummaryRepository $SummaryRepo, MachinePerformanceRepository $machinePerformanceRepo,
-                                 MachinePerformanceService $machService)
+    public function __construct(MachinePerformanceRepository $machinePerformanceRepo, MachinePerformanceService $machService,
+                                RollerDataRepository $rollerDataRepo)
     {
-        $this->ResRepo = $ResourceRepo;
-        $this->MainRepo = $MainProgramRepo;
-        $this->SumRepo = $SummaryRepo;
+        // $this->ResRepo = $ResourceRepo;
+        // $this->MainRepo = $MainProgramRepo;
+        // $this->SumRepo = $SummaryRepo;
         $this->machinePerformanceRepo = $machinePerformanceRepo;
         $this->machService = $machService;
+        $this->rollerDataRepo = $rollerDataRepo;
     }
 
     public function show()
     {
-        $data = $this->SumRepo->index();
+        $data = $this->machinePerformanceRepo->index();
         
         return view('machineperformance', ['datas' => $data]);
     }
-
-
     public function searchdate()
     {
-        $datas = $this->SumRepo->searchdate(request()->date);
+        $datas = $this->machinePerformanceRepo->searchdate(request()->date);
         
         if($datas[0]){
             return view('searchmachineperformance', ['datas' => $datas]);
@@ -47,6 +45,22 @@ class ResourceController extends Controller
         return redirect()->route('show_machineperformance');
     }
 
+    public function fixmachinedatabase()
+    { 
+        $parme = $this->rollerDataRepo->data();
+
+        foreach ($parme as $parmas) {
+            
+            $status = $this->machService->refueling($parmas);
+            
+            $this->machinePerformanceRepo->create($status->toArray());
+            
+            $this->machService->updateflag($parmas);
+
+            $updat = $this->machService->update($status);   
+        }
+        return response()->json(['status' => $updat]);
+    }
 
     public function getmachinedatabase()
     {
@@ -117,23 +131,6 @@ class ResourceController extends Controller
             $total = $this->SumRepo->total($show);
 
             $updat = $this->SumRepo->update($total->toArray());
-        }
-        return response()->json(['status' => $updat]);
-    }
-
-    public function fixmachinedatabase()
-    { 
-        $parme = $this->ResRepo->data();
-       
-        foreach ($parme as $parmas) {
-            
-            $status = $this->machService->refueling($parmas);
-            
-            $this->machinePerformanceRepo->create($status->toArray());
-            
-            $this->machService->updateflag($parmas);
-
-            $updat = $this->machService->update($status);   
         }
         return response()->json(['status' => $updat]);
     }

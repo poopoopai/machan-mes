@@ -366,7 +366,7 @@ class MachinePerformanceService
         $breaktime = ""
         : $breaktime = "";
         /**
-         * 這邊把 $mainprogram的資料做合併
+         * 這邊把變數$mainprogram的資料做合併
          * 
          */
         $status->description = $mainprogram->description;
@@ -396,7 +396,7 @@ class MachinePerformanceService
             $worktime = '0';
         }
 
-        $worktime = date("H:i:s", $worktime - 8 * 3600); //
+        $worktime = date("H:i:s", $worktime - 8 * 3600); 
 
         $status->working_time = $worktime;
         return $status;

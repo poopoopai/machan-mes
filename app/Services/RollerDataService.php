@@ -3,7 +3,6 @@
 namespace App\Services;
 
 use App\Entities\ErrorCode;
-use App\Entities\StandardCt;
 use App\Repositories\RollerDataRepository;
 use App\Repositories\MainProgramRepository;
 use App\Repositories\MachinePerformanceRepository;
@@ -31,11 +30,11 @@ class RollerDataService
             $findFirstOpen = $this->machinePerformanceRepo->findFirstOpen();
             if ($findFirstOpen) {
                 $findFirstOpenId = $this->rollerDataRepo->findFirstOpenId($findFirstOpen);
-                $order = StandardCt::where('orderno', $findFirstOpenId->orderno)->with('MachineDefinition')->first();
+                $order = $this->mainProgramRepo->findOrderno($findFirstOpenId);
                 $machine = $order->MachineDefinition->machine_name;
             }
         } else {
-            $order = StandardCt::where('orderno', $data->orderno)->with('MachineDefinition')->first();
+            $order = $this->mainProgramRepo->findOrderno($data);
             if ($order) {
                 $machine = $order->MachineDefinition->machine_name;
             } else {
