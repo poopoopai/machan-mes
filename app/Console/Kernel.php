@@ -26,7 +26,7 @@ class Kernel extends ConsoleKernel
     {
         $schedule->command('raw-data:get')->hourly();
        
-        $schedule->call('App\Http\Controllers\api\ResourceController@getmachinedatabase')->hourly();
+        $schedule->call('App\Http\Controllers\api\ResourceController@fixmachinedatabase')->hourly();
     }
 
     /**

@@ -27,6 +27,11 @@
         {
             return Resource::where('id', $data->id)->update(['flag' => 1]);
         }
+
+        public function data()
+        {
+            return Resource::where('flag', 0)->orderby('time')->get();
+        }
     }
 
 ?>

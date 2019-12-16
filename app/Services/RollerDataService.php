@@ -3,7 +3,6 @@
 namespace App\Services;
 
 use App\Entities\ErrorCode;
-use App\Entities\StandardCt;
 use App\Repositories\RollerDataRepository;
 use App\Repositories\MainProgramRepository;
 use App\Repositories\MachinePerformanceRepository;
@@ -13,7 +12,6 @@ class RollerDataService
     protected $machinePerformanceRepo;
     protected $rollerDataRepo;
     protected $mainProgramRepo;
-    
     
     public function __construct(MachinePerformanceRepository $machinePerformanceRepository, RollerDataRepository $rollerDataRepository,
                                 MainProgramRepository $mainProgramRepository)
@@ -31,11 +29,11 @@ class RollerDataService
             $findFirstOpen = $this->machinePerformanceRepo->findFirstOpen();
             if ($findFirstOpen) {
                 $findFirstOpenId = $this->rollerDataRepo->findFirstOpenId($findFirstOpen);
-                $order = StandardCt::where('orderno', $findFirstOpenId->orderno)->with('MachineDefinition')->first();
+                $order = $this->mainProgramRepo->findOrderno($findFirstOpenId);
                 $machine = $order->MachineDefinition->machine_name;
             }
         } else {
-            $order = StandardCt::where('orderno', $data->orderno)->with('MachineDefinition')->first();
+            $order = $this->mainProgramRepo->findOrderno($data);
             if ($order) {
                 $machine = $order->MachineDefinition->machine_name;
             } else {
@@ -51,9 +49,9 @@ class RollerDataService
         $findPreviousId = $this->rollerDataRepo->findPreviousId($data);
         $rollerStatus = $this->mainProgramRepo->description($data);
         $summary = '0';
-
+       
         if ($data['status_id'] == '9' || $data['status_id'] == '10' || $data['status_id'] == '3' || $data['status_id'] == '15' || $data['status_id'] == '16') {
-
+            
             if ($data['orderno'] != $findPreviousId['orderno'] && $findPreviousId['id'] != null) {
                 $summary = "換線";
             } else {
@@ -62,21 +60,18 @@ class RollerDataService
         } elseif ($data['code'] == 0) {
             $summary = $rollerStatus->description;
         } elseif ($data['code'] != 0) {
-            $summary = ErrorCode::where('machine_type', $rollerStatus->type)->where('code', $data['code'])->first();
-            return $summary->message;
+            $summary = ErrorCode::where('machine_type', $rollerStatus->type)->where('code', $data['code'])->pluck('message')->first();
         } else {
             $summary = '0';
         }
-
         $rollerStatus->abnormal = $summary;
-       
+        
         return $rollerStatus;
     }
 
     public function message($data)
     {
         $rollerAbnormal = $this->abnormal($data);
-        
         $message = '0';
 
         $rollerAbnormal->abnormal == '0' ? $message = $rollerAbnormal->description : $message = $rollerAbnormal->abnormal;
@@ -146,6 +141,3 @@ class RollerDataService
         return $status;
     }
 }
-        
-    
-?>

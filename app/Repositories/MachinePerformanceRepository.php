@@ -13,7 +13,6 @@
        
         public function getBeforeData()
         {
-            
             $count = Summary::with('resource')->whereRaw('id = (select max(`id`) from summaries)')->first(); //前一筆資料
 
             if ($count == null) {
@@ -31,6 +30,26 @@
         public function getLastTurn()
         {
             return Summary::where('turn_off', '!=', '')->orderby('id', 'desc')->first();
+        }
+
+        public function getLastRefuelingStart()
+        {
+            return Summary::where('refueling_start', '!=', '')->orderby('id', 'desc')->first();
+        }
+
+        public function getLastRefuelingEnd()
+        {
+            return Summary::where('refueling_end', '!=', '')->orderby('id', 'desc')->first();
+        }
+
+        public function getLastAggregateStart()
+        {
+            return Summary::where('aggregate_start', '!=', '')->orderby('id', 'desc')->first();
+        }
+
+        public function getLastAggregateEnd()
+        {
+            return Summary::where('aggregate_end', '!=', '')->orderby('id', 'desc')->first();
         }
 
         public function getPreviousCompletion($count)
@@ -203,6 +222,15 @@
         public function checkResourceId($newdata)
         {
             return Summary::where('resources_id', $newdata['resources_id'])->first();
+        }
+        public function index()
+        {
+            return Summary::paginate(100);
+        }
+
+        public function searchdate()
+        {
+            return Summary::where('date' , request()->date)->paginate(100);
         }
     }
 ?>
