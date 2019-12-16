@@ -29,7 +29,7 @@ class MachinePerformanceService
         $count->id = $count->id + 1;
         $count->serial_number++;
      
-        if ($count->resources_id == 0 || $data['date'] != $count['date']) {  //如果為第一筆資料 或者 不是同一天 (就要重頭計算)
+        if ($count->resources_id == 0 || $data['date'] != $count['date']) { 
             $count->open = 0;
             $count->turn_off = 0;   
             $count->start_count = 0;
@@ -66,18 +66,15 @@ class MachinePerformanceService
             $data['status_id'] == 3 ? $count->start_count++ : $count->start_count;
             $data['status_id'] == 4 ? $count->stop_count++ : $count->stop_count;
         }
-        
         $data['status_id'] == 15 ? $count->sensro_inputs++ : $count->sensro_inputs;
-        $data['status_id'] == 10 ? $count->machine_inputs_day++ : $count->machine_inputs_day;
-        
+        $data['status_id'] == 10 ? $count->machine_inputs_day++ : $count->machine_inputs_day;   
         if ($machine == '捲料機1') {
             $data['status_id'] == 9 ? $count->second_completion++ : $count->second_completion;
             $data['status_id'] == 9 ? $count->machine_completion_day++ : $count->machine_completion_day;
         } else {
             $data['status_id'] == 10 ? $count->second_completion++ : $count->second_completion;
             $data['status_id'] == 10 ? $count->machine_completion_day++ : $count->machine_completion_day;
-        }
-      
+        }     
         if ($count->resources_id == 0 || $data['orderno'] != $count->resource->orderno) {
             $count->machine_completion = 0;
             $count->machine_inputs = 0;
@@ -88,7 +85,6 @@ class MachinePerformanceService
             }
             $data['status_id'] == 10 ? $count->machine_inputs++ : $count->machine_inputs;
         } else {
-
             $data['status_id'] == 10 ? $count->machine_inputs++ : $count->machine_inputs;
 
             if ($machine == '捲料機1') {   
@@ -98,7 +94,6 @@ class MachinePerformanceService
                 $data['status_id'] == 10 ? $count->machine_completion++ : $count->machine_completion;
                 $data['status_id'] == 10 ? $count->processing_completion_time = $data['time'] : $count->processing_completion_time = "";
             }
-
             if ($machine == '捲料機1') {
                 $data['status_id'] == 10 ? $count->processing_start_time = $data['time'] : $count->processing_start_time = "00:00:00";
             } else {
@@ -306,19 +301,19 @@ class MachinePerformanceService
         $standard263 = 0;
         $standard363 = 0;
 
-        if ($status['uat_h_26_2'] == 0) { //一定要改
+        if ($status['uat_h_26_2'] == 0) { 
             $standard262 = 0;
         } else {
             $standard262 = $standard->standard_ct;
         }
 
-        if ($status['uat_h_26_3'] == 0) { //一定要改
+        if ($status['uat_h_26_3'] == 0) { 
             $standard263 = 0;
         } else {
             $standard263 = $standard->standard_ct;
         }
 
-        if ($status['uat_h_36_3'] == 0) { //一定要改
+        if ($status['uat_h_36_3'] == 0) { 
             $standard363 = 0;
         } else {
             $standard363 = $standard->standard_ct;
@@ -434,7 +429,7 @@ class MachinePerformanceService
                 $down_time = '00:00:00';
             } else {
                 if ((isset($beforeturn) && $beforeturn->turn_off) ? $beforeturn->turn_off : $beforeturn['turn_off'] == 0) {
-                    if ($beforeturn['turn_off'] > $status->open && $status->stop_count != '') { //判斷前面關機數量有沒有大於當前開機數量
+                    if ($beforeturn['turn_off'] > $status->open && $status->stop_count != '') {
                         if ($beforeopen->time ?  $beforeopen->time : $beforeopen['time'] == "00:00:00") {
                             $down_time = strtotime($status->time) - strtotime($beforeopen['time']);
                             $down_time = date("H:i:s", $down_time - 8 * 60 * 60);
@@ -557,12 +552,10 @@ class MachinePerformanceService
         $refueling = '00:00:00';
         $aggregate = '00:00:00';
 
-        //累計剛好只有一筆資料 會找不到
-
         if ($status['refueling_end'] != 0) {
             $RefuelingStart = $this->machinePerformanceRepo->findRefuelingStart($status);
             $RefuelingEnd = $this->machinePerformanceRepo->findRefuelingEnd($status);
-            if ($RefuelingEnd && $RefuelingStart) { //有小問題
+            if ($RefuelingEnd && $RefuelingStart) {
                 $refueling = strtotime($RefuelingEnd->time) - strtotime($RefuelingStart->time);
                 $refueling = date("H:i:s", $refueling - 8 * 60 * 60);
             } else {
@@ -611,7 +604,7 @@ class MachinePerformanceService
         $sensro  = $this->machinePerformanceRepo->findPreviousInputDay($status);
         $sensro2 = $this->machinePerformanceRepo->findPreviousTwoInputDay($status);
 
-        $sum = $status->machine_completion_day - $status->machine_inputs_day; //Q-R
+        $sum = $status->machine_completion_day - $status->machine_inputs_day;
         $sensros  = $this->machinePerformanceRepo->findPreviousInputDaySubtractSum($status, $sum);
         $sensros2 = $this->machinePerformanceRepo->findPreviousTwoInputDaySubtractSum($status, $sum);
 
