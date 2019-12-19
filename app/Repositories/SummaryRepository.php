@@ -256,6 +256,7 @@ class SummaryRepository
         $hanging_time = 0;
         $aggregate_time = 0;
         $break_time = 0;
+        $chang_model_and_line = 0;
         $excluded_working_hours = 0;
 
         $machinee_work_except_hours['correction_time'] = '';  //由APP輸入或由機台自動判定除外工時(暖機(校正)時間)
@@ -294,7 +295,19 @@ class SummaryRepository
         $machinee_work_except_hours['break_time'] = date("H:i:s", $break_time - 8 * 60 * 60); //將時間戳轉回字串
 
 
-        $machinee_work_except_hours['chang_model_and_line'] = '';  //由APP輸入或由機台自動判定除外工時(換模換線)
+        $machinee_work_except_hours['chang_model_and_line'] = 0;  //由APP輸入或由機台自動判定除外工時(換模換線)
+        foreach ($sameDayAndName as $key => $data) {
+            if ($data->summary->refueling_time != "00:00:00" || $data->summary->refueler_time != "00:00:00") {
+                $refueling_time = strtotime($data->summary->refueling_time) - strtotime(Carbon::today()); 
+                $refueler_time = strtotime($data->summary->refueler_time) - strtotime(Carbon::today()); 
+                $chang_model_and_line = $chang_model_and_line + $refueling_time + $refueler_time;
+            } else {
+                $machinee_work_except_hours['chang_model_and_line'] = 0;
+            }
+        }
+        $machinee_work_except_hours['chang_model_and_line'] = date("H:i:s", $chang_model_and_line - 8 * 60 * 60); //將時間戳轉回字串
+
+
         $machinee_work_except_hours['bad_disposal_time'] = '';  //由APP輸入或由機台自動判定除外工時(物料品質不良處置時間)
         $machinee_work_except_hours['model_damge_change_line_time'] = '';  //由APP輸入或由機台自動判定除外工時(模具損壞換線時間)
         $machinee_work_except_hours['program_modify_time'] = '';  //由APP輸入或由機台自動判定除外工時(程式修改時間)
