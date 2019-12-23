@@ -153,7 +153,7 @@
                                 </li>
                             </ul>
                         </li>
-                        <li>
+                        <!-- <li>
                             <a href="#" style="color: white;">稼動參數<span class="fa arrow"></span></a>
                             <ul class="nav nav-second-level">
                                 <li>
@@ -167,7 +167,7 @@
                                 </li>
                                
                             </ul>
-                        </li>
+                        </li> -->
                         <!-- <li>
                         <a href="#" style="color: white;">帳號管理<span class="fa arrow"></span></a>
                             <ul class="nav nav-second-level">
