@@ -33,7 +33,7 @@ class ResourceController extends Controller
         if($datas[0]){
             return view('searchmachineperformance', ['datas' => $datas]);
         }
-        return redirect()->route('show_machineperformance');
+        return view('machineperformance', ['datas' => $datas]);
     }
 
     public function fixmachinedatabase()
