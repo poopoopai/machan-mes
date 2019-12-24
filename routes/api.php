@@ -27,7 +27,7 @@ Route::get('/getMachineDefinition', 'MachineDefinitionController@getMachineDefin
 
 Route::get('/getapsdata', 'ProcessRoutingController@getApsData')->name('getApsData');
 Route::get('/getdatabase', 'ResourceController@getdatabase')->name('getdatabase');
-Route::get('/getmachinedatabase', 'api\ResourceController@getmachinedatabase')->name('getmachinedatabase');
+
 Route::get('/fixmachinedatabase', 'api\ResourceController@fixmachinedatabase')->name('fixmachinedatabase');
 Route::get('/test', 'ResourceController@test');
 Route::get('/test2', 'ResourceController@test2');
