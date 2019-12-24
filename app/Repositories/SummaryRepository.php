@@ -206,8 +206,6 @@ class SummaryRepository
         $sameDay = Resource::where('date', $dayPerfor['report_work_date'])->with('summary')->get();
         $sameDayAndName = Resource::where('orderno', $dayPerfor['material_name'])->where('date', $dayPerfor['report_work_date'])->with('summary')->get();
         $total_downtime = 0;
-        $standard_processing_seconds1 = 0;
-        $standard_processing_seconds2 = 0;
         $actual_processing_seconds = 0;
 
         // total_downtime
@@ -221,16 +219,9 @@ class SummaryRepository
             $machine_processing_time['total_downtime'] = date("H:i:s", $total_downtime - 8 * 60 * 60);
         }
 
-        // standard_processing_seconds
-        foreach ($sameDay as $key => $data) {
-            $standard_processing_seconds1 = $standard_processing_seconds1 + $data->summary['standard_uat_h_26_2'];
-        }
-        foreach ($sameDayAndName as $key => $data) {
-            $standard_uat_h_26_3 = $data->summary->standard_uat_h_26_3;
-            $standard_uat_h_36_3 = $data->summary->standard_uat_h_36_3;
-            $standard_processing_seconds2 = $standard_processing_seconds2 + $standard_uat_h_26_3 + $standard_uat_h_36_3;
-        }
-        $machine_processing_time['standard_processing_seconds'] = ($standard_processing_seconds1 + $standard_processing_seconds2);
+        // standard_processing_seconds  標準應完工量 乘 標準加工秒數
+        
+        $machine_processing_time['standard_processing_seconds'] = ($dayPerfor['standard_processing']*$dayPerfor['standard_completion']);
 
         // actual_processing_seconds
         foreach ($sameDayAndName as $key => $data) {
