@@ -31,8 +31,7 @@ class OEEperformanceController extends Controller
             if($datas[0]){
                 return view('searchOEEperformance', ['datas' => $datas]);
             }
-            return redirect()->route('show_OEEperformance');
-            
+            return view('OEEperformance', ['datas' => $datas]); 
     }
 
     public function getOEEperformance()
