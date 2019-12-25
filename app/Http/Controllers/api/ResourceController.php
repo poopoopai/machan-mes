@@ -28,12 +28,13 @@ class ResourceController extends Controller
     }
     public function searchdate()
     {
-        $datas = $this->machinePerformanceRepo->searchdate(request()->date);
-        
+        $datas = $this->machinePerformanceRepo->searchdate(request()->date_start, request()->date_end);
+        $date = request()->only('date_start', 'date_end');
+    
         if($datas[0]){
-            return view('searchmachineperformance', ['datas' => $datas]);
+            return view('searchmachineperformance', ['datas' => $datas, 'date' => $date]);
         }
-        return view('machineperformance', ['datas' => $datas]);
+        return view('machineperformance', ['datas' => $datas, 'date' => $date]);
     }
 
     public function fixmachinedatabase()

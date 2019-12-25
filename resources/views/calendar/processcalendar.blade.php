@@ -94,7 +94,7 @@
 <script>
     
    const getOrganization = () => {
-        axios.get('{{ route('getOrganization') }}' , {
+        axios.get("{{ route('getOrganization') }}" , {
             params: {
                 org_id: $('#sel1').val(),
             }

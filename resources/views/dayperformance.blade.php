@@ -61,6 +61,9 @@
         background-color: #6c757d;
         border-color: #6c757d;
     }
+    .textcenter{
+        text-align:center;
+    }
 </style>
 @endsection
 
@@ -80,15 +83,22 @@
                     <div class="panel-heading">資料編輯</div>
                     <div class="panel-body">
                         <form class="form-horizontal" action="{{ route('search_dayperformance_date')}}"  method="GET">
-                            
                                 <div class="form-group">
-                                    <label class="col-md-2 control-label">機台日績效統計日期查詢</label>
-                                        <div class="col-md-10">
-                                            <input type="date" name="date" class="clearable form-control" required>
-                                        </div>
+                                    <div class="col-md-2 textcenter">
+                                        <label class="control-label">機台日績效統計日期查詢</label>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <input type="date" name="date_start" class="clearable form-control" required>
+                                    </div>
+                                    <div class="col-md-1 textcenter">
+                                        <label class="control-label"> ~ </label>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <input type="date" name="date_end" class="clearable form-control" required>
+                                    </div>
                                 </div>
                                 <hr>
-                            <div style="text-align:center">
+                            <div class="textcenter">
                                 <button type="submit" onclick="" id="sendBtn" class="btn btn-success btn-lg" style="width:45%">確認</button>
                                 <button type="reset" onclick="" class="btn btn-secondary btn-lg" style="width:45%">清除資料</button>
                             </div>

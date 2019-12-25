@@ -230,7 +230,7 @@
 
         public function searchdate()
         {
-            return Summary::where('date' , request()->date)->paginate(100);
+            return Summary::whereBetween('date' , [request()->date_start, request()->date_end])->paginate(100);
         }
     }
 ?>

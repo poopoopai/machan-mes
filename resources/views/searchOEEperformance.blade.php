@@ -61,6 +61,9 @@
         background-color: #6c757d;
         border-color: #6c757d;
     }
+    .textcenter{
+        text-align:center;
+    }
 </style>
 @endsection
 
@@ -75,7 +78,9 @@
             <span class="space-item">
             <a href="{{ route('show_OEEperformance') }}">OEE績效統計</a><span>
             <span class="space-item">></span>
-            <span class="space-item">{{$datas[0]->date}}<span>
+            <span class="space-item">{{$date['date_start']}}<span>
+            <span class="space-item">~</span>
+            <span class="space-item">{{$date['date_end']}}<span>
         </ol>
         <div class="row">
             <div class="col-md-12">
@@ -84,10 +89,18 @@
                     <div class="panel-body">
                         <form class="form-horizontal" action="{{ route('search_OEEperformance_date')}}"  method="GET">
                                 <div class="form-group">
-                                    <label class="col-md-2 control-label">OEE績效統計日期查詢</label>
-                                        <div class="col-md-10">
-                                            <input type="date" name="date" class="clearable form-control" required>
-                                        </div>
+                                    <div class="col-md-2 textcenter">
+                                    <label class="control-label">OEE績效統計日期查詢</label>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <input type="date" name="date_start" class="clearable form-control" required>
+                                    </div>
+                                    <div class="col-md-1 textcenter">
+                                        <label class="control-label"> ~ </label>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <input type="date" name="date_end" class="clearable form-control" required>
+                                    </div>
                                 </div>
                                 <hr>
                             <div style="text-align:center">

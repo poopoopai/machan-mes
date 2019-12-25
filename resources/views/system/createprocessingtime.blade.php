@@ -101,7 +101,7 @@
 
 <script>
         const getMachineDefinition = () => {
-                axios.get('{{ route('getMachineDefinition') }}', {
+                axios.get("{{ route('getMachineDefinition') }}", {
                 })
                 .then(({ data }) => {
                     $('#machine-definition').empty();
