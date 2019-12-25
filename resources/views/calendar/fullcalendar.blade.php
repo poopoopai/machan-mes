@@ -183,7 +183,7 @@
 
         const getCalendarData = (year, month) => {
             const textMonth = ~~month + 1;
-            axios.get('{{ route('getcalendar') }}', {
+            axios.get("{{ route('getcalendar') }}", {
                 params: {
                     year,
                     month: textMonth
@@ -260,7 +260,7 @@
             const workType = $('#sel1')[0].value;
             const workTime = $('#sel2')[0].value;
 
-            axios.post('{{ route('calendar-data') }}', {
+            axios.post("{{ route('calendar-data') }}", {
                 date,
                 workId: workTime,
                 status: workType,
@@ -300,7 +300,7 @@
         }
 
         const getWorkTime = () => {
-            axios.get('{{ route('get-work-time') }}')
+            axios.get("{{ route('get-work-time') }}")
                 .then(({ data }) => {
                     $('#sel2').empty();
                     $('#sel2').append(`

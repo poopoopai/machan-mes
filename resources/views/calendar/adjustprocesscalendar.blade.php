@@ -209,7 +209,7 @@
         makeYearCalendar('{{ $year }}', '{{ $month -1}}');
 
         const getResourceData = () => {
-            axios.get('{{ route('adjust-process-calendar') }}' + location.search)
+            axios.get("{{ route('adjust-process-calendar') }}" + location.search)
                 .then(({ data }) => {
                     data.forEach(data => {
                         $('#sel-org').append(`
@@ -286,7 +286,7 @@
             const workTime = $('#sel2')[0].value;
             const resource_id = $('#sel-org').val();
 
-            axios.post('{{ route('process-calendar-data') }}', {
+            axios.post("{{ route('process-calendar-data') }}", {
                 date,
                 resource_id,
                 status: workType,
@@ -331,7 +331,7 @@
 
         const getCompanyData = (year, month) => {
             const textMonth = ~~month + 1;
-            return axios.get('{{ route('getcalendar') }}', {
+            return axios.get("{{ route('getcalendar') }}", {
                 params: {
                     year,
                     month: textMonth
@@ -341,7 +341,7 @@
 
         const getProcessData = (year, month, resourceId) => {
             const textMonth = ~~month + 1;
-            return axios.get('{{ route('getprocesscalendar') }}', {
+            return axios.get("{{ route('getprocesscalendar') }}", {
                 params: {
                     year: '{{ $year }}',
                     month: '{{ $month }}',
@@ -381,7 +381,7 @@
         }
 
         const getCalendarTotal = () => {
-            axios.get('{{ route('work-data') }}', {
+            axios.get("{{ route('work-data') }}", {
                 params: {
                     year: '{{ $year }}',
                     month: '{{ $month }}',
@@ -399,7 +399,7 @@
         getCalendarTotal();
 
         const getWorkTime = () => {
-            axios.get('{{ route('get-work-time') }}')
+            axios.get("{{ route('get-work-time') }}")
                 .then(({ data }) => {
                     $('#sel2').empty();
                     $('#sel2').append(`

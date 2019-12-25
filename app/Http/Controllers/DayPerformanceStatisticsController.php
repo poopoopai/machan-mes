@@ -26,11 +26,12 @@ class DayPerformanceStatisticsController extends Controller
 
     public function searchdate()
     {
-        $datas = DayPerformanceStatistics::where('report_work_date' , request()->date)->paginate(100)->appends(request()->query());
+        $datas = DayPerformanceStatistics::whereBetween('report_work_date' , [request()->date_start, request()->date_end])->paginate(100)->appends(request()->query());
+        $date = request()->only('date_start' , 'date_end');
             if($datas[0]){
-                return view('searchdayperformance', ['datas' => $datas]);
+                return view('searchdayperformance', ['datas' => $datas, 'date' => $date]);
             }
-            return view('dayperformance', ['datas' => $datas]);
+            return view('dayperformance', ['datas' => $datas, 'date' => $date]);
     }
 
     public function getmachineperformance()
