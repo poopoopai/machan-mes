@@ -34,8 +34,8 @@ class OEEperformanceController extends Controller
             return view('OEEperformance', ['datas' => $datas, 'date' => $date]); 
     }
 
-    public function getOEEperformance()
-    {
+    public function getOEEperformance(){
+
         $sum =  [];
 
         // work ( date, day, weekend, work_name, standard_working_hours, total_hours )

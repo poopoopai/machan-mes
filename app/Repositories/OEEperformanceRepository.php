@@ -358,7 +358,7 @@ class OEEperformanceRepository
                 $sum_machine_downtime = $sum_machine_downtime + $machine_downtime;
             }
         }
-        $machinee_work_except_hours['chang_model_and_line'] = date("H:i:s", $sum_machine_downtime-8*60*60);//將時間戳轉回字串
+        $machinee_work_except_hours['machine_downtime'] = date("H:i:s", $sum_machine_downtime-8*60*60);//將時間戳轉回字串
         
 
         $machinee_work_except_hours['bad_disposal_time'] = '';
@@ -390,14 +390,14 @@ class OEEperformanceRepository
         foreach($sameday as $key =>$datas){
             $machine_utilization_rate = $machine_utilization_rate + $datas->machine_utilization_rate;
         }
-        $machine_performance['machine_utilization_rate'] = $machine_utilization_rate/count($sameday);
+        $machine_performance['machine_utilization_rate'] = floor(($machine_utilization_rate/count($sameday))*100)/100;
 
         
         $performance_rate = 0;
         foreach($sameday as $key =>$datas){
             $performance_rate = $performance_rate + $datas->performance_rate;
         }
-        $machine_performance['performance_rate'] = $performance_rate/count($sameday);
+        $machine_performance['performance_rate'] = floor(($performance_rate/count($sameday))*100)/100;
 
 
         
@@ -405,7 +405,7 @@ class OEEperformanceRepository
         foreach($sameday as $key =>$datas){
             $yield = $yield + $datas->yield;
         }
-        $machine_performance['yield'] = $yield/count($sameday);
+        $machine_performance['yield'] = floor(($yield/count($sameday))*100)/100;
 
 
         
@@ -413,7 +413,7 @@ class OEEperformanceRepository
         foreach($sameday as $key =>$datas){
             $OEE = $OEE + $datas->OEE;
         }
-        $machine_performance['OEE'] = $OEE/count($sameday);
+        $machine_performance['OEE'] = floor(($OEE/count($sameday))*100)/100;
 
         return $machine_performance;
     }
