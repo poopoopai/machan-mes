@@ -59,11 +59,10 @@ class SummaryRepository
         } else { //加班幾小時?
             $first_time = Resource::where('orderno', $dayPerfor['material_name'])->where('date', $dayPerfor['report_work_date'])->first()->time;
             $last_time = Resource::where('orderno', $dayPerfor['material_name'])->where('date', $dayPerfor['report_work_date'])->latest('time')->first()->time;
-            // dd($first_time, $last_time);
+
             $first_time = strtotime($first_time) - strtotime(Carbon::today());
             $last_time = strtotime($last_time) - strtotime(Carbon::today());
-            // dd($last_time - $first_time);  //秒數
-            // dd(date("H:i:s", ($last_time - $first_time)-8*60*60));
+
             return (($last_time - $first_time)/3600);
         }
     }
@@ -74,7 +73,7 @@ class SummaryRepository
         } else { //加班幾小時?
             $first_time = Resource::where('orderno', $dayPerfor['material_name'])->where('date', $dayPerfor['report_work_date'])->first()->time;
             $last_time = Resource::where('orderno', $dayPerfor['material_name'])->where('date', $dayPerfor['report_work_date'])->latest('time')->first()->time;
-            // dd($first_time, $last_time);
+
             $first_time = strtotime($first_time) - strtotime(Carbon::today());
             $last_time = strtotime($last_time) - strtotime(Carbon::today());
 
@@ -353,15 +352,15 @@ class SummaryRepository
         $mass_production_time = strtotime($dayPerfor['mass_production_time']) - strtotime(Carbon::today());
         $updown_time = $dayPerfor['updown_time'];
 
-        $machine_utilization_rate = ($mass_production_time - $total_downtime + $updown_time) / ($mass_production_time);
+        $machine_utilization_rate = floor((($mass_production_time - $total_downtime + $updown_time) / ($mass_production_time))*100)/100;
         $performance_exclusion_time['machine_utilization_rate'] = $machine_utilization_rate;
 
-        $performance_exclusion_time['performance_rate'] = ($dayPerfor['total_completion_that_day'] / $dayPerfor['standard_completion']);
+        $performance_exclusion_time['performance_rate'] = floor(($dayPerfor['total_completion_that_day'] / $dayPerfor['standard_completion'])*100)/100;
 
         //yield  ($total_completion_that_day - $adverse_number)/($total_completion_that_day)
-        $performance_exclusion_time['yield'] = ($dayPerfor['total_completion_that_day'] - $dayPerfor['adverse_number']) / ($dayPerfor['total_completion_that_day']);
+        $performance_exclusion_time['yield'] = floor(($dayPerfor['total_completion_that_day'] - $dayPerfor['adverse_number']) / ($dayPerfor['total_completion_that_day'])*100)/100;
 
-        $performance_exclusion_time['OEE'] = ($performance_exclusion_time['machine_utilization_rate'] * $performance_exclusion_time['performance_rate'] * $performance_exclusion_time['yield']);
+        $performance_exclusion_time['OEE'] = floor(($performance_exclusion_time['machine_utilization_rate'] * $performance_exclusion_time['performance_rate'] * $performance_exclusion_time['yield'])*100)/100;
 
         return $performance_exclusion_time;
     }

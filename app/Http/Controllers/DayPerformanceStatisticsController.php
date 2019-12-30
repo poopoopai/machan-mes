@@ -37,7 +37,7 @@ class DayPerformanceStatisticsController extends Controller
     public function getmachineperformance()
     {
         $today = Carbon::today()->format("Y-m-d");
-        // $orderno = Resource::where('date', '2019-11-27')->select('orderno')->distinct()->get();
+        // $orderno = Resource::where('date', '2019-11-08')->select('orderno')->distinct()->get();
         $orderno = Resource::where('date', $today)->select('orderno')->distinct()->get();
         // dd($orderno);
         foreach($orderno as $key =>$datas){
