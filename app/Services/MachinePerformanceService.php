@@ -39,7 +39,9 @@ class MachinePerformanceService
             $count->aggregate_start = 0;
             $count->aggregate_end = 0;
             $count->machine_completion_day = 0;
-            $count->machine_inputs_day = 0;    
+            $count->machine_inputs_day = 0;
+            $count->sensro_inputs = 0;
+            $count->second_completion = 0;
             
             $data['status_id'] == 3 ? $count->open++ : ($count->open == 0 ? $count->open : $count->open = '');
             $data['status_id'] == 4 ? $count->turn_off++ : ($count->turn_off == 0 ? $count->turn_off : $count->turn_off = '');
@@ -47,8 +49,7 @@ class MachinePerformanceService
             $data['status_id'] == 21 ? $count->refueling_end++ : ($count->refueling_end == 0 ? $count->refueling_end : $count->refueling_end = '');
             $data['status_id'] == 22 ? $count->aggregate_start++ : ($count->aggregate_start == 0 ? $count->aggregate_start : $count->aggregate_start = '');
             $data['status_id'] == 23 ? $count->aggregate_end++ : ($count->aggregate_end == 0 ? $count->aggregate_end : $count->aggregate_end = '');
-            $data['status_id'] == 3 ? $count->start_count++ : $count->start_count;
-            $data['status_id'] == 4 ? $count->stop_count++ : $count->stop_count;
+         
         } else {
             $lastopen = $this->machinePerformanceRepo->getLastOpen();
             $lastturn = $this->machinePerformanceRepo->getLastTurn();
@@ -63,18 +64,20 @@ class MachinePerformanceService
             $data['status_id'] == 21 ? $count->refueling_end = $lastrefuelingend->refueling_end + 1 : $count->refueling_end = '';
             $data['status_id'] == 22 ? $count->aggregate_start = $lastaggregatestart->aggregate_start + 1 : $count->aggregate_start = '';
             $data['status_id'] == 23 ? $count->aggregate_end = $lastaggregateend->aggregate_end + 1: $count->aggregate_end = '';
-            $data['status_id'] == 3 ? $count->start_count++ : $count->start_count;
-            $data['status_id'] == 4 ? $count->stop_count++ : $count->stop_count;
         }
+        $data['status_id'] == 3 ? $count->start_count++ : $count->start_count;
+        $data['status_id'] == 4 ? $count->stop_count++ : $count->stop_count;
         $data['status_id'] == 15 ? $count->sensro_inputs++ : $count->sensro_inputs;
-        $data['status_id'] == 10 ? $count->machine_inputs_day++ : $count->machine_inputs_day;   
+        $data['status_id'] == 10 ? $count->machine_inputs_day++ : $count->machine_inputs_day;
+
         if ($machine == '捲料機1') {
             $data['status_id'] == 9 ? $count->second_completion++ : $count->second_completion;
             $data['status_id'] == 9 ? $count->machine_completion_day++ : $count->machine_completion_day;
         } else {
             $data['status_id'] == 10 ? $count->second_completion++ : $count->second_completion;
             $data['status_id'] == 10 ? $count->machine_completion_day++ : $count->machine_completion_day;
-        }     
+        }
+
         if ($count->resources_id == 0 || $data['orderno'] != $count->resource->orderno) {
             $count->machine_completion = 0;
             $count->machine_inputs = 0;
@@ -554,9 +557,8 @@ class MachinePerformanceService
 
         if ($status['refueling_end'] != 0) {
             $RefuelingStart = $this->machinePerformanceRepo->findRefuelingStart($status);
-            $RefuelingEnd = $this->machinePerformanceRepo->findRefuelingEnd($status);
-            if ($RefuelingEnd && $RefuelingStart) {
-                $refueling = strtotime($RefuelingEnd->time) - strtotime($RefuelingStart->time);
+            if ($RefuelingStart) {
+                $refueling = strtotime($status->time) - strtotime($RefuelingStart->time);
                 $refueling = date("H:i:s", $refueling - 8 * 60 * 60);
             } else {
                 $refueling = '00:00:00'; 
@@ -564,12 +566,10 @@ class MachinePerformanceService
         } else {
             $refueling = '00:00:00';
         }
-
         if ($status['aggregate_end'] != 0) {
             $AggregateStart = $this->machinePerformanceRepo->findAggregateStart($status);
-            $AggregateEnd = $this->machinePerformanceRepo->findAggregateEnd($status); 
-            if ($AggregateEnd && $AggregateStart) {
-                $aggregate = strtotime($AggregateEnd->time) - strtotime($AggregateStart->time);
+            if ($AggregateStart) {
+                $aggregate = strtotime($status->time) - strtotime($AggregateStart->time);
                 $aggregate = date("H:i:s", $aggregate - 8 * 60 * 60);
             } else {
                 $aggregate = '00:00:00'; 

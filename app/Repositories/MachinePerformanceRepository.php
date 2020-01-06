@@ -115,7 +115,7 @@
 
         public function findReOpen()
         {
-            return Summary::where('restop_count', '!=', 0)->desc('time', 'desc')->first();
+            return Summary::where('restop_count', '!=', 0)->orderby('time', 'desc')->first();
         }
 
         function findTurnOffEqualStopCount($data, $beforeopen, $restop)
@@ -143,24 +143,14 @@
             return Summary::whereIn('resources_id', $findLessId)->where('refueling_start', $status->refueling_end)->get();
         }
 
-        public function findRefuelingEnd($status)
-        {
-            return Summary::where('refueling_end', $status['refueling_end'])->first();
-        }
-
         public function findRefuelingStart($status)
         {
-            return Summary::where('refueling_start', $status['refueling_end'])->first();
-        }
-
-        public function findAggregateEnd($status)
-        {
-            return Summary::where('aggregate_end', $status['aggregate_end'])->first(); //累計剛好只有一筆資料
+            return Summary::where('refueling_start', $status['refueling_end'])->orderby('id', 'desc')->first();
         }
 
         public function findAggregateStart($status)
         {
-            return Summary::where('aggregate_start', $status['aggregate_end'])->first();
+            return Summary::where('aggregate_start', $status['aggregate_end'])->orderby('id', 'desc')->first();
         }
 
         public function create($data)
