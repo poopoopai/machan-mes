@@ -84,36 +84,18 @@ class OEEperformanceRepository
 
 
         // standard_working_hours
-        if($work['work_name'] == '正常班'){
+        if($work['work_name'] == '正常班' || $work['work_name'] == '早班' || $work['work_name'] == '中班' || $work['work_name'] == '晚班'){
             $work['standard_working_hours'] = '8:00:00';
         }elseif($work['work_name'] == '休假' || $work['work_name'] == '國定假日'){
             $work['standard_working_hours'] = '0:00:00';
-        }else{  // 以下處理加班
-            if($com_work_type == null){  // 如果公司行事曆沒資料
-                $work_type_id = ProcessCalendar::where('date', $work['date'])->first()->work_type_id; //看看機台行事曆的加班資料
-                $work_time = SetupShift::where('id', $work_type_id)->first();
-                $work_off = strtotime($work_time->work_off) - strtotime(Carbon::today());
-                $work_on = strtotime($work_time->work_on) - strtotime(Carbon::today());
-
-                $rest = RestSetup::where('id', $work_time->rest_group)->first();
-                $rest_start = strtotime($rest->start) - strtotime(Carbon::today());
-                $rest_end = strtotime($rest->end) - strtotime(Carbon::today());
-                $rest_time = $rest_end - $rest_start;
-
-                $work['standard_working_hours'] = date("H:i:s", ($work_off - $work_on - $rest_time + 28800)-8*60*60); 
-                // workoff - workon - 休息時間 + 8hour      28800為8小時的時間戳(秒數)
-            }else{
-                $work_time = SetupShift::where('id', $com_work_type->work_type_id)->first();
-                $work_off = strtotime($work_time->work_off) - strtotime(Carbon::today());
-                $work_on = strtotime($work_time->work_on) - strtotime(Carbon::today());
-
-                $rest = RestSetup::where('id', $work_time->rest_group)->first();
-                $rest_start = strtotime($rest->start) - strtotime(Carbon::today());
-                $rest_end = strtotime($rest->end) - strtotime(Carbon::today());
-                $rest_time = $rest_end - $rest_start;
-
-                $work['standard_working_hours'] = date("H:i:s", ($work_off - $work_on - $rest_time + 28800)-8*60*60); 
-            }
+        }elseif($work['work_name'] == '正常班加3' || $work['work_name'] == '大夜班' || $work['work_name'] == '早班加3'){ 
+            $work['standard_working_hours'] = '11:00:00';
+        }elseif($work['work_name'] == '正常班加3.5'){ 
+            $work['standard_working_hours'] = '11:30:00';
+        }elseif($work['work_name'] == '早班+中班'){ 
+            $work['standard_working_hours'] = '16:00:00';
+        }elseif($work['work_name'] == '正常加班1+大夜班'){ 
+            $work['standard_working_hours'] = '24:00:00';
         }
         
 
