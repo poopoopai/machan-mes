@@ -580,9 +580,10 @@ class MachinePerformanceService
 
         $status['refueler_time'] = $refueling;
         $status['collector_time'] = $aggregate;
-
+      
         $status->resources_id = $data->id;
-
+        unset($status['resource']);
+        
         return $status;
     }
 
