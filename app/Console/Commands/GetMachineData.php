@@ -3,34 +3,32 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
-use App\Services\GetRawDataService;
-
-class GetRawData extends Command
+use App\Http\Controllers\api\ResourceController;
+class GetMachineData extends Command
 {
-    protected $rawdataService;
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'raw-data:get';
+    protected $signature = 'machine-data:get';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Get rawdata';
+    protected $description = 'Get machinedata';
 
     /**
      * Create a new command instance.
      *
      * @return void
      */
-    public function __construct(GetRawDataService $rawdataService)
+    public function __construct(ResourceController $resourceController)
     {
         parent::__construct();
-        $this->rawdataService = $rawdataService;
+        $this->resourceController = $resourceController;
     }
 
     /**
@@ -40,6 +38,6 @@ class GetRawData extends Command
      */
     public function handle()
     {
-        $this->rawdataService->getrawdata();
+        $this->resourceController->fixmachinedatabase();
     }
 }

@@ -24,9 +24,9 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        $schedule->command('raw-data:get')->hourly();
-       
-        $schedule->call('App\Http\Controllers\api\ResourceController@fixmachinedatabase')->hourly(); //每小時一次
+        $schedule->command('raw-data:get')->withoutOverlapping(60);
+        $schedule->command('machine-data:get')->withoutOverlapping(60);
+        // $schedule->call('App\Http\Controllers\api\ResourceController@fixmachinedatabase')->name('machinedata')->withoutOverlapping(60); //每小時一次
     }
 
     /**

@@ -45,9 +45,11 @@
     .top {
         padding-top: 3px;
     }
+    
 
     input[readonly].top {
         background-color: transparent;
+        border-color: #6c757d;
         border: 0;
         font-size: 1em;
     }
@@ -205,7 +207,7 @@
         varible.disabled = false;
         $('#formula').append(`      
                 <div class="col-md-1 top" id ="sign${++mulaId}">      
-                    <input  type="text" id="signs${mulaId}" value="+" class="form-control top" required readonly>
+                    <input  type="text" id="signs${mulaId}" value="+" class="top" required readonly>
                 </div>
             `);
     });

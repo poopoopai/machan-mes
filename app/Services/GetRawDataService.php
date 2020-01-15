@@ -31,7 +31,5 @@ class GetRawDataService
                 'time' => $data->Time,
             ]);
         }
-
-        dd("資料抓完了");
     }
 }
