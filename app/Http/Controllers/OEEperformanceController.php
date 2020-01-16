@@ -66,6 +66,39 @@ class OEEperformanceController extends Controller
         $sum = array_merge($sum, $machine_performance);
         // dd($sum);
 
-        OEEperformance::create($sum);
+        OEEperformance::updateOrCreate( ['date' => $sum['date'] ] , 
+            [
+                'day' => $sum['day'],
+                'weekend' => $sum['weekend'],
+                'work_name' => $sum['work_name'],
+                'standard_working_hours' => $sum['standard_working_hours'],
+                'total_hours' => $sum['total_hours'],
+                'machine_processing' => $sum['machine_processing'],
+                'actual_production_quantity' => $sum['actual_production_quantity'],
+                'standard_completion' => $sum['standard_completion'],
+                'total_input_that_day' => $sum['total_input_that_day'],
+                'total_completion_that_day' => $sum['total_completion_that_day'],
+                'adverse_number' => $sum['adverse_number'],
+                'mass_production_time' => $sum['mass_production_time'],
+                'total_downtime' => $sum['total_downtime'],
+                'standard_processing_seconds' => $sum['standard_processing_seconds'],
+                'actual_processing_seconds' => $sum['actual_processing_seconds'],
+                'updown_time' => $sum['updown_time'],
+                'correction_time' => $sum['correction_time'],
+                'hanging_time' => $sum['hanging_time'],
+                'aggregate_time' => $sum['aggregate_time'],
+                'break_time' => $sum['break_time'],
+                'chang_model_and_line' => $sum['chang_model_and_line'],
+                'machine_downtime' => $sum['machine_downtime'],
+                'bad_disposal_time' => $sum['bad_disposal_time'],
+                'model_damge_change_line_time' => $sum['model_damge_change_line_time'],
+                'program_modify_time' => $sum['program_modify_time'],
+                'machine_maintain_time' => $sum['machine_maintain_time'],
+                'excluded_working_hours' => $sum['excluded_working_hours'],
+                'machine_utilization_rate' => $sum['machine_utilization_rate'],
+                'performance_rate' => $sum['performance_rate'],
+                'yield' => $sum['yield'],
+                'OEE' => $sum['OEE'],
+            ] );
     }
 }
