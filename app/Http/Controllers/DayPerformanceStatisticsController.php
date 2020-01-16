@@ -83,7 +83,49 @@ class DayPerformanceStatisticsController extends Controller
                 $dayPerfor = array_merge($dayPerfor, $performance_exclusion_time);
         
 
-                DayPerformanceStatistics::create($dayPerfor);
+                DayPerformanceStatistics::updateOrCreate(
+                    [   'report_work_date' => $dayPerfor['report_work_date'], 
+                        'material_name' => $dayPerfor['material_name']
+                    ] ,
+                    [   'standard_working_hours' => $dayPerfor['standard_working_hours'],
+                        'total_hours' => $dayPerfor['total_hours'],
+                        'production_quantity' => $dayPerfor['production_quantity'],
+                        'work_name' => $dayPerfor['work_name'],
+                        'machine_code' => $dayPerfor['machine_code'],
+                        'machine_name' => $dayPerfor['machine_name'],
+                        'production_category' => $dayPerfor['production_category'],
+                        'standard_processing' => $dayPerfor['standard_processing'],
+                        'standard_updown' => $dayPerfor['standard_updown'],
+                        'machine_processing' => $dayPerfor['machine_processing'],
+                        'actual_production_quantity' => $dayPerfor['actual_production_quantity'],
+                        'total_input_that_day' => $dayPerfor['total_input_that_day'],
+                        'standard_completion' => $dayPerfor['standard_completion'],
+                        'total_completion_that_day' => $dayPerfor['total_completion_that_day'],
+                        'adverse_number' => $dayPerfor['adverse_number'],
+                        'mass_production_time' => $dayPerfor['mass_production_time'],
+                        'total_downtime' => $dayPerfor['total_downtime'],
+                        'standard_processing_seconds' => $dayPerfor['standard_processing_seconds'],
+                        'actual_processing_seconds' => $dayPerfor['actual_processing_seconds'],
+                        'machine_speed' => $dayPerfor['machine_speed'],
+                        'updown_time' => $dayPerfor['updown_time'],
+                        'correction_time' => $dayPerfor['correction_time'],
+                        'hanging_time' => $dayPerfor['hanging_time'],
+                        'aggregate_time' => $dayPerfor['aggregate_time'],
+                        'break_time' => $dayPerfor['break_time'],
+                        'chang_model_and_line' => $dayPerfor['chang_model_and_line'],
+                        'bad_disposal_time' => $dayPerfor['bad_disposal_time'],
+                        'model_damge_change_line_time' => $dayPerfor['model_damge_change_line_time'],
+                        'program_modify_time' => $dayPerfor['program_modify_time'],
+                        'meeting_time' => $dayPerfor['meeting_time'],
+                        'environmental_arrange_time' => $dayPerfor['environmental_arrange_time'],
+                        'excluded_working_hours' => $dayPerfor['excluded_working_hours'],
+                        'machine_downtime' => $dayPerfor['machine_downtime'],
+                        'machine_maintain_time' => $dayPerfor['machine_maintain_time'],
+                        'machine_utilization_rate' => $dayPerfor['machine_utilization_rate'],
+                        'performance_rate' => $dayPerfor['performance_rate'],
+                        'yield' => $dayPerfor['yield'],
+                        'OEE' => $dayPerfor['OEE'],
+                    ] );
             }
             
         }
