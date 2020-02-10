@@ -195,7 +195,7 @@ class OEEperformanceRepository
                 $sum_updown_time = $sum_updown_time + $data->updown_time;
             }
         }
-        $machine_processing_time['actual_processing_seconds'] = $sum_updown_time;
+        $machine_processing_time['updown_time'] = $sum_updown_time;
 
         return $machine_processing_time;
     }
