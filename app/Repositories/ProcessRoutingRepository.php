@@ -8,7 +8,7 @@ class ProcessRoutingRepository
 {
     public function syncTechRouting(array $datas)
     {
-        $org_id = ['10', '', '20', '30', '', '60', '50'];
+        $org_id = ['0' => '10', '2' => '20', '3' => '30', '9' => '50', '5' => '60', '6' => '60'];
         $transfer_factory = ['0', '1', '2', '3', '4', '5', '6', 'A' => 'A'];
         $routing_level = ['11', '20', '30', '40', '50'];
         $routing = ['11', '13', '12', '14'];
@@ -16,7 +16,6 @@ class ProcessRoutingRepository
             if ($techRouting->CU_APSState == 0) {
                 $tech_route_id = explode('-', $techRouting->TechRouteKeyId);
                 $techRouting->org_id = $org_id[$tech_route_id[0][3]];
-                $org_id2 = $org_id[$tech_route_id[0][3]];
                 if ($tech_route_id[1][0] == 8) {
                     $techRouting->transfer_factory = '6';
                 } else {
