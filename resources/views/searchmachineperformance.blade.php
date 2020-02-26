@@ -64,6 +64,9 @@
     .textcenter {
         text-align:center;
     }
+    .m-t-15{
+        margin-top: 15px;
+    }
 </style>
 @endsection
 
@@ -77,9 +80,9 @@
             <span class="space-item">></span>
             <a href="{{ route('show_machineperformance') }}">機台績效</a><span>
             <span class="space-item">></span>
-            <span class="space-item">{{$date['date_start']}}<span>
+            <span class="space-item">{{ $data['date_start']}}<span>
             <span class="space-item">~</span>
-            <span class="space-item">{{$date['date_end']}}<span>
+            <span class="space-item">{{ $data['date_end']}}<span>
         </ol>
         <div class="row">
             <div class="col-md-12">
@@ -94,11 +97,144 @@
                                     <div class="col-md-4">
                                         <input type="date" name="date_start" class="clearable form-control" required>
                                     </div>
-                                    <div class="col-md-1 textcenter">
+                                    <div class="col-md-2 textcenter">
                                         <label class="control-label"> ~ </label>
                                     </div>
                                     <div class="col-md-4">
                                         <input type="date" name="date_end" class="clearable form-control" required>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <div class="col-md-2 textcenter">
+                                            <label class="control-label">訊息狀態</label>
+                                    </div>
+                                    <div class="col-md-10 textcenter">
+                                        <select name="message_status"  class="clearable form-control">
+                                            <option disabled selected>---請選擇---</option>
+                                            <option value="訂單開始">訂單開始</option>
+                                            <option value="訂單結束">訂單結束</option>
+                                            <option value="開機">開機</option>
+                                            <option value="關機">關機</option>
+                                            <option value="二次元異常開始">二次元異常開始</option>
+                                            <option value="二次元異常結束">二次元異常結束</option>
+                                            <option value="送料異常開始">送料異常開始</option>
+                                            <option value="送料異常結束">送料異常結束</option>
+                                            <option value="二次元成品完成">二次元成品完成</option>
+                                            <option value="送料機成品完成">送料機成品完成</option>
+                                            <option value="二次元連線開始">二次元連線開始</option>
+                                            <option value="二次元連線結束">二次元連線結束</option>
+                                            <option value="送料機連線開始">送料機連線開始</option>
+                                            <option value="送料機連線結束">送料機連線結束</option>
+                                            <option value="Sensro1">Sensro1</option>
+                                            <option value="Sensro2">Sensro2</option>
+                                            <option value="成品數量到達">成品數量到達</option>
+                                            <option value="送料機換料開始">送料機換料開始</option>
+                                            <option value="送料機換料結束">送料機換料結束</option>
+                                            <option value="集料轉移開始">集料轉移開始</option>
+                                            <option value="集料轉移結束">集料轉移結束</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <div class="col-md-2 textcenter">
+                                            <label class="control-label">完工狀態</label>
+                                    </div>
+                                    <div class="col-md-10 textcenter">
+                                        <select name="completion_status" class="clearable form-control">
+                                            <option disabled selected>---請選擇---</option>
+                                            <option value="正常生產">正常生產</option>
+                                            <option value="異常">異常</option>
+                                            <option value="不正常">不正常</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <div class="col-md-2 textcenter">
+                                            <label class="control-label">生產狀態</label>
+                                    </div>
+                                    <div class="col-md-10 textcenter">
+                                        <select name="manufacturing_status" class="clearable form-control">
+                                            <option disabled selected>---請選擇---</option>
+                                            <option value="上班">上班</option>
+                                            <option value="休息">休息</option>
+                                            <option value="開始生產">開始生產</option>
+                                            <option value="自動完工">自動完工</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <div class="col-md-2 textcenter">
+                                            <label class="control-label">機台</label>
+                                    </div>
+                                    <div class="col-md-10 textcenter">
+                                        <select name="machine" id="machines" class="clearable form-control">   
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <div class="col-md-2 textcenter">
+                                            <label class="control-label">時間區間</label>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <select name="time_start" class="clearable form-control">
+                                            <option disabled selected>---請選擇---</option>
+                                            <option value="01:00">01:00</option>
+                                            <option value="02:00">02:00</option>
+                                            <option value="03:00">03:00</option>
+                                            <option value="04:00">04:00</option>
+                                            <option value="05:00">05:00</option>
+                                            <option value="06:00">06:00</option>
+                                            <option value="07:00">07:00</option>
+                                            <option value="08:00">08:00</option>
+                                            <option value="09:00">09:00</option>
+                                            <option value="10:00">10:00</option>
+                                            <option value="11:00">11:00</option>
+                                            <option value="12:00">12:00</option>
+                                            <option value="13:00">13:00</option>
+                                            <option value="14:00">14:00</option>
+                                            <option value="15:00">15:00</option>
+                                            <option value="16:00">16:00</option>
+                                            <option value="17:00">17:00</option>
+                                            <option value="18:00">18:00</option>
+                                            <option value="19:00">19:00</option>
+                                            <option value="20:00">20:00</option>
+                                            <option value="21:00">21:00</option>
+                                            <option value="22:00">22:00</option>
+                                            <option value="23:00">23:00</option>
+                                            <option value="24:00">24:00</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-1 textcenter">
+                                        <label class="control-label"> ~ </label>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <select name="time_end" class="clearable form-control">
+                                        <option disabled selected>---請選擇---</option>
+                                            <option value="01:00">01:00</option>
+                                            <option value="02:00">02:00</option>
+                                            <option value="03:00">03:00</option>
+                                            <option value="04:00">04:00</option>
+                                            <option value="05:00">05:00</option>
+                                            <option value="06:00">06:00</option>
+                                            <option value="07:00">07:00</option>
+                                            <option value="08:00">08:00</option>
+                                            <option value="09:00">09:00</option>
+                                            <option value="10:00">10:00</option>
+                                            <option value="11:00">11:00</option>
+                                            <option value="12:00">12:00</option>
+                                            <option value="13:00">13:00</option>
+                                            <option value="14:00">14:00</option>
+                                            <option value="15:00">15:00</option>
+                                            <option value="16:00">16:00</option>
+                                            <option value="17:00">17:00</option>
+                                            <option value="18:00">18:00</option>
+                                            <option value="19:00">19:00</option>
+                                            <option value="20:00">20:00</option>
+                                            <option value="21:00">21:00</option>
+                                            <option value="22:00">22:00</option>
+                                            <option value="23:00">23:00</option>
+                                            <option value="24:00">24:00</option>
+                                        </select>
                                     </div>
                                 </div>
                                 <hr>
@@ -112,7 +248,7 @@
             </div>
         </div>
         <div class="total-data">載入筆數 | 共 {{$datas->total()}}  筆</div>
-        <div style="margin-top:15px;">
+        <div clsss="m-t-15">
             <table class="table table-striped table-pos">
                 <thead class="thead-color">
                     <tr>
@@ -165,7 +301,7 @@
                         @foreach ($datas as $key =>$data)
                     <tr>     
                     @if ($data->id>1)
-                        <td>{{ $key + ($datas->currentPage() - 1) * 100 }}</td>
+                        <td>{{ ++$key + ($datas->currentPage() - 1) * 100 }}</td>
                         <td>{{ $data->machine }}</td>
                         <td>{{ $data->description }}</td>
                         <td>{{ $data->type }}</td>
@@ -211,15 +347,25 @@
                     </tr>
                     @endif
                     @endforeach
-
-                    {{!! $datas->appends(request()->query())->links() !!}}
-                </tbody>
+                    {!! $datas->appends(request()->query())->links() !!}
             </table>
-            
     </div>
-    
 </div>
 <script>
-    
+    const getMachineDefiniton = () => {
+        axios.get("{{ route('getMachineDefinition') }}")
+        .then(({ data }) => {
+            $('#machines').empty();
+            $('#machines').append(`
+                <option disabled selected value="">--- 請選擇 ---</option>
+            `)
+            data.forEach(data => {
+                $('#machines').append(`
+                    <option value="${data.machine_name}">${data.machine_name}</option>
+                `);
+            })
+        });
+    }
+    getMachineDefiniton();
 </script>
 @endsection

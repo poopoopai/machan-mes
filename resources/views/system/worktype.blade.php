@@ -88,7 +88,7 @@
     let lastPage;
     const getWorkTypeData = (page = 1) => {
         const amount = $('#amount').val();
-        axios.get('{{ route('work-type-data') }}', {
+        axios.get("{{ route('work-type-data') }}", {
             params: {
                 amount,
                 page,

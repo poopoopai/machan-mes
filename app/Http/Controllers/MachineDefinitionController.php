@@ -75,6 +75,7 @@ class MachineDefinitionController extends Controller
     {
         return $this->machineRepo->machineDefinitionIndex(request()->amount);
     }
+
     public function getMachineDefinition()
     {
         return $this->machineRepo->getMachineDefinition();

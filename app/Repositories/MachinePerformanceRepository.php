@@ -213,14 +213,10 @@
         {
             return Summary::where('resources_id', $newdata['resources_id'])->first();
         }
-        public function index()
-        {
-            return Summary::paginate(100);
-        }
 
-        public function searchdate()
+        public function searchdate($data)
         {
-            return Summary::whereBetween('date' , [request()->date_start, request()->date_end])->paginate(100);
+            return Summary::whereBetween('date', [$data['date_start'], $data['date_end']]);
         }
     }
 ?>

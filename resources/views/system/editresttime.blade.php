@@ -154,8 +154,8 @@
     </div>
 </div>
 <script>
-    if ('{{ session('message') }}') {
-        alert('{{ session('message') }}');
+    if ("{{ session('message') }}") {
+        alert("{{ session('message') }}");
     }
     const restData = '{{!! $result->restSetup !!}}';
     const restGroupData = '{{!! $result->id !!}}'
