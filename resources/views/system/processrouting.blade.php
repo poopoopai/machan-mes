@@ -103,7 +103,7 @@
     let lastPage;
     const getTechRoutingIndex = (page = 1) => {
         const amount = $('#amount').val();
-        axios.get('{{ route('ProcessRoutingIndex') }}',{
+        axios.get("{{ route('ProcessRoutingIndex') }}",{
             params: {
                 amount,
                 page,

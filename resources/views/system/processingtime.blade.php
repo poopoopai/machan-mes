@@ -119,7 +119,7 @@ let lastPage;
 
     const ProcessingTimeIndex = (page = 1) => {
         const amount = $('#amount').val();
-        axios.get('{{ route('ProcessingTimeIndex') }}',{
+        axios.get("{{ route('ProcessingTimeIndex') }}",{
             params: {
                 amount,
                 page,

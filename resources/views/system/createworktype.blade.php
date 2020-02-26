@@ -110,11 +110,11 @@
     </div>
 </div>
 <script>
-    if ('{{ session('message') }}') {
-        alert('{{ session('message') }}');
+    if ("{{ session('message') }}") {
+        alert("{{ session('message') }}");
     }
     const getRestId = () => {
-        axios.get('{{ route('rest-group') }}', {
+        axios.get("{{ route('rest-group') }}", {
             params: {
                 value: $('#work-type').val()
             }
