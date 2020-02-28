@@ -20,18 +20,27 @@ class DayPerformanceStatisticsController extends Controller
     }
 
     public function show(){
-        $datas = DayPerformanceStatistics::paginate(100);
-        return view('dayperformance', ['datas' => $datas]);
+        return view('dayperformance');
     }
 
     public function searchdate()
     {
-        $datas = DayPerformanceStatistics::whereBetween('report_work_date' , [request()->date_start, request()->date_end])->paginate(100)->appends(request()->query());
+        $data = request()->only('date_start', 'date_end', 'standard_processing');
+
+        $datas = DayPerformanceStatistics::whereBetween('report_work_date' , [$data['date_start'], $data['date_end']]);
+
+        if (!empty($data['standard_processing'])){
+            $datas = $datas->where('standard_processing', $data['standard_processing']);
+        }
+        
+        $datas = $datas->paginate(100);
+
         $date = request()->only('date_start' , 'date_end');
-            if($datas[0]){
+
+            if($datas){
                 return view('searchdayperformance', ['datas' => $datas, 'date' => $date]);
             }
-            return view('dayperformance', ['datas' => $datas, 'date' => $date]);
+            return view('dayperformance');
     }
 
     public function getmachineperformance()

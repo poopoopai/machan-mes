@@ -60,7 +60,7 @@ class ResourceController extends Controller
         }
         
         $datas = $datas->paginate(100);
-
+        
         if($datas){
             return view('searchmachineperformance', ['datas' => $datas, 'data' => $data]);
         }
