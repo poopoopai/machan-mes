@@ -20,18 +20,17 @@ class OEEperformanceController extends Controller
     }
 
     public function show(){
-        $datas = OEEperformance::paginate(100);
-        return view('OEEperformance', ['datas' => $datas]);
+        return view('OEEperformance');
     }
 
     public function searchdate()
     {
         $datas = OEEperformance::whereBetween('date' , [request()->date_start, request()->date_end])->paginate(100)->appends(request()->query());
         $date = request()->only('date_start' , 'date_end');
-            if($datas[0]){
+            if($datas){
                 return view('searchOEEperformance', ['datas' => $datas, 'date' => $date]);
             }
-            return view('OEEperformance', ['datas' => $datas, 'date' => $date]); 
+            return view('OEEperformance'); 
     }
 
     public function getOEEperformance(){

@@ -349,6 +349,7 @@
                     @endforeach
                     {!! $datas->appends(request()->query())->links() !!}
             </table>
+        </div>
     </div>
 </div>
 <script>

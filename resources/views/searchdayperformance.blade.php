@@ -91,17 +91,34 @@
                                 <div class="form-group">
                                     <div class="col-md-2 textcenter">
                                             <label class="control-label">機台日績效統計日期查詢</label>
-                                        </div>
-                                        <div class="col-md-4">
-                                            <input type="date" name="date_start" class="clearable form-control" required>
-                                        </div>
-                                        <div class="col-md-1 textcenter">
-                                            <label class="control-label"> ~ </label>
-                                        </div>
-                                        <div class="col-md-4">
-                                            <input type="date" name="date_end" class="clearable form-control" required>
-                                        </div>
                                     </div>
+                                    <div class="col-md-4">
+                                        <input type="date" name="date_start" class="clearable form-control" required>
+                                    </div>
+                                    <div class="col-md-1 textcenter">
+                                        <label class="control-label"> ~ </label>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <input type="date" name="date_end" class="clearable form-control" required>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <div class="col-md-2 textcenter">
+                                            <label class="control-label">機台</label>
+                                    </div>
+                                    <div class="col-md-10 textcenter">
+                                        <select name="machine" id="machines"  class="clearable form-control">
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <div class="col-md-2 textcenter">
+                                            <label class="control-label">物料代碼</label>
+                                    </div>
+                                    <div class="col-md-10 textcenter">
+                                        <input type="text" name="standard_processing" class="clearable form-control">
+                                    </div>
+                                </div>
                                 <hr>
                             <div style="text-align:center">
                                 <button type="submit" onclick="" id="sendBtn" class="btn btn-success btn-lg" style="width:45%">確認</button>
@@ -206,19 +223,30 @@
                         <td>{{ $data->machine_utilization_rate*100 }}%</td>
                         <td>{{ $data->performance_rate*100 }}%</td>
                         <td>{{ $data->yield*100 }}%</td>
-                        <td>{{ $data->OEE*100 }}%</td>
-                               
+                        <td>{{ $data->OEE*100 }}%</td>      
                     </tr>
                     @endforeach
-
                     {!! $datas->appends(request()->query())->links() !!}
                 </tbody>
             </table>
-            
+        </div>
     </div>
-    
 </div>
 <script>
-    
+    const getMachineDefiniton = () => {
+        axios.get("{{ route('getMachineDefinition') }}")
+        .then(({ data }) => {
+            $('#machines').empty();
+            $('#machines').append(`
+                <option disabled selected value="">--- 請選擇 ---</option>
+            `)
+            data.forEach(data => {
+                $('#machines').append(`
+                    <option value="${data.machine_name}">${data.machine_name}</option>
+                `);
+            })
+        });
+    }
+    getMachineDefiniton();
 </script>
 @endsection
