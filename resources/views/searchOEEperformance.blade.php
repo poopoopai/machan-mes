@@ -102,15 +102,6 @@
                                         <input type="date" name="date_end" class="clearable form-control" required>
                                     </div>
                                 </div>
-                                <div class="form-group">
-                                    <div class="col-md-2 textcenter">
-                                            <label class="control-label">機台</label>
-                                    </div>
-                                    <div class="col-md-10 textcenter">
-                                        <select name="machine" id="machines"  class="clearable form-control">
-                                        </select>
-                                    </div>
-                                </div>
                                 <hr>
                             <div style="text-align:center">
                                 <button type="submit" onclick="" id="sendBtn" class="btn btn-success btn-lg" style="width:45%">確認</button>

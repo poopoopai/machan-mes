@@ -107,7 +107,7 @@
                                             <label class="control-label">機台</label>
                                     </div>
                                     <div class="col-md-10 textcenter">
-                                        <select name="machine" id="machines"  class="clearable form-control">
+                                        <select name="machine_name" id="machines"  class="clearable form-control">
                                         </select>
                                     </div>
                                 </div>

@@ -199,7 +199,7 @@ class ProcessCalendarController extends Controller
         $work_total_time = Carbon::parse($work_on)->diffInMinutes(Carbon::parse($work_off));
         //  dd($times += ($work_total_time - $rest_total_time));
 
-        return $times += ($work_total_time - $rest_total_time);
+        return $times += ($work_total_time - $rest_total_time) + 480;
     }
 
 }
