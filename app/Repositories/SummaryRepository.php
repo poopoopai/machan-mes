@@ -7,6 +7,7 @@ use App\Entities\StandardCt;
 use App\Entities\ProcessCalendar;
 use App\Entities\CompanyCalendar;
 use App\Entities\SetupShift;
+use App\Entities\MachineDefinition;
 use Carbon\Carbon;
 
 class SummaryRepository
@@ -79,6 +80,15 @@ class SummaryRepository
 
             return date("H:i:s", ($last_time - $first_time)-8*60*60);
         }
+    }
+
+    public function machine_name($dayPerfor){
+        $standard = StandardCt::where('orderno', $dayPerfor['material_name'])->first();
+        return $standard->machine;
+    }
+    public function machine_code($dayPerfor){
+        $definition = MachineDefinition::where('machine_name', $dayPerfor['machine_name'])->first();
+        return $definition->machine_id;
     }
 
     //機檯作業數量
