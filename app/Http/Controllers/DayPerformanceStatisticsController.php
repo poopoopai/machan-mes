@@ -48,15 +48,15 @@ class DayPerformanceStatisticsController extends Controller
         $today = Carbon::today()->format("Y-m-d");
         // $orderno = Resource::where('date', '2019-11-08')->select('orderno')->distinct()->get();
         $orderno = Resource::where('date', $today)->select('orderno')->distinct()->get();
-        // dd($orderno);
+
         foreach($orderno as $key =>$datas){
             if($datas->orderno !== ''){
                 $dayPerfor =  [];
 
                 //製令資訊
-                $dayPerfor['order_number'] = '';  // 製令單號 空白??
+                $dayPerfor['order_number'] = '';  // 製令單號
                 $dayPerfor['material_name'] = $datas->orderno;   
-                $dayPerfor['production_quantity'] = 1;   // 生產數量 空白??
+                $dayPerfor['production_quantity'] = 1;   // 生產數量 
                 
                 $dayPerfor['report_work_date'] = $today; //$today
                 $dayPerfor['work_name'] = $this->SumRepo->work_name($dayPerfor);     //跟oee一樣去抓是否有加班?setup_shifts->name, process_calendars
@@ -64,9 +64,9 @@ class DayPerformanceStatisticsController extends Controller
                 $dayPerfor['total_hours'] = $this->SumRepo->total_hours($dayPerfor);   
 
                 //機台代碼 機台名稱
-                $dayPerfor['machine_code'] = '5010R01';  //???????????????????????
-                $dayPerfor['machine_name'] = '五廠抽屜捲料自動裁切機';
-                
+                $dayPerfor['machine_name'] = $this->SumRepo->machine_name($dayPerfor);
+                $dayPerfor['machine_code'] = $this->SumRepo->machine_code($dayPerfor);
+
                 $dayPerfor['production_category'] = '量產';
                 
                 
