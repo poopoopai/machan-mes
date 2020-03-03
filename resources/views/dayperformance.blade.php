@@ -102,7 +102,7 @@
                                             <label class="control-label">機台</label>
                                     </div>
                                     <div class="col-md-10 textcenter">
-                                        <select name="machine" id="machines"  class="clearable form-control">
+                                        <select name="machine_name" id="machines"  class="clearable form-control">
                                         </select>
                                     </div>
                                 </div>
@@ -111,7 +111,7 @@
                                             <label class="control-label">物料代碼</label>
                                     </div>
                                     <div class="col-md-10 textcenter">
-                                        <input type="text" name="" class="clearable form-control">
+                                        <input type="text" name="standard_processing" class="clearable form-control">
                                     </div>
                                 </div>
                                 <hr>
