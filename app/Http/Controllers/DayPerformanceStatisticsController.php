@@ -25,15 +25,15 @@ class DayPerformanceStatisticsController extends Controller
 
     public function searchdate()
     {
-        $data = request()->only('date_start', 'date_end', 'standard_processing', 'machine_name');
+        $data = request()->only('date_start', 'date_end', 'material_name', 'machine_name');
 
         $datas = DayPerformanceStatistics::whereBetween('report_work_date' , [$data['date_start'], $data['date_end']]);
 
         if (!empty($data['machine_name'])){
             $datas = $datas->where('machine_name', $data['machine_name']);
         }
-        if (!empty($data['standard_processing'])){
-            $datas = $datas->where('standard_processing', $data['standard_processing']);
+        if (!empty($data['material_name'])){
+            $datas = $datas->where('material_name', $data['material_name']);
         }
         
         $datas = $datas->paginate(100);

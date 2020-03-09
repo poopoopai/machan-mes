@@ -9,10 +9,9 @@ class ProcessCalendarRepository
 {
     public function index($data)
     {
-        $apsId = ProcessRouting::where('id' , $data['id'] )->first();
-        $machine = MachineDefinition::where('aps_process_code', $apsId->aps_id)->get();
+        $process_routing = ProcessRouting::where('id' , $data['id'] )->first();
 
-        return $machine;
+        return MachineDefinition::where('aps_process_code', $process_routing->aps_id)->get();
     }
 
     public function create(array $data)

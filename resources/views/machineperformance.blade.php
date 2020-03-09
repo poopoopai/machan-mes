@@ -151,8 +151,11 @@
                                             <option disabled selected>---請選擇---</option>
                                             <option value="上班">上班</option>
                                             <option value="休息">休息</option>
+                                            <option value="異常">異常</option>
+                                            <option value="不正常">不正常</option>
                                             <option value="開始生產">開始生產</option>
                                             <option value="自動完工">自動完工</option>
+                                            <option value="正常生產">正常生產</option>
                                         </select>
                                     </div>
                                 </div>
