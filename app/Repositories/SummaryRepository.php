@@ -84,7 +84,7 @@ class SummaryRepository
 
     public function machine_name($dayPerfor){
         $standard = StandardCt::where('orderno', $dayPerfor['material_name'])->first();
-        return $standard->machine;
+        return $standard->MachineDefinition->machine_name;
     }
     public function machine_code($dayPerfor){
         $definition = MachineDefinition::where('machine_name', $dayPerfor['machine_name'])->first();
