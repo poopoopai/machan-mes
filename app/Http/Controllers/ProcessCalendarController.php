@@ -192,14 +192,16 @@ class ProcessCalendarController extends Controller
         $rest_group = $data->setupShift->rest_group;
         $rest_setup = RestGroup::where('id', $rest_group)->first();
         $rest_time = $rest_setup->restSetup;
-        
         foreach ($rest_time as $key => $time) {
             $rest_total_time += Carbon::parse($time->start)->diffInMinutes(Carbon::parse($time->end));
         }
+        
+        if($work_off === "00:00:00") {
+            $work_off = "24:00:00";
+        }
         $work_total_time = Carbon::parse($work_on)->diffInMinutes(Carbon::parse($work_off));
-        //  dd($times += ($work_total_time - $rest_total_time));
-
-        return $times += ($work_total_time - $rest_total_time) + 480;
+        
+        return $times += ($work_total_time - $rest_total_time);
     }
 
 }

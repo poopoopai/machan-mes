@@ -111,7 +111,7 @@
                                             <label class="control-label">物料代碼</label>
                                     </div>
                                     <div class="col-md-10 textcenter">
-                                        <input type="text" name="standard_processing" class="clearable form-control">
+                                        <input type="text" name="material_name" class="clearable form-control">
                                     </div>
                                 </div>
                                 <hr>
