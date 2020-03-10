@@ -127,7 +127,7 @@
 </div>
 <script>
     const getOrganization = async () => {
-        await axios.get('{{ route('getorganization') }}')
+        await axios.get("{{ route('getorganization') }}")
             .then(({ data }) => {
                 data.forEach(data => {
                     $('#sel1').append(`
@@ -142,8 +142,8 @@
     getOrganization();
 
     const loadSession = async () => {
-        const saleOrder = JSON.parse('{{ session('comResults') }}'.replace(/&quot;/g,'"'));
-        const orgId = '{{ session('org_id') }}';
+        const saleOrder = JSON.parse("{{ session('comResults') }}".replace(/&quot;/g,'"'));
+        const orgId = "{{ session('org_id') }}";
         let date = new Date();
         let day = date.getDate();
         let month = date.getMonth() + 1;
