@@ -47,7 +47,6 @@ class OEEperformanceController extends Controller
         $sum['mass_production_time'] = $this->OEErepo->mass_production_time($sum); //因為真的太長所以分開寫...
         $machine_processing_time = $this->OEErepo->machine_processing_time($sum);
         $sum = array_merge($sum, $machine_processing_time);
-        
 
         // 機檯作業數量  machine_works_number ( total_completion_that_day, machine_processing, actual_production_quantity, 
         //                                    standard_completion, total_input_that_day, adverse_number )

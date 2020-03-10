@@ -42,7 +42,7 @@ class OEEperformanceRepository
             $work['weekend'] = '休';
         }
         
-        // $work_type = ProcessCalendar::where('date', '2019-11-08')->first(); // work_name
+        // $com_work_type = ProcessCalendar::where('date', '2019-11-08')->first(); // work_name
         $com_work_type = CompanyCalendar::where('date', $work['date'])->first(); //看看公司行事曆有沒有加班資料
 
         if( $com_work_type == null ){ //如果公司行事曆沒資料
@@ -101,7 +101,15 @@ class OEEperformanceRepository
 
         // total_hours
         if($work['work_name'] == '正常班'){
-            $work['total_hours'] = '9:20:00';
+
+        $total_hours = 0;
+        $totalTime = DayPerformanceStatistics::where('report_work_date', $work['date'])->select('total_hours')->distinct()->get();
+        
+        foreach($totalTime as $key =>$datas){
+            $total_hours += strtotime($datas->total_hours) - strtotime(Carbon::today());
+        }
+        $work['total_hours'] = date("H:i:s", ($total_hours)-8*60*60);
+
         }elseif($work['work_name'] == '休假' || $work['work_name'] == '國定假日'){
             $work['total_hours'] = '00:00:00';
         }else{  // 以下處理加班

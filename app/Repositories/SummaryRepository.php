@@ -64,7 +64,7 @@ class SummaryRepository
             $first_time = strtotime($first_time) - strtotime(Carbon::today());
             $last_time = strtotime($last_time) - strtotime(Carbon::today());
 
-            return (($last_time - $first_time)/3600);
+            return (($last_time - $first_time)/3600); //顯示小時
         }
     }
     public function total_hours($dayPerfor)  //改成 當天這筆料號在summaries的總working_time
@@ -78,7 +78,7 @@ class SummaryRepository
             $first_time = strtotime($first_time) - strtotime(Carbon::today());
             $last_time = strtotime($last_time) - strtotime(Carbon::today());
 
-            return date("H:i:s", ($last_time - $first_time)-8*60*60);
+            return date("H:i:s", ($last_time - $first_time)-8*60*60); // 顯示確切時數
         }
     }
 
