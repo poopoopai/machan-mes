@@ -85,7 +85,7 @@
     let lastPage;
     const getSaleOrderData = (page = 1) => {
         const amount = $('#amount').val();
-        axios.get('{{ route('current-data') }}' + location.search, {
+        axios.get("{{ route('current-data') }}" + location.search, {
             params: {
                 mo_id : '{{ $mo_id }}',
                 amount,

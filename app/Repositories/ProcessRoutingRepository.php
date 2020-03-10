@@ -64,9 +64,9 @@ class ProcessRoutingRepository
     {
         return ProcessRouting::get();
     }
-    public function getOrganization($data)
+    public function getOrganization($org_id)
     {
-        return ProcessRouting::where('org_id', $data)->get();
+        return ProcessRouting::where('org_id', $org_id)->get();
     }
 
 }

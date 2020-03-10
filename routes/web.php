@@ -35,9 +35,6 @@ Route::group(['middleware' => ['auth']], function () {
     Route::resource('formula-setting', 'FormulaSettingController')->except('show');
     Route::resource('machineoee', 'MachineOeeController')->except('show');
 
-    Route::get('/home', 'HomeController@index')->name('home');
-    Route::post('/inform', 'ResourceController@inform')->name('inform');
-
     Route::get('machineperformance/search', 'api\ResourceController@searchdate')->name('search_machineperformance');
     Route::get('dayperformance/search', 'DayPerformanceStatisticsController@searchdate')->name('search_dayperformance_date');
     Route::get('/OEEperformance/search', 'OEEperformanceController@searchdate')->name('search_OEEperformance_date');
@@ -50,12 +47,7 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('/manufacture-result', 'ManufactureController@manufactureResult')->name('manufacture-result');
     Route::get('/search-manufacture', 'ManufactureController@index')->name('search-manufacture');
     Route::get('/get-manufacture', 'ManufactureController@getManufactureData')->name('get-manufacture');
-
-    Route::get('/order-inbound', 'web\OrderInboundController@index')->name('order-inbound');
-    
-    Route::get('/personnel-management', 'web\PersonnelManagementController@index')->name('personnel-management');
-
-
+  
     Route::group(['prefix' => 'process-routing'], function () {
         Route::get('/', 'ProcessRoutingController@index')->name('process-routing.index');
         Route::put('/{id}', 'ProcessRoutingController@update')->name('process-routing.update');
@@ -63,15 +55,10 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('/index', 'ProcessRoutingController@processRoutingIndex')->name('ProcessRoutingIndex');
     });
 
-    Route::group(['prefix' => 'edit'], function () {
-        
-        Route::get('/personnel-management', 'web\PersonnelManagementController@edit')->name('edit-personnel-management');
-    });
-
-        Route::get('/full-calendar', 'CalendarController@fullCalendar')->name('full-calendar');
-        Route::get('/year-calendar', 'CalendarController@yearcalendar')->name('year-calendar');
-        Route::get('/process-calendar', 'ProcessCalendarController@processcalendar')->name('process-calendar');
-        Route::get('/adjust-process-calendar', 'ProcessCalendarController@showProcessCalendar')->name('show-process-calendar');
+    Route::get('/full-calendar', 'CalendarController@fullCalendar')->name('full-calendar');
+    Route::get('/year-calendar', 'CalendarController@yearcalendar')->name('year-calendar');
+    Route::get('/process-calendar', 'ProcessCalendarController@processcalendar')->name('process-calendar');
+    Route::get('/adjust-process-calendar', 'ProcessCalendarController@showProcessCalendar')->name('show-process-calendar');
         
 });
 

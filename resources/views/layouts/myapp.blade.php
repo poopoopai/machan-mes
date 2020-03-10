@@ -164,16 +164,7 @@
                                 </li>
                                 <li>
                                     <a href="{{ route('machineoee.index') }}" style="color: white;">機台OEE設定</a>
-                                </li>
-                               
-                            </ul>
-                        </li> -->
-                        <!-- <li>
-                        <a href="#" style="color: white;">帳號管理<span class="fa arrow"></span></a>
-                            <ul class="nav nav-second-level">
-                                <li>
-                                    <a href="{{route('personnel-management')}}" style="color: white;">人員帳號設定</a>
-                                </li>
+                                </li> 
                             </ul>
                         </li> -->
                         <li>

@@ -29,10 +29,7 @@ Route::get('/getapsdata', 'ProcessRoutingController@getApsData')->name('getApsDa
 Route::get('/getdatabase', 'ResourceController@getdatabase')->name('getdatabase');
 
 Route::get('/fixmachinedatabase', 'api\ResourceController@fixmachinedatabase')->name('fixmachinedatabase');
-Route::get('/test', 'ResourceController@test');
 Route::get('/test2', 'ResourceController@test2');
-Route::get('/inform', 'ResourceController@inform');
-
 
 Route::get('/organization', 'OrganizationController@getOrganization')->name('getorganization');
 Route::get('/sale-order-data', 'SaleOrderController@getSaleOrderData')->name('save-sale-order');
