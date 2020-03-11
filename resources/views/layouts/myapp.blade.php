@@ -176,9 +176,7 @@
                                 <li>
                                 <a href="{{route('search-manufacture')}}" style="color: white;">製令單查詢</a>
                                 </li>
-                                <!-- <li>
-                                    <a href="{{route('order-inbound')}}" style="color: white;">入庫單查詢</a>
-                                </li> -->
+                                
                                 <li>
                                     <a href="{{route('show_machineperformance')}}" style="color: white;">機台績效</a>
                                 </li>
