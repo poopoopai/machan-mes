@@ -319,7 +319,6 @@
                     renderCalendarDate(date);
                 });
             });
-            console.log(currentYear, ~~currentMonth+1, $getCurrentStatus.value);
             getCalendarTotals(currentYear, ~~currentMonth+1, $getCurrentStatus.value);
         }
 
