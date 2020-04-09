@@ -64,7 +64,7 @@ class SummaryRepository
             $first_time = strtotime($first_time) - strtotime(Carbon::today());
             $last_time = strtotime($last_time) - strtotime(Carbon::today());
 
-            return (($last_time - $first_time)/3600); //顯示小時
+            return round(($last_time - $first_time)/3600); //顯示小時
         }
     }
     public function total_hours($dayPerfor)  //改成 當天這筆料號在summaries的總working_time
@@ -110,7 +110,7 @@ class SummaryRepository
         $machine_works_number['total_input_that_day'] = $count1;    //同上上？？
 
         // standard_completion //個別料號分開計算 有問題
-        $machine_works_number['standard_completion'] = intval(($dayPerfor['standard_working_hours'] * 3600) / ($dayPerfor['standard_processing'] + $dayPerfor['standard_updown']));
+        $machine_works_number['standard_completion'] = (($dayPerfor['standard_working_hours'] * 3600) / ($dayPerfor['standard_processing'] + $dayPerfor['standard_updown']));
 
         // total_completion_that_day
         // COUNTIFS( 捲料機績效分析!$C:$C, 9,   捲料機績效分析!$E:$E,機台日績效統計表!$B7,   捲料機績效分析!$B:$B,機台日績效統計表!$J7)
@@ -151,19 +151,16 @@ class SummaryRepository
         $sum = 0;
         $sum1 = 0;
         $sum2 = 0;
-        // dd($sameDayAndName_changeLine);
+
         if ($sameDayAndName_changeLine == null) {    //沒有換線
 
             foreach ($sameDayAndName as $key => $data) {
-                $max = $data->summary->max('serial_number_day');    //抓最大值
-                if ($max == $data->summary->serial_number_day) {      //如果帶進來的值為最大值
-                    $time = strtotime($data->summary->time) - strtotime(Carbon::today());
-                    $sum1 = $sum1 + $time;
-                }
+                $time = strtotime($data->summary->working_time) - strtotime(Carbon::today());
+                $sum1 = $sum1 + $time;
             }
             foreach ($sameDay as $key => $data) {
                 if ($data->summary->serial_number_day == 1) {
-                    $time = strtotime($data->summary->time) - strtotime(Carbon::today());
+                    $time = strtotime($data->summary->working_time) - strtotime(Carbon::today());
                     $sum2 = $sum2 + $time;
                 }
             }
@@ -174,15 +171,12 @@ class SummaryRepository
             if ($dayPerfor['material_name'] == "") {
 
                 foreach ($sameDay as $key => $data) {
-                    $max = $data->summary->max('serial_number_day');    //抓最大值
-                    if ($max == $data->summary->serial_number_day) {      //如果帶進來的值為最大值
-                        $time = strtotime($data->summary->time) - strtotime(Carbon::today());
-                        $sum1 = $sum1 + $time;
-                    }
+                    $time = strtotime($data->summary->working_time) - strtotime(Carbon::today());
+                    $sum1 = $sum1 + $time;
                 }
                 foreach ($sameDayAndName as $key => $data) {
                     if (1 == $data->summary->serial_number_day) {
-                        $time = strtotime($data->summary->time) - strtotime(Carbon::today());
+                        $time = strtotime($data->summary->working_time) - strtotime(Carbon::today());
                         $sum2 = $sum2 + $time;
                     }
                 }
@@ -193,13 +187,13 @@ class SummaryRepository
 
                 foreach ($sameDayAndName as $key => $data) {
                     if ('換線' == $data->summary->abnormal) {
-                        $time = strtotime($data->summary->time) - strtotime(Carbon::today());
+                        $time = strtotime($data->summary->working_time) - strtotime(Carbon::today());
                         $sum1 = $sum1 + $time;
                     }
                 }
                 foreach ($sameDayAndName as $key => $data) {
                     if (1 == $data->summary->serial_number_day) {
-                        $time = strtotime($data->summary->time) - strtotime(Carbon::today());
+                        $time = strtotime($data->summary->working_time) - strtotime(Carbon::today());
                         $sum2 = $sum2 + $time;
                     }
                 }
