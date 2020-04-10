@@ -158,7 +158,7 @@ class SummaryRepository
                 $time = strtotime($data->summary->working_time) - strtotime(Carbon::today());
                 $sum1 = $sum1 + $time;
             }
-            foreach ($sameDay as $key => $data) {
+            foreach ($sameDayAndName as $key => $data) {
                 if ($data->summary->serial_number_day == 1) {
                     $time = strtotime($data->summary->working_time) - strtotime(Carbon::today());
                     $sum2 = $sum2 + $time;
@@ -183,7 +183,7 @@ class SummaryRepository
                 $sum = $sum1 - $sum2;
                 return date("H:i:s", $sum - 8 * 60 * 60); //將時間戳轉回字串
 
-            } else {
+            } else {  //有換線也有料號名
 
                 foreach ($sameDayAndName as $key => $data) {
                     if ('換線' == $data->summary->abnormal) {
