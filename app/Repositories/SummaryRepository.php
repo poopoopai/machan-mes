@@ -355,20 +355,20 @@ class SummaryRepository
         $chang_model_and_line = strtotime($dayPerfor['chang_model_and_line']) - strtotime(Carbon::today());
         $updown_time = $dayPerfor['updown_time'];
 
-        $machine_utilization_rate = floor((($mass_production_time - $total_downtime - $updown_time - $chang_model_and_line) / ($mass_production_time))*100)/100;
+        $machine_utilization_rate = round((($mass_production_time - $total_downtime - $updown_time - $chang_model_and_line) / ($mass_production_time)), 2);
         $performance_exclusion_time['machine_utilization_rate'] = $machine_utilization_rate;
 
-        $performance_exclusion_time['performance_rate'] = floor(($dayPerfor['total_completion_that_day'] / $dayPerfor['standard_completion'])*100)/100;
+        $performance_exclusion_time['performance_rate'] = round(($dayPerfor['total_completion_that_day'] / $dayPerfor['standard_completion']), 2);
 
         //yield  ($total_completion_that_day - $adverse_number)/($total_completion_that_day)
 
         if($dayPerfor['total_completion_that_day'] == 0){
             $performance_exclusion_time['yield'] = 0;
         }else{
-            $performance_exclusion_time['yield'] = floor(($dayPerfor['total_completion_that_day'] - $dayPerfor['adverse_number']) / ($dayPerfor['total_completion_that_day'])*100)/100;
+            $performance_exclusion_time['yield'] = round((($dayPerfor['total_completion_that_day'] - $dayPerfor['adverse_number']) / ($dayPerfor['total_completion_that_day'])),2);
         }
 
-        $performance_exclusion_time['OEE'] = floor(($performance_exclusion_time['machine_utilization_rate'] * $performance_exclusion_time['performance_rate'] * $performance_exclusion_time['yield'])*100)/100;
+        $performance_exclusion_time['OEE'] = round(($performance_exclusion_time['machine_utilization_rate'] * $performance_exclusion_time['performance_rate'] * $performance_exclusion_time['yield']), 2);
 
         return $performance_exclusion_time;
     }
