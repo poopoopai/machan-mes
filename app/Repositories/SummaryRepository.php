@@ -199,7 +199,6 @@ class SummaryRepository
                 }
                 $sum = $sum1 - $sum2;
                 return date("H:i:s", $sum - 8 * 60 * 60); //將時間戳轉回字串
-
             }
         }
     }
@@ -301,7 +300,6 @@ class SummaryRepository
         }
         $machinee_work_except_hours['chang_model_and_line'] = date("H:i:s", $chang_model_and_line - 8 * 60 * 60); //將時間戳轉回字串
 
-
         $machinee_work_except_hours['bad_disposal_time'] = '';  //由APP輸入或由機台自動判定除外工時(物料品質不良處置時間)
         $machinee_work_except_hours['model_damge_change_line_time'] = '';  //由APP輸入或由機台自動判定除外工時(模具損壞換線時間)
         $machinee_work_except_hours['program_modify_time'] = '';  //由APP輸入或由機台自動判定除外工時(程式修改時間)
@@ -372,10 +370,4 @@ class SummaryRepository
 
         return $performance_exclusion_time;
     }
-
-    // public function data()//當日最後一筆
-    // {
-    //   summary::orderby('created_at' , 'desc')->with('resource')->first();   
-    // }
-
 }
