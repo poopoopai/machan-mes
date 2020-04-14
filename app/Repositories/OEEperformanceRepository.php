@@ -344,7 +344,7 @@ class OEEperformanceRepository
         $sum_machine_downtime = 0; 
         foreach($getSameDay as $key =>$data){
             if($data->machine_downtime != "00:00:00"){
-                $machine_downtime = strtotime($data->break_time) - strtotime(Carbon::today()); //將字串改為時間戳  之後再相減進行校正
+                $machine_downtime = strtotime($data->machine_downtime) - strtotime(Carbon::today()); //將字串改為時間戳  之後再相減進行校正
                 $sum_machine_downtime = $sum_machine_downtime + $machine_downtime;
             }
         }
