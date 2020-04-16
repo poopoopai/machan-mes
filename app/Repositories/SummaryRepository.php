@@ -63,7 +63,6 @@ class SummaryRepository
 
             $first_time = strtotime($first_time) - strtotime(Carbon::today());
             $last_time = strtotime($last_time) - strtotime(Carbon::today());
-
             return round(($last_time - $first_time)/3600); //顯示小時
         }
     }
@@ -111,7 +110,6 @@ class SummaryRepository
 
         // standard_completion //個別料號分開計算 有問題
         $machine_works_number['standard_completion'] = (($dayPerfor['standard_working_hours'] * 3600) / ($dayPerfor['standard_processing'] + $dayPerfor['standard_updown']));
-
         // total_completion_that_day
         // COUNTIFS( 捲料機績效分析!$C:$C, 9,   捲料機績效分析!$E:$E,機台日績效統計表!$B7,   捲料機績效分析!$B:$B,機台日績效統計表!$J7)
         foreach ($sameDayAndName_id9 as $key => $data) {
@@ -149,6 +147,7 @@ class SummaryRepository
         $sameDayAndName = Resource::where('orderno', $dayPerfor['material_name'])->where('date', $dayPerfor['report_work_date'])->with('summary')->get();
         $sameDay = Resource::where('date', $dayPerfor['report_work_date'])->with('summary')->get();
         $sum = 0;
+        $sum0 = 0;
         $sum1 = 0;
         $sum2 = 0;
 
@@ -189,6 +188,9 @@ class SummaryRepository
                     if ('換線' == $data->summary->abnormal) {
                         $time = strtotime($data->summary->working_time) - strtotime(Carbon::today());
                         $sum1 = $sum1 + $time;
+                    } else {
+                        $time = strtotime($data->summary->working_time) - strtotime(Carbon::today());
+                        $sum0 = $sum0 + $time;
                     }
                 }
                 foreach ($sameDayAndName as $key => $data) {
@@ -197,7 +199,7 @@ class SummaryRepository
                         $sum2 = $sum2 + $time;
                     }
                 }
-                $sum = $sum1 - $sum2;
+                $sum = $sum0 - $sum1 - $sum2;
                 return date("H:i:s", $sum - 8 * 60 * 60); //將時間戳轉回字串
             }
         }
