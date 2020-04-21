@@ -124,8 +124,8 @@ class OEEperformanceRepository
                 $rest_end = strtotime($rest->end) - strtotime(Carbon::today());
                 $rest_time = $rest_end - $rest_start;
 
-                $work['total_hours'] = date("H:i:s", ($work_off - $work_on - $rest_time + 28800)-8*60*60); 
-                // workoff - workon - 休息時間 + 8hour      28800為8小時的時間戳(秒數)
+                $work['total_hours'] = date("H:i:s", ($work_off - $work_on - $rest_time )-8*60*60); 
+                // workoff - workon - 休息時間    28800為8小時的時間戳(秒數)
             }else{
                 $work_time = SetupShift::where('id', $com_work_type->work_type_id)->first();
                 $work_off = strtotime($work_time->work_off) - strtotime(Carbon::today());
@@ -136,7 +136,7 @@ class OEEperformanceRepository
                 $rest_end = strtotime($rest->end) - strtotime(Carbon::today());
                 $rest_time = $rest_end - $rest_start;
 
-                $work['total_hours'] = date("H:i:s", ($work_off - $work_on - $rest_time + 28800)-8*60*60); 
+                $work['total_hours'] = date("H:i:s", ($work_off - $work_on - $rest_time )-8*60*60); 
             }
         }
 
