@@ -64,7 +64,6 @@ class OEEperformanceRepository
                     $work['work_name'] = $work_name;
                 }
             }
-
         }else{  //如果公司行事曆有資料 
             if( $com_work_type->work_type_id == null ){
                 if($com_work_type->status == 2 ){
@@ -82,7 +81,6 @@ class OEEperformanceRepository
             }
         }
 
-
         // standard_working_hours
         if($work['work_name'] == '正常班' || $work['work_name'] == '早班' || $work['work_name'] == '中班' || $work['work_name'] == '晚班'){
             $work['standard_working_hours'] = '8:00:00';
@@ -98,7 +96,6 @@ class OEEperformanceRepository
             $work['standard_working_hours'] = '24:00:00';
         }
         
-
         // total_hours
         if($work['work_name'] == '正常班'){
 
@@ -143,7 +140,6 @@ class OEEperformanceRepository
         return $work;
 
     }
-
 
     //////////////////////////機台加工時間      machine_processing_time
 
@@ -196,7 +192,6 @@ class OEEperformanceRepository
         }
         $machine_processing_time['actual_processing_seconds'] = $sum_actual_processing_seconds;
         
- 
         $sum_updown_time = 0;   // updown_time
         if( $getSameDay->first() != null ){ 
             foreach($getSameDay as $key =>$data){  // actual_processing_seconds
@@ -208,13 +203,11 @@ class OEEperformanceRepository
         return $machine_processing_time;
     }
     
-    
     //////////////////////////////////機檯作業數量      machine_works_number
 
     public function machine_works_number($sum){
         $machine_works_number = [];
         $getSameDay = DayPerformanceStatistics::where('report_work_date', $sum['date'])->get(); 
-
         
         //  total_completion_that_day
         $sum_total_completion_that_day = 0;
@@ -227,7 +220,6 @@ class OEEperformanceRepository
             }
             $machine_works_number['total_completion_that_day'] = $sum_total_completion_that_day; 
         }
-
         
         //  machine_processing
         $sum_machine_processing = 0;
@@ -241,7 +233,6 @@ class OEEperformanceRepository
             $machine_works_number['machine_processing'] = $sum_machine_processing;
         }
 
-
         //  actual_production_quantity
         $sum_actual_production_quantity = 0;
 
@@ -254,7 +245,6 @@ class OEEperformanceRepository
             $machine_works_number['actual_production_quantity'] = $sum_actual_production_quantity;
         }
 
-
         //  standard_completion
         $sum_standard_completion = 0;
         if( $getSameDay->first() == null ){
@@ -265,7 +255,6 @@ class OEEperformanceRepository
             }
             $machine_works_number['standard_completion'] = $sum_standard_completion;
         }
-
 
         //  total_input_that_day
         $sum_total_input_that_day = 0;
@@ -279,7 +268,6 @@ class OEEperformanceRepository
             $machine_works_number['total_input_that_day'] = $sum_total_input_that_day;
         }
 
-
         //  adverse_number
         if($machine_works_number['total_completion_that_day'] == ''){
             $machine_works_number['adverse_number'] = '';
@@ -289,7 +277,6 @@ class OEEperformanceRepository
 
         return $machine_works_number;
     }
-
 
     ///////////////////////////////////////機台嫁動除外工時   machinee_work_except_hours
 
@@ -319,7 +306,6 @@ class OEEperformanceRepository
             }
         }
         $machinee_work_except_hours['aggregate_time'] = date("H:i:s", $sum_aggregate_time-8*60*60);//將時間戳轉回字串
-
 
         // break_time
         $sum_break_time = 0;
@@ -370,7 +356,6 @@ class OEEperformanceRepository
 
     }
     
-    
     public function machine_performance($sum){
 
         $machine_performance = [];
@@ -380,30 +365,25 @@ class OEEperformanceRepository
         foreach($sameday as $key =>$datas){
             $machine_utilization_rate = $machine_utilization_rate + $datas->machine_utilization_rate;
         }
-        $machine_performance['machine_utilization_rate'] = round(($machine_utilization_rate/count($sameday)), 2);
-
+        $machine_performance['machine_utilization_rate'] = round(($machine_utilization_rate/count($sameday)), 4);
         
         $performance_rate = 0;
         foreach($sameday as $key =>$datas){
             $performance_rate = $performance_rate + $datas->performance_rate;
         }
-        $machine_performance['performance_rate'] = round(($performance_rate/count($sameday)), 2);
-
-
+        $machine_performance['performance_rate'] = round(($performance_rate/count($sameday)), 4);
         
         $yield = 0;
         foreach($sameday as $key =>$datas){
             $yield = $yield + $datas->yield;
         }
-        $machine_performance['yield'] = round(($yield/count($sameday)), 2);
-
-
+        $machine_performance['yield'] = round(($yield/count($sameday)), 4);
         
         $OEE = 0;
         foreach($sameday as $key =>$datas){
             $OEE = $OEE + $datas->OEE;
         }
-        $machine_performance['OEE'] = round(($OEE/count($sameday)), 2);
+        $machine_performance['OEE'] = round(($OEE/count($sameday)), 4);
 
         return $machine_performance;
     }
