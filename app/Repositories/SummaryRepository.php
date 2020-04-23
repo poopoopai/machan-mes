@@ -153,7 +153,6 @@ class SummaryRepository
         $sum2 = 0;
 
         if ($sameDayAndName_changeLine == null) {    //沒有換線
-
             foreach ($sameDayAndName as $key => $data) {
                 $time = strtotime($data->summary->working_time) - strtotime(Carbon::today());
                 $sum1 = $sum1 + $time;
@@ -353,23 +352,23 @@ class SummaryRepository
 
         //machine_utilization_rate   ($mass_production_time - $total_downtime + $updown_time)/($mass_production_time)
         $mass_production_time = strtotime($dayPerfor['mass_production_time']) - strtotime(Carbon::today());
-        $chang_model_and_line = strtotime($dayPerfor['chang_model_and_line']) - strtotime(Carbon::today());
+        $total_hours = strtotime($dayPerfor['total_hours']) - strtotime(Carbon::today());
         $updown_time = $dayPerfor['updown_time'];
 
-        $machine_utilization_rate = round((($mass_production_time - $total_downtime - $updown_time - $chang_model_and_line) / ($mass_production_time)), 2);
+        $machine_utilization_rate = round((($mass_production_time - $total_downtime - $updown_time) / ($total_hours)), 4);
         $performance_exclusion_time['machine_utilization_rate'] = $machine_utilization_rate;
 
-        $performance_exclusion_time['performance_rate'] = round(($dayPerfor['total_completion_that_day'] / $dayPerfor['standard_completion']), 2);
+        $performance_exclusion_time['performance_rate'] = round(($dayPerfor['total_completion_that_day'] / $dayPerfor['standard_completion']), 4);
 
         //yield  ($total_completion_that_day - $adverse_number)/($total_completion_that_day)
 
         if($dayPerfor['total_completion_that_day'] == 0){
             $performance_exclusion_time['yield'] = 0;
         }else{
-            $performance_exclusion_time['yield'] = round((($dayPerfor['total_completion_that_day'] - $dayPerfor['adverse_number']) / ($dayPerfor['total_completion_that_day'])),2);
+            $performance_exclusion_time['yield'] = round((($dayPerfor['total_input_that_day'] - $dayPerfor['adverse_number']) / ($dayPerfor['total_input_that_day'])),4);
         }
 
-        $performance_exclusion_time['OEE'] = round(($performance_exclusion_time['machine_utilization_rate'] * $performance_exclusion_time['performance_rate'] * $performance_exclusion_time['yield']), 2);
+        $performance_exclusion_time['OEE'] = round(($performance_exclusion_time['machine_utilization_rate'] * $performance_exclusion_time['performance_rate'] * $performance_exclusion_time['yield']), 4);
 
         return $performance_exclusion_time;
     }
