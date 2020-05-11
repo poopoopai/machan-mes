@@ -185,12 +185,11 @@ class SummaryRepository
             } else {  //有換線也有料號名
 
                 foreach ($sameDayAndName as $key => $data) {
+                    $time = strtotime($data->summary->working_time) - strtotime(Carbon::today());
+                    $sum0 = $sum0 + $time;
                     if ('換線' == $data->summary->abnormal) {
                         $time = strtotime($data->summary->working_time) - strtotime(Carbon::today());
                         $sum1 = $sum1 + $time;
-                    } else {
-                        $time = strtotime($data->summary->working_time) - strtotime(Carbon::today());
-                        $sum0 = $sum0 + $time;
                     }
                 }
                 foreach ($sameDayAndName as $key => $data) {
