@@ -26,7 +26,7 @@ class SummaryRepository
                 }elseif($work_type->status == 3){
                     return '國定假日';
                 }
-            }else{ //有加班
+            }else{ //機台行事曆有加班
                 $work_name = SetupShift::where('id', $work_type->work_type_id)->first()->type;
                 if(Carbon::now()->isWeekend() == true){
                     return '假日加班';
@@ -35,14 +35,14 @@ class SummaryRepository
                 }
             }
 
-        }else{  //如果公司行事曆有資料 
+        }else{  //公司行事曆有資料 
             if( $com_work_type->work_type_id == null ){
                 if($com_work_type->status == 2 ){
                     return '休假';
                 }elseif($com_work_type->status == 3){
                     return '國定假日';
                 }
-            }else{ //有加班
+            }else{ //公司行事曆有加班
                 $work_name = SetupShift::where('id', $com_work_type->work_type_id)->first()->type;
                 if(Carbon::now()->isWeekend() == true){
                     return '假日加班';
@@ -55,15 +55,48 @@ class SummaryRepository
 
     public function standard_working_hours($dayPerfor)  //改成從resource抓當天同料號的運作時間(最後一筆減去第一筆)
     {
+        $first = Resource::where('orderno', $dayPerfor['material_name'])->where('date', $dayPerfor['report_work_date'])->first();
+        $last = Resource::where('orderno', $dayPerfor['material_name'])->where('date', $dayPerfor['report_work_date'])->latest('time')->first();
+        $first_time = strtotime($first->time) - strtotime(Carbon::today());
+        $last_time = strtotime($last->time) - strtotime(Carbon::today());
+        
         if ($dayPerfor['work_name'] == '休假' || $dayPerfor['work_name'] == '國定假日') {
             return 0;
-        } else { //加班幾小時?
-            $first_time = Resource::where('orderno', $dayPerfor['material_name'])->where('date', $dayPerfor['report_work_date'])->first()->time;
-            $last_time = Resource::where('orderno', $dayPerfor['material_name'])->where('date', $dayPerfor['report_work_date'])->latest('time')->first()->time;
+        }elseif($last->orferno == $dayPerfor['material_name'] ){ //如果是當天最後一筆料號 先查看當天班別工作時間
+            if($dayPerfor['work_name'] == '正常班' ){
+                $work_end = strtotime('17:10:00') - strtotime(Carbon::today()); //班別設定的最後時間
+                if($last_time > $work_end){  //如果工作時間超出班別時間
+                    $extra_worktime = $last_time - $work_end;
+                    return round((($last_time - $first_time + $extra_worktime)/3600), 2); //顯示小時
+                }else{
+                    return round((($work_end - $first_time)/3600), 2); //顯示小時
+                }
+            }else{ //不是正常班
+                $com_work_type = CompanyCalendar::where('date', $dayPerfor['report_work_date'])->first(); //看看公司行事曆有沒有加班資料
+                if( $com_work_type == null ){ //如果公司行事曆沒資料
+                    $work_type = ProcessCalendar::where('date', $dayPerfor['report_work_date'])->first(); //看看機台行事曆的加班資料
+                    $work_shift = SetupShift::where('id', $work_type->work_type_id)->first();
+                    $work_down = strtotime($work_shift->work_off) - strtotime(Carbon::today()); //班別設定的工作結束時間
+                    
+                    if($last_time > $work_down){  //如果超過班別設定工作時間
+                        $extra_worktime = $last_time - $work_down;
+                        return round((($last_time - $first_time + $extra_worktime)/3600), 2); //顯示小時
+                    }else{
+                        return round((($work_down - $first_time)/3600), 2); //顯示小時
+                    }
 
-            $first_time = strtotime($first_time) - strtotime(Carbon::today());
-            $last_time = strtotime($last_time) - strtotime(Carbon::today());
-
+                }else{  //公司行事曆有資料 
+                    $work_shift = SetupShift::where('id', $com_work_type->work_type_id)->first();
+                    $work_down = strtotime($work_shift->work_off) - strtotime(Carbon::today()); //班別設定的工作結束時間
+                    if($last_time > $work_down){  //如果超過班別設定工作時間
+                        $extra_worktime = $last_time - $work_down;
+                        return round((($last_time - $first_time + $extra_worktime)/3600), 2); //顯示小時
+                    }else{
+                        return round((($work_down - $first_time)/3600), 2); //顯示小時
+                    }
+                }
+            }
+        }else{ 
             return round((($last_time - $first_time)/3600), 2); //顯示小時
         }
     }
@@ -71,7 +104,7 @@ class SummaryRepository
     {
         if ($dayPerfor['work_name'] == '休假' || $dayPerfor['work_name'] == '國定假日') {
             return 0;
-        } else { //加班幾小時?
+        } else { 
             $first_time = Resource::where('orderno', $dayPerfor['material_name'])->where('date', $dayPerfor['report_work_date'])->first()->time;
             $last_time = Resource::where('orderno', $dayPerfor['material_name'])->where('date', $dayPerfor['report_work_date'])->latest('time')->first()->time;
 
@@ -349,12 +382,13 @@ class SummaryRepository
 
         $performance_exclusion_time['machine_maintain_time'] = '';  //由APP輸入
 
-        //machine_utilization_rate   ($mass_production_time - $total_downtime + $updown_time)/($mass_production_time)
+        //machine_utilization_rate   ($mass_production_time - $total_downtime + $updown_time)/($standard_working_hours)
         $mass_production_time = strtotime($dayPerfor['mass_production_time']) - strtotime(Carbon::today());
         $total_hours = strtotime($dayPerfor['total_hours']) - strtotime(Carbon::today());
         $updown_time = $dayPerfor['updown_time'];
 
-        $machine_utilization_rate = round((($mass_production_time - $total_downtime - $updown_time) / ($total_hours)), 4);
+        //應該除以標準工時 但這裡直接拿總時數計算更快
+        $machine_utilization_rate = round((($mass_production_time - $total_downtime - $updown_time) / ($total_hours)), 4); 
         $performance_exclusion_time['machine_utilization_rate'] = $machine_utilization_rate;
 
         $performance_exclusion_time['performance_rate'] = round(($dayPerfor['total_completion_that_day'] / $dayPerfor['standard_completion']), 4);
