@@ -7,6 +7,7 @@ use App\Entities\ProcessCalendar;
 use App\Entities\CompanyCalendar;
 use App\Entities\SetupShift;
 use App\Entities\RestSetup;
+use App\Entities\Summary;
 use App\Entities\DayPerformanceStatistics;
 use Carbon\Carbon;
 
@@ -16,7 +17,7 @@ class OEEperformanceRepository
         $work = [];
         
         $work['date'] = Carbon::today()->format("Y-m-d"); // date
-        // $work['date'] = '2019-11-08';
+        // $work['date'] = '2019-11-27';
 
         $day = Carbon::now()->dayOfWeek; // day
         if($day == 1){
@@ -42,26 +43,57 @@ class OEEperformanceRepository
             $work['weekend'] = '休';
         }
         
-        // $com_work_type = ProcessCalendar::where('date', '2019-11-08')->first(); // work_name
-        $com_work_type = CompanyCalendar::where('date', $work['date'])->first(); //看看公司行事曆有沒有加班資料
+        // work_name and standard_working_hours
+        $last_worktime = Summary::where('date', $work['date'])->orderBy('time', 'desc')->first()->time; //當天最後一筆資料的工作時間點
+        $last_worktime = strtotime($last_worktime) - strtotime(Carbon::today()); 
 
+        $com_work_type = CompanyCalendar::where('date', $work['date'])->first(); //看看公司行事曆有沒有加班資料
         if( $com_work_type == null ){ //如果公司行事曆沒資料
             $work_type = ProcessCalendar::where('date', $work['date'])->first(); //看看機台行事曆有沒有加班資料
             
             if( $work_type == false ){ //如果機台行事曆沒有加班資料 //沒加班
                 $work['work_name'] = '正常班';  
+                $work_down = strtotime('17:10:00') - strtotime(Carbon::today());
+                if($last_worktime > $work_down){        //如果當天工作時間 超過 班別設定的下班時間
+                    $extra_worktime = $last_worktime - $work_down;
+                    $work['standard_working_hours'] = date("H:i:s", ($extra_worktime + 28800)-8*60*60);  //額外時間加8小時
+                }else{
+                    $work['standard_working_hours'] = '8:00:00';
+                }       
             }elseif( $work_type->work_type_id == null ){
                 if($work_type->status == 2 ){
                     $work['work_name'] = '休假';
                 }elseif($work_type->status == 3){
                     $work['work_name'] = '國定假日';
                 }
-            }else{ //有加班
-                $work_name = SetupShift::where('id', $work_type->work_type_id)->first()->type;
+                $work['standard_working_hours'] = '0:00:00';
+
+            }else{ //機台行事曆有加班
+                $work_shift = SetupShift::where('id', $work_type->work_type_id)->first();  //取得當天加班資料
+                
                 if($work['weekend'] == '休'){
                     $work['work_name'] = '假日加班';
                 }else{
-                    $work['work_name'] = $work_name;
+                    $work['work_name'] = $work_shift->type;
+                }
+
+                $work_start = strtotime($work_shift->work_on) - strtotime(Carbon::today());  //班別設定的工作開始時間
+                $work_down = strtotime($work_shift->work_off) - strtotime(Carbon::today()); //班別設定的工作結束時間
+
+                $rest = RestSetup::where('rest_id', $work_shift->rest_group)->get();
+                $sum_rest_time = 0;
+                foreach($rest as $key => $rest_datas){
+                    $rest_start = strtotime($rest_datas->start) - strtotime(Carbon::today());
+                    $rest_end = strtotime($rest_datas->end) - strtotime(Carbon::today());
+                    $rest_time = $rest_end - $rest_start;
+                    $sum_rest_time += $rest_time;
+                }
+
+                if($last_worktime > $work_down){       //如果當天工作時間 超過 班別設定的下班時間
+                    $extra_worktime = $last_worktime - $work_down;
+                    $work['standard_working_hours'] = date("H:i:s", ($work_down - $work_start - $sum_rest_time + $extra_worktime)-8*60*60);
+                }else{               
+                    $work['standard_working_hours'] = date("H:i:s", ($work_down - $work_start - $sum_rest_time)-8*60*60);
                 }
             }
         }else{  //如果公司行事曆有資料 
@@ -71,29 +103,36 @@ class OEEperformanceRepository
                 }elseif($com_work_type->status == 3){
                     $work['work_name'] = '國定假日';
                 }
-            }else{ //有加班
-                $work_name = SetupShift::where('id', $com_work_type->work_type_id)->first()->type;
+                $work['standard_working_hours'] = '0:00:00';
+
+            }else{ //公司行事曆有加班
+                $work_shift = SetupShift::where('id', $com_work_type->work_type_id)->first();
                 if($work['weekend'] == '休'){
                     $work['work_name'] = '假日加班';
                 }else{
-                    $work['work_name'] = $work_name;
+                    $work['work_name'] = $work_shift->type;
                 }
-            }
-        }
 
-        // standard_working_hours
-        if($work['work_name'] == '正常班' || $work['work_name'] == '早班' || $work['work_name'] == '中班' || $work['work_name'] == '晚班'){
-            $work['standard_working_hours'] = '8:00:00';
-        }elseif($work['work_name'] == '休假' || $work['work_name'] == '國定假日'){
-            $work['standard_working_hours'] = '0:00:00';
-        }elseif($work['work_name'] == '正常班加3' || $work['work_name'] == '大夜班' || $work['work_name'] == '早班加3'){ 
-            $work['standard_working_hours'] = '11:00:00';
-        }elseif($work['work_name'] == '正常班加3.5'){ 
-            $work['standard_working_hours'] = '11:30:00';
-        }elseif($work['work_name'] == '早班+中班'){ 
-            $work['standard_working_hours'] = '16:00:00';
-        }elseif($work['work_name'] == '正常加班1+大夜班'){ 
-            $work['standard_working_hours'] = '24:00:00';
+                $work_start = strtotime($work_shift->work_on) - strtotime(Carbon::today());  //班別設定的工作開始時間
+                $work_down = strtotime($work_shift->work_off) - strtotime(Carbon::today()); //班別設定的工作結束時間
+
+                $rest = RestSetup::where('rest_id', $work_shift->rest_group)->get();
+                $sum_rest_time = 0;
+                foreach($rest as $key => $rest_datas){
+                    $rest_start = strtotime($rest_datas->start) - strtotime(Carbon::today());
+                    $rest_end = strtotime($rest_datas->end) - strtotime(Carbon::today());
+                    $rest_time = $rest_end - $rest_start;
+                    $sum_rest_time += $rest_time;
+                }
+
+                if($last_worktime > $work_down){       //如果當天工作時間 超過 班別設定的下班時間
+                    $extra_worktime = $last_worktime - $work_down;
+                    $work['standard_working_hours'] = date("H:i:s", ($work_down - $work_start - $sum_rest_time + $extra_worktime)-8*60*60);
+                }else{               
+                    $work['standard_working_hours'] = date("H:i:s", ($work_down - $work_start - $sum_rest_time)-8*60*60);
+                }
+
+            }
         }
         
         // total_hours
@@ -116,29 +155,36 @@ class OEEperformanceRepository
                 $work_off = strtotime($work_time->work_off) - strtotime(Carbon::today());
                 $work_on = strtotime($work_time->work_on) - strtotime(Carbon::today());
 
-                $rest = RestSetup::where('id', $work_time->rest_group)->first();
-                $rest_start = strtotime($rest->start) - strtotime(Carbon::today());
-                $rest_end = strtotime($rest->end) - strtotime(Carbon::today());
-                $rest_time = $rest_end - $rest_start;
-
-                $work['total_hours'] = date("H:i:s", ($work_off - $work_on - $rest_time )-8*60*60); 
+                $rest = RestSetup::where('rest_id', $work_time->rest_group)->get();
+                $sum_rest_time = 0;
+                foreach($rest as $key => $rest_datas){
+                    $rest_start = strtotime($rest_datas->start) - strtotime(Carbon::today());
+                    $rest_end = strtotime($rest_datas->end) - strtotime(Carbon::today());
+                    $rest_time = $rest_end - $rest_start;
+                    $sum_rest_time += $rest_time;
+                }
+                
+                $work['total_hours'] = date("H:i:s", ($work_off - $work_on - $sum_rest_time )-8*60*60); 
                 // workoff - workon - 休息時間    28800為8小時的時間戳(秒數)
             }else{
                 $work_time = SetupShift::where('id', $com_work_type->work_type_id)->first();
                 $work_off = strtotime($work_time->work_off) - strtotime(Carbon::today());
                 $work_on = strtotime($work_time->work_on) - strtotime(Carbon::today());
 
-                $rest = RestSetup::where('id', $work_time->rest_group)->first();
-                $rest_start = strtotime($rest->start) - strtotime(Carbon::today());
-                $rest_end = strtotime($rest->end) - strtotime(Carbon::today());
-                $rest_time = $rest_end - $rest_start;
+                $rest = RestSetup::where('rest_id', $work_time->rest_group)->get();
+                $sum_rest_time = 0;
+                foreach($rest as $key => $rest_datas){
+                    $rest_start = strtotime($rest_datas->start) - strtotime(Carbon::today());
+                    $rest_end = strtotime($rest_datas->end) - strtotime(Carbon::today());
+                    $rest_time = $rest_end - $rest_start;
+                    $sum_rest_time += $rest_time;
+                }
 
-                $work['total_hours'] = date("H:i:s", ($work_off - $work_on - $rest_time )-8*60*60); 
+                $work['total_hours'] = date("H:i:s", ($work_off - $work_on - $sum_rest_time )-8*60*60); 
             }
         }
 
         return $work;
-
     }
 
     //////////////////////////機台加工時間      machine_processing_time
@@ -360,30 +406,17 @@ class OEEperformanceRepository
 
         $machine_performance = [];
         
-        $sameday = DayPerformanceStatistics::where('report_work_date', $sum['date'])->get();
-        $machine_utilization_rate = 0;
-        foreach($sameday as $key =>$datas){
-            $machine_utilization_rate = $machine_utilization_rate + $datas->machine_utilization_rate;
-        }
-        $machine_performance['machine_utilization_rate'] = round(($machine_utilization_rate/count($sameday)), 4);
+        $mass_production_time = strtotime($sum['mass_production_time']) - strtotime(Carbon::today());
+        $total_hours = strtotime($sum['total_hours']) - strtotime(Carbon::today());
+        $updown_time = $sum['updown_time'];
+        $standard_working_hours = strtotime($sum['standard_working_hours']) - strtotime(Carbon::today());
+        $machine_performance['machine_utilization_rate'] = round((($mass_production_time - $total_downtime - $updown_time) / ($standard_working_hours)), 4); 
         
-        $performance_rate = 0;
-        foreach($sameday as $key =>$datas){
-            $performance_rate = $performance_rate + $datas->performance_rate;
-        }
-        $machine_performance['performance_rate'] = round(($performance_rate/count($sameday)), 4);
+        $machine_performance['performance_rate'] = round(($sum['total_completion_that_day'] / $sum['standard_completion']), 4);
         
-        $yield = 0;
-        foreach($sameday as $key =>$datas){
-            $yield = $yield + $datas->yield;
-        }
-        $machine_performance['yield'] = round(($yield/count($sameday)), 4);
+        $machine_performance['yield'] = round((($sum['total_input_that_day'] - $sum['adverse_number']) / ($sum['total_input_that_day'])),4);
         
-        $OEE = 0;
-        foreach($sameday as $key =>$datas){
-            $OEE = $OEE + $datas->OEE;
-        }
-        $machine_performance['OEE'] = round(($OEE/count($sameday)), 4);
+        $machine_performance['OEE'] = round(($machine_performance['machine_utilization_rate'] * $machine_performance['performance_rate'] * $machine_performance['yield']), 4);
 
         return $machine_performance;
     }
