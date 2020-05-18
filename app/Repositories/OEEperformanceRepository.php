@@ -407,6 +407,7 @@ class OEEperformanceRepository
         $machine_performance = [];
         
         $mass_production_time = strtotime($sum['mass_production_time']) - strtotime(Carbon::today());
+        $total_downtime = strtotime($sum['total_downtime']) - strtotime(Carbon::today());
         $total_hours = strtotime($sum['total_hours']) - strtotime(Carbon::today());
         $updown_time = $sum['updown_time'];
         $standard_working_hours = strtotime($sum['standard_working_hours']) - strtotime(Carbon::today());
