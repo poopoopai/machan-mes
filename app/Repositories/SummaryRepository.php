@@ -483,11 +483,10 @@ class SummaryRepository
 
         //machine_utilization_rate   ($mass_production_time - $total_downtime + $updown_time)/($standard_working_hours)
         $mass_production_time = strtotime($dayPerfor['mass_production_time']) - strtotime(Carbon::today());
-        $total_hours = strtotime($dayPerfor['total_hours']) - strtotime(Carbon::today());
         $updown_time = $dayPerfor['updown_time'];
 
         //應該除以標準工時 但這裡直接拿總時數計算更快
-        $machine_utilization_rate = round((($mass_production_time - $total_downtime - $updown_time) / ($total_hours)), 4); 
+        $machine_utilization_rate = round((($mass_production_time - $total_downtime - $updown_time) / ($dayPerfor['standard_working_hours']*3600)), 4); 
         $performance_exclusion_time['machine_utilization_rate'] = $machine_utilization_rate;
 
         $performance_exclusion_time['performance_rate'] = round(($dayPerfor['total_completion_that_day'] / $dayPerfor['standard_completion']), 4);
