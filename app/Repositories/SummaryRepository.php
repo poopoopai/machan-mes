@@ -233,7 +233,7 @@ class SummaryRepository
             $afternoon_rest_end = strtotime('15:10:00') - strtotime(Carbon::today()); 
 
             $rest0 = [$morning_rest_start, $morning_rest_end];
-            $rest1 = [$lunch_rest_start, $lunch_rest_start];
+            $rest1 = [$lunch_rest_start, $lunch_rest_end];
             $rest2 = [$afternoon_rest_start, $afternoon_rest_end];
             $rest = array($rest0, $rest1, $rest2);
 
