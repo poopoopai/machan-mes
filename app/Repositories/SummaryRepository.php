@@ -75,7 +75,7 @@ function calc_unnnormal_standard_work_hours($dayPerfor, $end, $work_shift, $last
                 return round((($work_end - $work_start - $sum_rest_time)/3600), 2); //顯示小時 扣掉1:10:00的休息時間
             }
         }else{  // 真的是最後一筆
-            $sum_rest_time = calc_sum_rest_time($work_shift, $this->pre_last_time, $last_time);
+            $sum_rest_time = calc_sum_rest_time($work_shift, $this->pre_last_time, $work_end);
             if($last_time > $work_end){  //如果工作時間超出班別時間
                 return round((($last_time - $this->pre_last_time - $sum_rest_time)/3600), 2); //顯示小時 扣掉1:10:00的休息時間
             }else{
@@ -166,7 +166,7 @@ class SummaryRepository
                         return round((($work_end - $work_start - 4200)/3600), 2); //顯示小時 扣掉1:10:00的休息時間
                     }
                 }else{  // 真的是最後一筆
-                    $normal_rest = normal_work_rest($this->pre_last_time , $last_time);
+                    $normal_rest = normal_work_rest($this->pre_last_time , $work_end);
                     if($last_time > $work_end){  //如果工作時間超出班別時間
                         return round((($last_time - $this->pre_last_time - $normal_rest)/3600), 2); //顯示小時 扣掉1:10:00的休息時間
                     }else{
