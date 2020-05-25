@@ -137,7 +137,6 @@ class OEEperformanceRepository
         
         // total_hours
         if($work['work_name'] == '正常班'){
-
             $total_hours = 0;
             $totalTime = DayPerformanceStatistics::where('report_work_date', $work['date'])->select('total_hours')->distinct()->get();
             
@@ -149,6 +148,7 @@ class OEEperformanceRepository
         }elseif($work['work_name'] == '休假' || $work['work_name'] == '國定假日'){
             $work['total_hours'] = '00:00:00';
         }else{  // 以下處理加班
+            
             if($com_work_type == null){  // 如果公司行事曆沒資料
                 $work_type_id = ProcessCalendar::where('date', $work['date'])->first()->work_type_id; //看看機台行事曆的加班資料
                 $work_time = SetupShift::where('id', $work_type_id)->first();
@@ -337,7 +337,7 @@ class OEEperformanceRepository
         foreach($getSameDay as $key =>$data){
             if($data->hanging_time != "00:00:00"){
                 $hanging_time = strtotime($data->hanging_time) - strtotime(Carbon::today()); //將字串改為時間戳  之後再相減進行校正
-                $sum_hanging_time = $sum_hanging_time + $refueling_time;
+                $sum_hanging_time = $sum_hanging_time + $hanging_time;
             }
         }
         $machinee_work_except_hours['hanging_time'] = date("H:i:s", $sum_hanging_time-8*60*60);//將時間戳轉回字串

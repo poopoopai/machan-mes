@@ -8,9 +8,22 @@ use App\Entities\ProcessCalendar;
 use App\Entities\CompanyCalendar;
 use App\Entities\SetupShift;
 use App\Entities\MachineDefinition;
+use App\Entities\RestSetup;
 use Carbon\Carbon;
 
-function calc_total_hours($work_shift, $first_time, $last_time){
+function calc_total_hours($work_shift, $end, $dayPerfor,$first_time, $last_time){
+    $work_end = strtotime($work_shift->work_off) - strtotime(Carbon::today()); //班別設定的工作結束時間
+
+    if($end->orderno == $dayPerfor['material_name']){
+        $sum_rest_time = calc_sum_rest_time($work_shift, $first_time, $work_end);
+        return date("H:i:s", ($work_end - $first_time - $sum_rest_time)-8*60*60);
+    }else{
+        $sum_rest_time = calc_sum_rest_time($work_shift, $first_time, $last_time);
+        return date("H:i:s", ($last_time - $first_time - $sum_rest_time)-8*60*60);
+    }
+}
+
+function calc_sum_rest_time($work_shift, $first_time, $last_time){
     $rest = RestSetup::where('rest_id', $work_shift->rest_group)->get();
 
     $sum_rest_time = 0;
@@ -23,21 +36,65 @@ function calc_total_hours($work_shift, $first_time, $last_time){
             $sum_rest_time += $rest_time;
         }
     }
-    return ($last_time - $first_time - $sum_rest_time);
+    return $sum_rest_time;
 }
 
-function calc_sum_rest_time($work_shift){
-    $rest = RestSetup::where('rest_id', $work_shift->rest_group)->get();
-    
-    $sum_rest_time = 0;
-    foreach($rest as $key => $rest_datas){
-        $rest_start = strtotime($rest_datas->start) - strtotime(Carbon::today());
-        $rest_end = strtotime($rest_datas->end) - strtotime(Carbon::today());
-        
-        $rest_time = $rest_end - $rest_start;
-        $sum_rest_time += $rest_time;
+function normal_work_rest($first_time, $last_time){
+    $morning_rest_start = strtotime('10:00:00') - strtotime(Carbon::today());
+    $morning_rest_end = strtotime('10:10:00') - strtotime(Carbon::today());  
+    $lunch_rest_start = strtotime('12:10:00') - strtotime(Carbon::today());
+    $lunch_rest_end = strtotime('13:00:00') - strtotime(Carbon::today());  
+    $afternoon_rest_start = strtotime('15:00:00') - strtotime(Carbon::today());
+    $afternoon_rest_end = strtotime('15:10:00') - strtotime(Carbon::today()); 
+
+    $rest0 = [$morning_rest_start, $morning_rest_end];
+    $rest1 = [$lunch_rest_start, $lunch_rest_end];
+    $rest2 = [$afternoon_rest_start, $afternoon_rest_end];
+    $rest = array($rest0, $rest1, $rest2);
+
+    $normal_work_rest = 0;
+    for($i = 0; $i < 3; $i++){
+        if($first_time < $rest[$i][0] && $last_time > $rest[$i][1]){ //工作時間內有休息時間
+            $rest_time = $rest[$i][1] - $rest[$i][0];
+            $normal_work_rest += $rest_time;
+        }
     }
-    return $sum_rest_time;
+    return $normal_work_rest;
+}
+
+function calc_unnnormal_standard_work_hours($dayPerfor, $end, $work_shift, $last_time){
+    $work_start = strtotime($work_shift->work_on) - strtotime(Carbon::today()); //班別設定的工作開始時間
+    $work_end = strtotime($work_shift->work_off) - strtotime(Carbon::today()); //班別設定的工作結束時間
+
+    if($end->orderno == $dayPerfor['material_name']){  // 最後一筆
+        if($this->pre_last_time == 0 ){   //如果當天第一筆料號即是最後一筆
+            $sum_rest_time = calc_sum_rest_time($work_shift, $work_start, $work_end);
+            if($last_time > $work_end){  //如果工作時間超出班別時間
+                return round((($last_time - $work_start - $sum_rest_time)/3600), 2); //顯示小時 扣掉1:10:00的休息時間
+            }else{
+                return round((($work_end - $work_start - $sum_rest_time)/3600), 2); //顯示小時 扣掉1:10:00的休息時間
+            }
+        }else{  // 真的是最後一筆
+            $sum_rest_time = calc_sum_rest_time($work_shift, $this->pre_last_time, $last_time);
+            if($last_time > $work_end){  //如果工作時間超出班別時間
+                return round((($last_time - $this->pre_last_time - $sum_rest_time)/3600), 2); //顯示小時 扣掉1:10:00的休息時間
+            }else{
+                return round((($work_end - $this->pre_last_time - $sum_rest_time)/3600), 2); //顯示小時 扣掉1:10:00的休息時間
+            }
+        } 
+    }else{ // 非最後一筆(多筆料號)
+        if($this->pre_last_time == 0 ){   //當天第一筆料號 
+            $standard_working_hours = $last_time - $work_start;
+            $sum_rest_time = calc_sum_rest_time($work_shift, $work_start, $last_time);
+            $this->pre_last_time = $last_time;        // 把第一筆料號的結束時間放進去
+            return round(($standard_working_hours - $sum_rest_time/3600), 2); 
+        }else{
+            $standard_working_hours = $last_time - $this->pre_last_time;  //扣掉上一筆的結束時間
+            $sum_rest_time = calc_sum_rest_time($work_shift, $this->pre_last_time, $last_time);
+            $this->pre_last_time = $last_time;        // 把這次料號的結束時間放進去
+            return round(($standard_working_hours - $sum_rest_time/3600), 2); 
+        }
+    }
 }
 
 class SummaryRepository
@@ -88,23 +145,20 @@ class SummaryRepository
             }
         }
     }
-    
-    public function standard_working_hours($dayPerfor)  //改成從resource抓當天同料號的運作時間(最後一筆減去第一筆)
-    {
-        $first = Resource::where('orderno', $dayPerfor['material_name'])->where('date', $dayPerfor['report_work_date'])->first();
+
+    public function standard_working_hours($dayPerfor){
         $last = Resource::where('orderno', $dayPerfor['material_name'])->where('date', $dayPerfor['report_work_date'])->latest('time')->first();
-        $end = Resource::where('date', $dayPerfor['report_work_date'])->latest('time')->first();
-        $first_time = strtotime($first->time) - strtotime(Carbon::today());  //當天該料號開始工作的時間
+        $end = Resource::where('date', $dayPerfor['report_work_date'])->latest('time')->first(); //resource當天最後一筆
         $last_time = strtotime($last->time) - strtotime(Carbon::today());  //當天該料號結束工作的時間
 
         if ($dayPerfor['work_name'] == '休假' || $dayPerfor['work_name'] == '國定假日') {
             return 0;
-        }elseif($end->orderno == $dayPerfor['material_name'] ){ //如果是當天最後一筆料號 先查看當天班別工作時間
-            if($dayPerfor['work_name'] == '正常班' ){
+        }elseif($dayPerfor['work_name'] == '正常班' ){
 
-                $work_end = strtotime('17:10:00') - strtotime(Carbon::today()); //正常班設定的最後時間
-                $work_start = strtotime('8:00:00') - strtotime(Carbon::today()); //正常班設定的開始時間
+            $work_end = strtotime('17:10:00') - strtotime(Carbon::today()); //正常班設定的最後時間
+            $work_start = strtotime('8:00:00') - strtotime(Carbon::today()); //正常班設定的開始時間
 
+            if($end->orderno == $dayPerfor['material_name']){  //正常班 最後一筆
                 if($this->pre_last_time == 0 ){   //如果當天第一筆料號即是最後一筆
                     if($last_time > $work_end){  //如果工作時間超出班別時間
                         return round((($last_time - $work_start - 4200)/3600), 2); //顯示小時 扣掉1:10:00的休息時間
@@ -112,104 +166,40 @@ class SummaryRepository
                         return round((($work_end - $work_start - 4200)/3600), 2); //顯示小時 扣掉1:10:00的休息時間
                     }
                 }else{  // 真的是最後一筆
+                    $normal_rest = normal_work_rest($this->pre_last_time , $last_time);
                     if($last_time > $work_end){  //如果工作時間超出班別時間
-                        return round((($last_time - $this->pre_last_time - 4200)/3600), 2); //顯示小時 扣掉1:10:00的休息時間
+                        return round((($last_time - $this->pre_last_time - $normal_rest)/3600), 2); //顯示小時 扣掉1:10:00的休息時間
                     }else{
-                        return round((($work_end - $this->pre_last_time - 4200)/3600), 2); //顯示小時 扣掉1:10:00的休息時間
+                        return round((($work_end - $this->pre_last_time - $normal_rest)/3600), 2); //顯示小時 扣掉1:10:00的休息時間
                     }
                 } 
-
-            }else{ //不是正常班
-                $com_work_type = CompanyCalendar::where('date', $dayPerfor['report_work_date'])->first(); //看看公司行事曆有沒有加班資料
-                if( $com_work_type == null ){ //如果公司行事曆沒資料
-                    $work_type = ProcessCalendar::where('date', $dayPerfor['report_work_date'])->first(); //看看機台行事曆的加班資料
-                    $work_shift = SetupShift::where('id', $work_type->work_type_id)->first();
-                    $work_end = strtotime($work_shift->work_off) - strtotime(Carbon::today()); //班別設定的工作結束時間
-                    $work_start = strtotime($work_shift->work_on) - strtotime(Carbon::today()); //正常班設定的工作開始時間
-
-                    $sum_rest_time = calc_sum_rest_time($work_shift);
-
-                    if($this->pre_last_time == 0 ){   //如果當天第一筆料號即是最後一筆 而且還不是正常班
-                        if($last_time > $work_end){  //如果工作時間超出班別時間
-                            return round((($last_time - $work_start - $sum_rest_time)/3600), 2); //顯示小時 扣掉1:10:00的休息時間
-                        }else{
-                            return round((($work_end - $work_start - $sum_rest_time)/3600), 2); //顯示小時 扣掉1:10:00的休息時間
-                        }
-                    }else{  //真的是最後一筆
-                        if($last_time > $work_end){  //如果工作時間超出班別時間
-                            return round((($last_time - $this->pre_last_time - $sum_rest_time)/3600), 2); //顯示小時 扣掉1:10:00的休息時間
-                        }else{
-                            return round((($work_end - $this->pre_last_time - $sum_rest_time)/3600), 2); //顯示小時 扣掉1:10:00的休息時間
-                        }
-                    }
-
-                }else{  //公司行事曆有資料 
-                    $work_shift = SetupShift::where('id', $com_work_type->work_type_id)->first();
-                    $work_end = strtotime($work_shift->work_off) - strtotime(Carbon::today()); //班別設定的工作結束時間
-                    $work_start = strtotime($work_shift->work_on) - strtotime(Carbon::today()); //班別設定的工作開始時間
-
-                    $sum_rest_time = calc_sum_rest_time($work_shift);
-
-                    if($this->pre_last_time == 0 ){   //如果當天第一筆料號即是最後一筆  而且還不是正常班
-                        if($last_time > $work_end){  //如果工作時間超出班別時間
-                            return round((($last_time - $work_start - $sum_rest_time)/3600), 2); //顯示小時 扣掉1:10:00的休息時間
-                        }else{
-                            return round((($work_end - $work_start - $sum_rest_time)/3600), 2); //顯示小時 扣掉1:10:00的休息時間
-                        }
-                    }else{  //真的是最後一筆
-                        if($last_time > $work_end){  //如果工作時間超出班別時間
-                            return round((($last_time - $this->pre_last_time - $sum_rest_time)/3600), 2); //顯示小時 扣掉1:10:00的休息時間
-                        }else{
-                            return round((($work_end - $this->pre_last_time - $sum_rest_time)/3600), 2); //顯示小時 扣掉1:10:00的休息時間
-                        }
-                    }
-
-                }
-            }
-        }else{  //不是當天最後一筆料號(有多筆料號)
-            if($dayPerfor['work_name'] == '正常班' ){
-                $work_start = strtotime('8:00:00') - strtotime(Carbon::today()); //正常班設定的開始時間
-
+            }else{ //正常班 非 最後一筆
                 if($this->pre_last_time == 0 ){   //當天第一筆料號 
                     $standard_working_hours = $last_time - $work_start;
+                    $normal_rest = normal_work_rest($work_start , $last_time);
                     $this->pre_last_time = $last_time;        // 把第一筆料號的結束時間放進去
-                    return round(($standard_working_hours/3600), 2); 
+                    return round(($standard_working_hours - $normal_rest/3600), 2); 
                 }else{
                     $standard_working_hours = $last_time - $this->pre_last_time;  //扣掉上一筆的結束時間
+                    $normal_rest = normal_work_rest($this->pre_last_time , $last_time);
                     $this->pre_last_time = $last_time;        // 把這次料號的結束時間放進去
-                    return round(($standard_working_hours/3600), 2); 
+                    return round(($standard_working_hours - $normal_rest/3600), 2); 
                 }
-            }else{  //非正常班還有多筆料號
-                $com_work_type = CompanyCalendar::where('date', $dayPerfor['report_work_date'])->first(); //看看公司行事曆有沒有加班資料
-                if( $com_work_type == null ){ //如果公司行事曆沒資料
-                    $work_type = ProcessCalendar::where('date', $dayPerfor['report_work_date'])->first(); //看看機台行事曆的加班資料
-                    $work_shift = SetupShift::where('id', $work_type->work_type_id)->first();  //取得當天班別
-                    $work_start = strtotime($work_shift->work_on) - strtotime(Carbon::today()); //班別設定的工作開始時間
-                    
-                    if($this->pre_last_time == 0 ){   //當天第一筆料號 
-                        $standard_working_hours = $last_time - $work_start;
-                        $this->pre_last_time = $last_time;        // 把第一筆料號的結束時間放進去
-                        return round(($standard_working_hours/3600), 2); 
-                    }else{
-                        $standard_working_hours = $last_time - $this->pre_last_time;  //扣掉上一筆的結束時間
-                        $this->pre_last_time = $last_time;        // 把這次料號的結束時間放進去
-                        return round(($standard_working_hours/3600), 2); 
-                    }
-                
-                }else{  //公司行事曆有資料
-                    $work_shift = SetupShift::where('id', $com_work_type->work_type_id)->first();
-                    $work_start = strtotime($work_shift->work_on) - strtotime(Carbon::today()); //班別設定的工作開始時間
+            }   
 
-                    if($this->pre_last_time == 0 ){   //當天第一筆料號 
-                        $standard_working_hours = $last_time - $work_start;
-                        $this->pre_last_time = $last_time;        // 把第一筆料號的結束時間放進去
-                        return round(($standard_working_hours/3600), 2); 
-                    }else{
-                        $standard_working_hours = $last_time - $this->pre_last_time;  //扣掉上一筆的結束時間
-                        $this->pre_last_time = $last_time;        // 把這次料號的結束時間放進去
-                        return round(($standard_working_hours/3600), 2); 
-                    }
-                }
+        }else{  //非正常班
+            $com_work_type = CompanyCalendar::where('date', $dayPerfor['report_work_date'])->first(); //看看公司行事曆有沒有加班資料
+            if( $com_work_type == null ){ //如果公司行事曆沒資料
+                $work_type = ProcessCalendar::where('date', $dayPerfor['report_work_date'])->first(); //看看機台行事曆的加班資料
+                $work_shift = SetupShift::where('id', $work_type->work_type_id)->first();
+
+                $standard_working_hours = calc_unnnormal_standard_work_hours($dayPerfor, $end, $work_shift, $last_time);
+                return $standard_working_hours;                
+
+            }else{  //公司行事曆有資料 
+                $work_shift = SetupShift::where('id', $com_work_type->work_type_id)->first();
+                $standard_working_hours = calc_unnnormal_standard_work_hours($dayPerfor, $end, $work_shift, $last_time);
+                return $standard_working_hours;
             }
         }
     }
@@ -218,47 +208,36 @@ class SummaryRepository
     {
         $first_time = Resource::where('orderno', $dayPerfor['material_name'])->where('date', $dayPerfor['report_work_date'])->first()->time;
         $last_time = Resource::where('orderno', $dayPerfor['material_name'])->where('date', $dayPerfor['report_work_date'])->latest('time')->first()->time;
-
-        $first_time = strtotime($first_time) - strtotime(Carbon::today());
-        $last_time = strtotime($last_time) - strtotime(Carbon::today());
+        $end = Resource::where('date', $dayPerfor['report_work_date'])->latest('time')->first(); //resource當天最後一筆
+        $first_time = strtotime($first_time) - strtotime(Carbon::today()); //當天該料號工作開始時間
+        $last_time = strtotime($last_time) - strtotime(Carbon::today()); //當天該料號工作結束時間
 
         if ($dayPerfor['work_name'] == '休假' || $dayPerfor['work_name'] == '國定假日') {
             return 0;
         }elseif($dayPerfor['work_name'] == '正常班'){ 
-            $morning_rest_start = strtotime('10:00:00') - strtotime(Carbon::today());
-            $morning_rest_end = strtotime('10:10:00') - strtotime(Carbon::today());  
-            $lunch_rest_start = strtotime('12:10:00') - strtotime(Carbon::today());
-            $lunch_rest_end = strtotime('13:00:00') - strtotime(Carbon::today());  
-            $afternoon_rest_start = strtotime('15:00:00') - strtotime(Carbon::today());
-            $afternoon_rest_end = strtotime('15:10:00') - strtotime(Carbon::today()); 
 
-            $rest0 = [$morning_rest_start, $morning_rest_end];
-            $rest1 = [$lunch_rest_start, $lunch_rest_end];
-            $rest2 = [$afternoon_rest_start, $afternoon_rest_end];
-            $rest = array($rest0, $rest1, $rest2);
-
-            $sum_rest_time = 0;
-            for($i = 0; $i < 3; $i++){
-                if($first_time < $rest[$i][0] && $last_time > $rest[$i][1]){ //工作時間內有休息時間
-                    $rest_time = $rest[$i][1] - $rest[$i][0];
-                    $sum_rest_time += $rest_time;
-                }
+            $work_end = strtotime('17:10:00') - strtotime(Carbon::today()); //正常班設定的最後結束時間
+            if($end->orderno == $dayPerfor['material_name']){
+                $sum_rest_time = normal_work_rest($first_time, $work_end);
+                return date("H:i:s", ($work_end - $first_time - $sum_rest_time)-8*60*60); // 顯示確切時數
+            }else{
+                $sum_rest_time = normal_work_rest($first_time, $last_time);
+                return date("H:i:s", ($last_time - $first_time - $sum_rest_time)-8*60*60); // 顯示確切時數
             }
-            return date("H:i:s", ($last_time - $first_time - $sum_rest_time)-8*60*60); // 顯示確切時數
-
         }else{
             $com_work_type = CompanyCalendar::where('date', $dayPerfor['report_work_date'])->first(); //看看公司行事曆有沒有加班資料
             if( $com_work_type == null ){ //如果公司行事曆沒資料
                 $work_type = ProcessCalendar::where('date', $dayPerfor['report_work_date'])->first(); //看看機台行事曆的加班資料
                 $work_shift = SetupShift::where('id', $work_type->work_type_id)->first();
-
-                $total_hours = calc_total_hours($work_shift, $first_time, $last_time);
-                return date("H:i:s", ($total_hours)-8*60*60);
-
+                
+                $total_hours = calc_total_hours($work_shift, $end, $dayPerfor,$first_time, $last_time);
+                return $total_hours;
+                
             }else{  //公司行事曆有資料 
                 $work_shift = SetupShift::where('id', $com_work_type->work_type_id)->first();
-                $total_hours = calc_total_hours($work_shift, $first_time, $last_time);
-                return date("H:i:s", ($total_hours)-8*60*60);
+                
+                $total_hours = calc_total_hours($work_shift, $end, $dayPerfor,$first_time, $last_time);
+                return $total_hours;
             }
         }
     }
