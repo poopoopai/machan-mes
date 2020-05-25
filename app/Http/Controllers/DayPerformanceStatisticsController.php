@@ -50,8 +50,8 @@ class DayPerformanceStatisticsController extends Controller
     public function getmachineperformance()
     {
         $today = Carbon::today()->format("Y-m-d");
-        // $orderno = Resource::where('date', '2019-11-08')->select('orderno')->distinct()->get();
-        $orderno = Resource::where('date', $today)->select('orderno')->distinct()->get();
+        $orderno = Resource::where('date', '2019-11-08')->select('orderno')->distinct()->get();
+        // $orderno = Resource::where('date', $today)->select('orderno')->distinct()->get();
 
         foreach($orderno as $key =>$datas){
             if($datas->orderno !== ''){
@@ -62,7 +62,7 @@ class DayPerformanceStatisticsController extends Controller
                 $dayPerfor['material_name'] = $datas->orderno;   
                 $dayPerfor['production_quantity'] = 1;   // 生產數量 
                 
-                $dayPerfor['report_work_date'] = $today; //$today
+                $dayPerfor['report_work_date'] = '2019-11-08'; //$today
                 $dayPerfor['work_name'] = $this->SumRepo->work_name($dayPerfor);     //跟oee一樣去抓是否有加班?setup_shifts->name, process_calendars
                 $dayPerfor['standard_working_hours'] = $this->SumRepo->standard_working_hours($dayPerfor);
                 $dayPerfor['total_hours'] = $this->SumRepo->total_hours($dayPerfor);   
