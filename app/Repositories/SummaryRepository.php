@@ -87,12 +87,12 @@ function calc_unnnormal_standard_work_hours($dayPerfor, $end, $work_shift, $last
             $standard_working_hours = $last_time - $work_start;
             $sum_rest_time = calc_sum_rest_time($work_shift, $work_start, $last_time);
             $this->pre_last_time = $last_time;        // 把第一筆料號的結束時間放進去
-            return round(($standard_working_hours - $sum_rest_time/3600), 2); 
+            return round((($standard_working_hours - $sum_rest_time)/3600), 2); 
         }else{
             $standard_working_hours = $last_time - $this->pre_last_time;  //扣掉上一筆的結束時間
             $sum_rest_time = calc_sum_rest_time($work_shift, $this->pre_last_time, $last_time);
             $this->pre_last_time = $last_time;        // 把這次料號的結束時間放進去
-            return round(($standard_working_hours - $sum_rest_time/3600), 2); 
+            return round((($standard_working_hours - $sum_rest_time)/3600), 2); 
         }
     }
 }
@@ -178,12 +178,12 @@ class SummaryRepository
                     $standard_working_hours = $last_time - $work_start;
                     $normal_rest = normal_work_rest($work_start , $last_time);
                     $this->pre_last_time = $last_time;        // 把第一筆料號的結束時間放進去
-                    return round(($standard_working_hours - $normal_rest/3600), 2); 
+                    return round((($standard_working_hours - $normal_rest)/3600), 2); 
                 }else{
                     $standard_working_hours = $last_time - $this->pre_last_time;  //扣掉上一筆的結束時間
                     $normal_rest = normal_work_rest($this->pre_last_time , $last_time);
                     $this->pre_last_time = $last_time;        // 把這次料號的結束時間放進去
-                    return round(($standard_working_hours - $normal_rest/3600), 2); 
+                    return round((($standard_working_hours - $normal_rest)/3600), 2); 
                 }
             }   
 
@@ -235,7 +235,7 @@ class SummaryRepository
                 
             }else{  //公司行事曆有資料 
                 $work_shift = SetupShift::where('id', $com_work_type->work_type_id)->first();
-                
+
                 $total_hours = calc_total_hours($work_shift, $end, $dayPerfor,$first_time, $last_time);
                 return $total_hours;
             }
