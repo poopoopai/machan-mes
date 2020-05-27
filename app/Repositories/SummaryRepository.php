@@ -70,15 +70,19 @@ function calc_unnnormal_standard_work_hours($dayPerfor, $end, $work_shift, $last
         if($this->pre_last_time == 0 ){   //如果當天第一筆料號即是最後一筆
             $sum_rest_time = calc_sum_rest_time($work_shift, $work_start, $work_end);
             if($last_time > $work_end){  //如果工作時間超出班別時間
+                $this->real_standard_worktime = ($last_time - $work_start - $sum_rest_time);
                 return round((($last_time - $work_start - $sum_rest_time)/3600), 2); //顯示小時 扣掉1:10:00的休息時間
             }else{
+                $this->real_standard_worktime = ($work_end - $work_start - $sum_rest_time);
                 return round((($work_end - $work_start - $sum_rest_time)/3600), 2); //顯示小時 扣掉1:10:00的休息時間
             }
         }else{  // 真的是最後一筆
             $sum_rest_time = calc_sum_rest_time($work_shift, $this->pre_last_time, $work_end);
             if($last_time > $work_end){  //如果工作時間超出班別時間
+                $this->real_standard_worktime = ($last_time - $this->pre_last_time - $sum_rest_time);
                 return round((($last_time - $this->pre_last_time - $sum_rest_time)/3600), 2); //顯示小時 扣掉1:10:00的休息時間
             }else{
+                $this->real_standard_worktime = ($work_end - $this->pre_last_time - $sum_rest_time);
                 return round((($work_end - $this->pre_last_time - $sum_rest_time)/3600), 2); //顯示小時 扣掉1:10:00的休息時間
             }
         } 
@@ -87,11 +91,13 @@ function calc_unnnormal_standard_work_hours($dayPerfor, $end, $work_shift, $last
             $standard_working_hours = $last_time - $work_start;
             $sum_rest_time = calc_sum_rest_time($work_shift, $work_start, $last_time);
             $this->pre_last_time = $last_time;        // 把第一筆料號的結束時間放進去
+            $this->real_standard_worktime = ($standard_working_hours - $sum_rest_time);
             return round((($standard_working_hours - $sum_rest_time)/3600), 2); 
         }else{
             $standard_working_hours = $last_time - $this->pre_last_time;  //扣掉上一筆的結束時間
             $sum_rest_time = calc_sum_rest_time($work_shift, $this->pre_last_time, $last_time);
             $this->pre_last_time = $last_time;        // 把這次料號的結束時間放進去
+            $this->real_standard_worktime = ($standard_working_hours - $sum_rest_time);
             return round((($standard_working_hours - $sum_rest_time)/3600), 2); 
         }
     }
@@ -100,9 +106,11 @@ function calc_unnnormal_standard_work_hours($dayPerfor, $end, $work_shift, $last
 class SummaryRepository
 {
     protected $pre_last_time;
+    protected $real_standard_worktime;
     public function __construct()
     {
         $this->pre_last_time = $pre_last_time = 0;
+        $this->real_standard_worktime = $real_standard_worktime = 0;
     }
 
     public function work_name($dayPerfor){
@@ -161,15 +169,19 @@ class SummaryRepository
             if($end->orderno == $dayPerfor['material_name']){  //正常班 最後一筆
                 if($this->pre_last_time == 0 ){   //如果當天第一筆料號即是最後一筆
                     if($last_time > $work_end){  //如果工作時間超出班別時間
+                        $this->real_standard_worktime = ($last_time - $work_start - 4200);
                         return round((($last_time - $work_start - 4200)/3600), 2); //顯示小時 扣掉1:10:00的休息時間
                     }else{
+                        $this->real_standard_worktime = ($work_end - $work_start - 4200);
                         return round((($work_end - $work_start - 4200)/3600), 2); //顯示小時 扣掉1:10:00的休息時間
                     }
                 }else{  // 真的是最後一筆
                     $normal_rest = normal_work_rest($this->pre_last_time , $work_end);
                     if($last_time > $work_end){  //如果工作時間超出班別時間
+                        $this->real_standard_worktime = ($last_time - $this->pre_last_time - $normal_rest);
                         return round((($last_time - $this->pre_last_time - $normal_rest)/3600), 2); //顯示小時 扣掉1:10:00的休息時間
                     }else{
+                        $this->real_standard_worktime = ($work_end - $this->pre_last_time - $normal_rest);
                         return round((($work_end - $this->pre_last_time - $normal_rest)/3600), 2); //顯示小時 扣掉1:10:00的休息時間
                     }
                 } 
@@ -178,11 +190,13 @@ class SummaryRepository
                     $standard_working_hours = $last_time - $work_start;
                     $normal_rest = normal_work_rest($work_start , $last_time);
                     $this->pre_last_time = $last_time;        // 把第一筆料號的結束時間放進去
+                    $this->real_standard_worktime = ($standard_working_hours - $normal_rest);
                     return round((($standard_working_hours - $normal_rest)/3600), 2); 
                 }else{
                     $standard_working_hours = $last_time - $this->pre_last_time;  //扣掉上一筆的結束時間
                     $normal_rest = normal_work_rest($this->pre_last_time , $last_time);
                     $this->pre_last_time = $last_time;        // 把這次料號的結束時間放進去
+                    $this->real_standard_worktime = ($standard_working_hours - $normal_rest);
                     return round((($standard_working_hours - $normal_rest)/3600), 2); 
                 }
             }   
@@ -514,7 +528,7 @@ class SummaryRepository
         $updown_time = $dayPerfor['updown_time'];
 
         //應該除以標準工時 但這裡直接拿總時數計算更快
-        $machine_utilization_rate = round((($mass_production_time - $total_downtime - $updown_time) / ($dayPerfor['standard_working_hours']*3600)), 4); 
+        $machine_utilization_rate = round((($mass_production_time - $total_downtime - $updown_time) / ($this->real_standard_worktime)), 4); 
         $performance_exclusion_time['machine_utilization_rate'] = $machine_utilization_rate;
 
         $performance_exclusion_time['performance_rate'] = round(($dayPerfor['total_completion_that_day'] / $dayPerfor['standard_completion']), 4);
