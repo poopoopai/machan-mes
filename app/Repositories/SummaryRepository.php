@@ -528,7 +528,11 @@ class SummaryRepository
         $updown_time = $dayPerfor['updown_time'];
 
         //應該除以標準工時 但這裡直接拿總時數計算更快
-        $machine_utilization_rate = round((($mass_production_time - $total_downtime - $updown_time) / ($this->real_standard_worktime)), 4); 
+        if($mass_production_time < $total_downtime){
+            $machine_utilization_rate = round(((($mass_production_time + $total_downtime) - $total_downtime - $updown_time) / ($this->real_standard_worktime)), 4);
+        }else{
+            $machine_utilization_rate = round((($mass_production_time - $total_downtime - $updown_time) / ($this->real_standard_worktime)), 4);
+        }
         $performance_exclusion_time['machine_utilization_rate'] = $machine_utilization_rate;
 
         $performance_exclusion_time['performance_rate'] = round(($dayPerfor['total_completion_that_day'] / $dayPerfor['standard_completion']), 4);
