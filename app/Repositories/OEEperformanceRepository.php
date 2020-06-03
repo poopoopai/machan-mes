@@ -50,7 +50,7 @@ class OEEperformanceRepository
         $work = [];
         
         // $work['date'] = Carbon::today()->format("Y-m-d"); // date
-        $work['date'] = '2019-11-27';
+        $work['date'] = '2019-11-08';
 
         $day = Carbon::now()->dayOfWeek; // day
         if($day == 1){
