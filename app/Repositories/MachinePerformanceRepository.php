@@ -168,8 +168,8 @@
         }
 
         public function create($data)
-        {
-            return Summary::create($data);
+        {	
+            return Summary::updateOrCreate(['resources_id' => $data['resources_id']]);
         }
 
         public function check($data)
